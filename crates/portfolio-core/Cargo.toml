@@ -1,0 +1,17 @@
+[package]
+name = "portfolio-core"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "staticlib", "lib"]
+
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/bin/uniffi-bindgen.rs"
+
+[dependencies]
+rust_decimal = { version = "1.37", features = ["serde", "maths"] }
+serde = { version = "1.0.229", features = ["derive"] }
+uniffi = { version = "0.32.2", features = ["cli"] }
+

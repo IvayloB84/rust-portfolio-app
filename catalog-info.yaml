@@ -1,0 +1,13 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: rust-portfolio-app
+  description: Rust (axum + sqlx) articles microservice with SQLite WAL persistence
+  annotations:
+    github.com/project-slug: IvayloB84/rust-portfolio-app
+    argocd/app-name: rust-portfolio-app
+    backstage.io/kubernetes-label-selector: "app=rust-portfolio-app"
+spec:
+  type: service
+  lifecycle: production
+  owner: "user:default/IvayloB84"
