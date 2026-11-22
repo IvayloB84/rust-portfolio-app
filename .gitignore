@@ -44,3 +44,6 @@
 
 /bindings/
 local.sqlite3*
+
+/bindings/
+local.sqlite3*
