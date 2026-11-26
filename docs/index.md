@@ -7,12 +7,12 @@
 
 ## What Is Done
 - **Auth & Sessions**: Argon2id Email/Password login & registration, Google OAuth2 login/account merge by email, sliding idle session renewal (`SESSION_IDLE_TTL_SECS`).
-- **Live Market Feeds & Multi-Region Search**: Swissquote FX (3s), Binance Crypto WS, Finnhub US Stocks WS + Yahoo Finance live quote polling for European/UK equities (`.DE`, `.MI`, `.L`, `.PA`, `.AS`, `.SW`, `.MC`) and indices; multi-region (`US`, `DE`, `GB`, `IT`, `FR`) autocomplete search.
+- **Live Market Feeds & Multi-Region Search**: Swissquote FX (3s), Binance Crypto WS, Finnhub US Stocks WS + Yahoo Finance live quote polling (`includePrePost=true`, accepting `REGULAR`/`LIVE`/`24/7`) for European/UK equities (`.DE`, `.F`, `.MI`, `.L`, `.PA`, `.AS`, `.SW`, `.MC`) and indices; automatic multi-region (`US`, `DE`, `GB`, `IT`, `FR`, `CH`) autocomplete search.
 - **Order & Risk Engine**: `Long`/`Short`, `Pending`/`Open` (`$0.00` Market Value & Cost Basis while `Pending`), `SL`/`TP` auto-close, `10-pip` / `0.35%` near-trigger alerts; `OPEN` positions lock `quantity` & `avg_buy_price` (only `SL`/`TP` editable); cancelled `PENDING` orders delete cleanly without booking fake trades.
-- **Mobile & Desktop SPA (`crates/server/src/index.html`)**: Grouped symbol rows (`×N`, weighted avg entry, `L / S` mixed badge) with individual position selector & sub-cent P&L precision; XTB-style slide-in chart (Candles/Line, 1:1 CTM crosshair); collapsible SL/TP & `+ New Position` drawer; full-screen Trade History window with Net Realized P&L & Win Rate.
+- **Mobile & Desktop SPA (`crates/server/src/index.html`)**: Grouped symbol rows (`×N`, weighted avg entry, `L / S` badge) with individual position selector & `Close All` / single-position sheet; sub-cent P&L precision; XTB-style slide-in chart (multi-day date labels, Candles/Line, 1:1 CTM crosshair); collapsible SL/TP & `+ New Position` drawer with `Long`/`Short` selector; uniform centered Account dropdown; full-screen Trade History window.
 
 ## What Is Not Done (Next Milestones)
 1. **GitHub OAuth2**: Add `/portfolio/api/auth/github` and `/portfolio/api/auth/github/callback` with verified primary email lookup and account merge.
 2. **Native Mobile Clients (UniFFI)**: Generate Kotlin (Android) and Swift (iOS) bindings from `crates/portfolio-core` and build native screens matching the mobile web UX.
 3. **Permanent Named Tunnel & K3s ArgoCD Verification**: Cut over from ephemeral `trycloudflare.com` quick tunnels to the permanent Named Tunnel domain (`TUNNEL_TOKEN` in `.env`) and verify k3s/ArgoCD image sync.
-4. **Broker & Tracker Portfolio Import (API Key + CSV)**: Add read-only API key connectors (Trading 212 `/api/v0/equity/portfolio`, Binance Spot, IBKR Flex) with ticker normalization (`AAPL_US_EQ` -> `AAPL`, `APC_DE_EQ` -> `APC.DE`) and idempotent sync.
+4. **Broker & Tracker Portfolio Import (API Key + CSV)**: Add read-only API key connectors (Trading 212 `/api/v0/equity/portfolio`, Binance Spot, IBKR Flex) + CSV fallback with ticker normalization and idempotent sync.

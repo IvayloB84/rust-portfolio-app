@@ -90,8 +90,9 @@
   #user-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   #user-dd { position: absolute; right: 0; top: calc(100% + 0.35rem); min-width: 190px; background: #1e293b; border: 1px solid #475569; border-radius: 0.65rem; padding: 0.5rem; box-shadow: 0 12px 28px rgba(0,0,0,0.6); display: none; z-index: 40; }
   #user-dd label { display: block; font-size: 0.7rem; color: #94a3b8; margin-bottom: 0.25rem; }
-  #user-dd #base-ccy { width: 100%; border-radius: 0.4rem; text-align: left; margin-bottom: 0.45rem; }
-  #user-dd #logout-btn { width: 100%; border-radius: 0.4rem; padding: 0.38rem 0.6rem; }
+  #user-dd select, #user-dd button { display: flex; align-items: center; justify-content: center; text-align: center; text-align-last: center; width: 100%; height: 2.35rem; padding: 0 0.65rem; font-size: 0.84rem; font-weight: 600; border-radius: 0.45rem; box-sizing: border-box; margin: 0 0 0.45rem 0; }
+  #user-dd select { display: block; line-height: 2.25rem; }
+  #user-dd #logout-btn { margin-bottom: 0; }
   @media (max-width: 680px) {
     .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 0.5rem; margin-bottom: 0.85rem; }
     .card { padding: 0.55rem 0.5rem; }
@@ -272,6 +273,7 @@
             <span>Order &amp; Risk Parameters</span>
             <button type="button" id="dca-toggle" style="width:auto;padding:0.2rem 0.55rem;font-size:0.74rem;background:#0f172a;border:1px solid #334155;color:#f59e0b">+ Buy More (DCA)</button>
           </div>
+          <div id="edit-side-wrap" style="display:none;margin-bottom:0.5rem"><label style="font-size:0.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:0.2rem">Direction / Side<select id="edit-side"><option value="LONG">Long (Buy)</option><option value="SHORT">Short (Sell)</option></select></label></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
             <label style="font-size:0.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:0.2rem">Quantity / Lots<input id="edit-qty" type="text" inputmode="decimal"></label>
             <label style="font-size:0.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:0.2rem">Entry / Trigger Price<input id="edit-px" type="text" inputmode="decimal"></label>
@@ -356,6 +358,7 @@ function setEditFields(h) {
   const isOpen = (h.status || 'OPEN') === 'OPEN';
   document.getElementById('edit-title').textContent = isOpen ? 'Edit SL / TP' : 'Modify Pending Order';
   document.getElementById('dca-toggle').textContent = '+ New Position';
+  const sw = document.getElementById('edit-side-wrap'); if (sw) sw.style.display = 'none';
   const qEl = document.getElementById('edit-qty'), pEl = document.getElementById('edit-px');
   qEl.value = h.quantity; pEl.value = h.avg_buy_price;
   qEl.disabled = isOpen; pEl.disabled = isOpen;
@@ -372,6 +375,7 @@ document.getElementById('dca-toggle').onclick = () => {
   if (dcaMode) {
     document.getElementById('edit-title').textContent = 'New Separate Position (' + activeHolding.symbol + ')';
     document.getElementById('dca-toggle').textContent = 'Back to Current';
+    const sw = document.getElementById('edit-side-wrap'); if (sw) { sw.style.display = 'block'; document.getElementById('edit-side').value = activeHolding.side || 'LONG'; }
     qEl.disabled = false; pEl.disabled = false; qEl.style.opacity = '1'; pEl.style.opacity = '1';
     qEl.value = ''; pEl.value = activeHolding.current_price ?? activeHolding.avg_buy_price;
     document.getElementById('edit-sl').value = ''; document.getElementById('edit-tp').value = '';
@@ -384,7 +388,7 @@ document.getElementById('edit-save').onclick = async () => {
   if (!(qIn > 0) || !(pIn > 0)) { msgEl.textContent = 'Enter positive quantity and price.'; return; }
   const slVal = cleanDec(document.getElementById('edit-sl').value) || null, tpVal = cleanDec(document.getElementById('edit-tp').value) || null;
   const res = dcaMode
-    ? await fetch('/portfolio/api/holdings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ symbol: activeHolding.symbol, asset_type: activeHolding.asset_type, side: activeHolding.side || 'LONG', quantity: qIn.toString(), avg_buy_price: pIn.toString(), stop_loss: slVal, take_profit: tpVal, currency: activeHolding.currency }) })
+    ? await fetch('/portfolio/api/holdings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ symbol: activeHolding.symbol, asset_type: activeHolding.asset_type, side: document.getElementById('edit-side').value || 'LONG', quantity: qIn.toString(), avg_buy_price: pIn.toString(), stop_loss: slVal, take_profit: tpVal, currency: activeHolding.currency }) })
     : await fetch('/portfolio/api/holdings/' + activeHolding.id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ quantity: qIn.toString(), avg_buy_price: pIn.toString(), stop_loss: slVal, take_profit: tpVal }) });
   if (!res.ok) { msgEl.textContent = await res.text(); return; }
   await load();
@@ -450,7 +454,7 @@ async function loadHistory() {
     const chgEl = document.getElementById('d-chg');
     chgEl.textContent = (up ? '+' : '') + pct + '% (' + activeRange.toUpperCase() + ')';
     chgEl.className = up ? 'pos' : 'neg';
-    const fmtTs = ts => { const dt = new Date(ts * 1000); return ['5m','15m','1h','4h','1d','5d'].includes(activeRange) ? dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : dt.toLocaleDateString([], {month:'short',day:'numeric'}); };
+    const spanDay = viewPts.length > 1 && (viewPts.at(-1).ts - viewPts.at(0).ts) > 43200; const fmtTs = ts => { const dt = new Date(ts * 1000); return ['5m','15m','1h','4h','1d','5d'].includes(activeRange) ? (spanDay ? dt.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' : '') + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : dt.toLocaleDateString([], { month: 'short', day: 'numeric', year: '2-digit' }); };
     
     
     const yTicks = [max, min + span * 0.67, min + span * 0.33, min];
@@ -662,7 +666,32 @@ document.getElementById('add-form').onsubmit = async e => {
     e.target.reset(); document.getElementById('currency').value = 'USD'; addForm.classList.add('mob-hidden'); mobAddBtn.textContent = '+ Add Instrument'; load();
   } finally { btn.disabled = false; btn.textContent = 'Add'; }
 };
-async function del(id) { await fetch('/portfolio/api/holdings/' + id, { method: 'DELETE' }); load(); }
+async function closeOneId(id) {
+  await fetch('/portfolio/api/holdings/' + id + '/close', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+}
+async function closeAllSym(sym) {
+  closeSheet();
+  const list = Object.values(holdingsMap).filter(x => x.symbol === sym);
+  for (const x of list) await closeOneId(x.id);
+  await load();
+}
+async function del(id) {
+  const h = holdingsMap[id]; if (!h) return;
+  const list = Object.values(holdingsMap).filter(x => x.symbol === h.symbol);
+  if (list.length <= 1) { await closeOneId(id); await load(); return; }
+  const cs = ccySym(h.asset_type === 'Forex' && h.symbol.length === 6 ? h.symbol.slice(3) : h.currency);
+  const dp = h.asset_type === 'Forex' ? 3 : 2;
+  const rows = list.map(x => {
+    const xp = Number(x.valuation?.unrealized_pnl || 0);
+    const stTxt = x.status === 'PENDING' ? '<span style="color:#facc15">PENDING</span>' : '<span class="' + (xp >= 0 ? 'pos' : 'neg') + '">' + (xp >= 0 ? '+' : '-') + cs + fmtPnl(xp) + '</span>';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0.65rem;background:#0f172a;border:1px solid #334155;border-radius:0.5rem;margin-bottom:0.4rem">' +
+      '<div style="font-size:0.82rem"><strong>' + (x.side || 'LONG') + '</strong> · ' + x.quantity + ' @ ' + cs + Number(x.avg_buy_price).toFixed(dp) + ' · ' + stTxt + '</div>' +
+      '<button type="button" class="del" style="width:auto" onclick="closeSheet();closeOneId(' + x.id + ').then(load)">' + (x.status === 'PENDING' ? 'Cancel' : 'Close') + '</button></div>';
+  }).join('');
+  sheetBox.innerHTML = '<div style="font-weight:700;margin-bottom:0.55rem">Close ' + h.symbol + ' (' + list.length + ' positions)</div>' + rows +
+    '<button type="button" style="width:100%;background:#dc2626;color:#fff;margin-top:0.25rem" data-sym="' + h.symbol + '" onclick="closeAllSym(this.dataset.sym)">Close All ' + list.length + ' Positions</button>';
+  sheetBg.classList.add('open');
+}
 function connectWS() {
   const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/portfolio/ws/prices');
   const badge = document.getElementById('ws-status');

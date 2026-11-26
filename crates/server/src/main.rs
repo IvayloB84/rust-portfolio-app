@@ -399,7 +399,7 @@ async fn run_stock_quote_fallback(state: AppState) {
                 .unwrap_or_default();
         for (sym,) in stock_rows {
             let url = format!(
-                "https://{}/v8/finance/chart/{}?interval=1m&range=1d",
+                "https://{}/v8/finance/chart/{}?interval=1m&range=1d&includePrePost=true",
                 yf_host,
                 sym.trim().to_uppercase()
             );
@@ -865,7 +865,7 @@ async fn update_price_meta(
     volume: Option<u64>,
     market_state: Option<String>,
 ) {
-    let is_reg = market_state.as_deref() == Some("REGULAR");
+    let is_reg = matches!(market_state.as_deref(), Some("REGULAR" | "LIVE" | "24/7"));
     let mut price_map = state.prices.write().await;
     if !is_valid_market_tick(
         price,
@@ -1979,15 +1979,16 @@ async fn search_symbols(Query(q): Query<SearchQuery>) -> Json<Vec<SearchItem>> {
         vec![(term.clone(), "US")]
     } else {
         vec![
-            (term.clone(), "US"),
-            (format!("{} XETRA", term), "DE"),
-            (term.clone(), "DE"),
-            (term.clone(), "GB"),
-            (term.clone(), "IT"),
-            (term.clone(), "FR"),
-            (format!("{}.DE", term), "DE"),
-            (format!("{}.MI", term), "IT"),
-            (format!("{}.L", term), "GB"),
+            (term.clone(), "US&lang=en-US"),
+            (term.clone(), "DE&lang=de-DE"),
+            (term.clone(), "GB&lang=en-GB"),
+            (term.clone(), "IT&lang=it-IT"),
+            (term.clone(), "FR&lang=fr-FR"),
+            (term.clone(), "CH&lang=de-CH"),
+            (format!("{}.DE", term), "DE&lang=de-DE"),
+            (format!("{}.MI", term), "IT&lang=it-IT"),
+            (format!("{}.L", term), "GB&lang=en-GB"),
+            (format!("{}.PA", term), "FR&lang=fr-FR"),
         ]
     };
     let mut idx = 0;
@@ -2036,11 +2037,20 @@ async fn search_symbols(Query(q): Query<SearchQuery>) -> Json<Vec<SearchItem>> {
                 let label = item
                     .shortname
                     .or(item.longname)
-                    .unwrap_or_else(|| sym.clone());
-                if idx == 1 && !sym.contains('.') && queries.len() < 3 {
-                    let fw = label.split_whitespace().next().unwrap_or("");
+                    .unwrap_or_else(|| sym.clone())
+                    .split_whitespace()
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                if idx == 1 && !sym.contains('.') && queries.len() <= 10 {
+                    let fw = label
+                        .split_whitespace()
+                        .next()
+                        .unwrap_or("")
+                        .trim_matches(',');
                     if fw.len() >= 3 && fw.to_uppercase() != term {
-                        queries.push((fw.to_string(), "DE"));
+                        queries.push((fw.to_string(), "DE&lang=de-DE"));
+                        queries.push((fw.to_string(), "GB&lang=en-GB"));
+                        queries.push((fw.to_string(), "IT&lang=it-IT"));
                     }
                 }
                 if seen.insert(sym.clone()) {
@@ -2050,7 +2060,30 @@ async fn search_symbols(Query(q): Query<SearchQuery>) -> Json<Vec<SearchItem>> {
         }
     }
 
-    raw_items.truncate(16);
+    let (eu, us): (Vec<_>, Vec<_>) = raw_items.into_iter().partition(|(s, _, _)| s.contains('.'));
+    let mut mixed = Vec::new();
+    let (mut iu, mut ie) = (us.into_iter(), eu.into_iter());
+    while mixed.len() < 16 {
+        let a = iu.next();
+        let b = ie.next();
+        if a.is_none() && b.is_none() {
+            break;
+        }
+        if let Some(x) = a {
+            mixed.push(x);
+        }
+        if let Some(x) = b
+            && mixed.len() < 16
+        {
+            mixed.push(x);
+        }
+    }
+    mixed.retain(|(s, _, at)| {
+        !(*at == AssetType::Index
+            && s.ends_with("=F")
+            && !matches!(s.as_str(), "ES=F" | "NQ=F" | "YM=F" | "NKD=F"))
+    });
+    let raw_items = mixed;
     let futs = raw_items.into_iter().map(|(sym, name, at)| {
         let c = client.clone();
         async move {

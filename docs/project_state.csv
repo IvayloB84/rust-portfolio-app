@@ -6,9 +6,9 @@ DONE,Core,Forex Lot & Orders,crates/portfolio-core/src/lib.rs,"Forex 100,000 uni
 DONE,DB,users & sessions,SQLite (DATABASE_URL),"users (Argon2id + Google OAuth); sessions (64-char hex token, sliding idle TTL SESSION_IDLE_TTL_SECS auto-renewed on 2xx)"
 DONE,DB,holdings & closed_trades,SQLite (DATABASE_URL),OPEN qty & entry immutable (SL/TP editable); PENDING fully editable; cancelled PENDING deleted cleanly; closed_trades archives exits
 DONE,API,Auth & Google OAuth,/portfolio/api/auth/*,"POST /register, /login, /logout; GET /me, /google, /google/callback (merges by email)"
-DONE,API,"Portfolio, Orders & Search",/portfolio/api/*,GET /portfolio; POST/PUT/DELETE /holdings; POST /holdings/{id}/close; GET /trades; multi-region US/DE/GB/IT/FR /search; live EU/US/FX/Crypto/Index polling
+DONE,API,"Portfolio, Orders & Search",/portfolio/api/*,GET /portfolio; POST/PUT/DELETE /holdings; POST /holdings/{id}/close; GET /trades; multi-region US/DE/GB/IT/FR/CH /search; live EU/US/FX/Crypto/Index polling
 DONE,API,Live WS Stream,GET /portfolio/ws/prices,WebSocket pushing PriceTick updates + LIVE/MKT CLOSED status and running process_symbol_triggers
-DONE,UI,Mobile & Desktop SPA,crates/server/src/index.html,"Grouped symbol rows (xN, weighted avg, L/S badge) + individual position selector; sub-cent P&L; XTB chart; collapsible SL/TP & +New Position drawer; full-screen Trade History"
+DONE,UI,Mobile & Desktop SPA,crates/server/src/index.html,"Grouped symbol rows (xN, weighted avg, L/S badge) + individual position selector & Close All sheet; sub-cent P&L; XTB chart; Long/Short +New Position drawer; centered Account menu; full-screen Trade History"
 TODO,Auth,GitHub OAuth2,crates/server/src/main.rs,Implement GET /portfolio/api/auth/github & /github/callback with verified primary email lookup and account merge
 TODO,Mobile,Native iOS & Android,crates/portfolio-core,Generate UniFFI Kotlin & Swift bindings and build native mobile apps matching the responsive mobile SPA
 TODO,Infra,Named Tunnel & K3s,k8s/ & .env,Cut over Google OAuth redirect URI to permanent Named Tunnel domain and verify ArgoCD k3s deployment sync
