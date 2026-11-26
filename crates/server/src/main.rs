@@ -903,7 +903,7 @@ fn extract_session_token(headers: &HeaderMap) -> Option<String> {
 const SESSION_IDLE_TTL_SECS: i64 = 1_800;
 
 async fn sliding_session_cookie(
-    State(state): State<Arc<AppState>>,
+    State(state): State<AppState>,
     req: axum::extract::Request,
     next: axum::middleware::Next,
 ) -> axum::response::Response {
