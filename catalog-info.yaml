@@ -1,0 +1,66 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: rust-portfolio-app
+  description: Rust (axum + sqlx) multi-asset portfolio and forex microservice with SQLite WAL persistence
+  annotations:
+    github.com/project-slug: IvayloB84/rust-portfolio-app
+    argocd/app-name: rust-portfolio-app
+    backstage.io/kubernetes-label-selector: "app=rust-portfolio-app"
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: "user:default/IvayloB84"
+  system: rust-portfolio-system
+  providesApis:
+    - portfolio-rest-ws-api
+  dependsOn:
+    - component:portfolio-core
+    - resource:portfolio-sqlite-db
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: rust-portfolio-system
+  description: Real-time multi-currency Stock, Forex, Crypto & Index portfolio and simulated order management system.
+spec:
+  owner: "user:default/IvayloB84"
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: portfolio-core
+  description: Shared Rust domain library (UniFFI-ready) for Long/Short valuation, Forex 100k lot sizing, Pending order triggers, and SL/TP evaluation.
+  annotations:
+    github.com/project-slug: IvayloB84/rust-portfolio-app
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: library
+  lifecycle: production
+  owner: "user:default/IvayloB84"
+  system: rust-portfolio-system
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: portfolio-rest-ws-api
+  description: REST JSON endpoints and 1-second live price WebSocket stream under /portfolio/api and /portfolio/ws.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: "user:default/IvayloB84"
+  system: rust-portfolio-system
+  definition:
+    $text: ./docs/API_REFERENCE.md
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: portfolio-sqlite-db
+  description: SQLite database in WAL mode (local.sqlite3 / k3s PVC) storing users, sessions, holdings, and closed_trades.
+spec:
+  type: database
+  lifecycle: production
+  owner: "user:default/IvayloB84"
+  system: rust-portfolio-system
