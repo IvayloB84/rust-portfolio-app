@@ -4,8 +4,8 @@
 
 | Method | Path | Body / Params | Description |
 |---|---|---|---|
-| `POST` | `/portfolio/api/auth/register` | `{ email, password, name? }` | Create user & set HTTP-only session cookie. |
-| `POST` | `/portfolio/api/auth/login` | `{ email, password }` | Authenticate & set session cookie. |
+| `POST` | `/portfolio/api/auth/register` | `{ email, password, name? }` | Create user & set HTTP-only sliding-TTL session cookie (`SESSION_IDLE_TTL_SECS`). |
+| `POST` | `/portfolio/api/auth/login` | `{ email, password }` | Authenticate & set HTTP-only sliding-TTL session cookie (auto-renewed on `2xx` requests). |
 | `POST` | `/portfolio/api/auth/logout` | — | Clear session cookie. |
 | `GET` | `/portfolio/api/auth/me` | — | Return `{ id, email, name }` or `401`. |
 | `GET` | `/portfolio/api/auth/google` | — | Start Google OAuth2 login flow. |

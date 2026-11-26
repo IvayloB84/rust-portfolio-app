@@ -7,3 +7,4 @@
   - Authenticated REST API (`/portfolio/api/*`)
   - Live broadcast WebSocket (`/portfolio/ws/prices`)
   - Background market pollers (Yahoo Finance, TwelveData, Finnhub, Frankfurter FX)
+  - **Session Security**: Sliding idle TTL (`SESSION_IDLE_TTL_SECS`) via `HttpOnly; SameSite=Lax` cookie (`portfolio_session`), auto-renewed on authenticated `2xx` responses.

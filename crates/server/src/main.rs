@@ -909,28 +909,29 @@ async fn sliding_session_cookie(
 ) -> axum::response::Response {
     let token = extract_session_token(req.headers());
     let mut res = next.run(req).await;
-    if let Some(tok) = token {
-        if res.status().is_success() && !res.headers().contains_key(SET_COOKIE) {
-            let now = SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_secs() as i64;
-            let valid: Option<(i64,)> = sqlx::query_as(
-                "SELECT expires_at FROM sessions WHERE token = ? AND expires_at > ?",
-            )
-            .bind(&tok)
-            .bind(now)
-            .fetch_optional(&state.db)
-            .await
-            .ok()
-            .flatten();
-            if valid.is_some() {
-                if let Ok(hv) = make_session_cookie(&tok, SESSION_IDLE_TTL_SECS).parse() {
-                    res.headers_mut().insert(SET_COOKIE, hv);
-                }
-            }
+    if let Some(tok) = token
+        && res.status().is_success()
+        && !res.headers().contains_key(SET_COOKIE)
+    {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs() as i64;
+        let valid: Option<(i64,)> =
+            sqlx::query_as("SELECT expires_at FROM sessions WHERE token = ? AND expires_at > ?")
+                .bind(&tok)
+                .bind(now)
+                .fetch_optional(&state.db)
+                .await
+                .ok()
+                .flatten();
+        if valid.is_some()
+            && let Ok(hv) = make_session_cookie(&tok, SESSION_IDLE_TTL_SECS).parse()
+        {
+            res.headers_mut().insert(SET_COOKIE, hv);
         }
     }
+
     res
 }
 
