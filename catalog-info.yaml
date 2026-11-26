@@ -28,20 +28,6 @@ spec:
   owner: "user:default/IvayloB84"
 ---
 apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: portfolio-core
-  description: Shared Rust domain library (UniFFI-ready) for Long/Short valuation, Forex 100k lot sizing, Pending order triggers, and SL/TP evaluation.
-  annotations:
-    github.com/project-slug: IvayloB84/rust-portfolio-app
-    backstage.io/techdocs-ref: dir:.
-spec:
-  type: library
-  lifecycle: production
-  owner: "user:default/IvayloB84"
-  system: rust-portfolio-system
----
-apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
   name: portfolio-rest-ws-api
