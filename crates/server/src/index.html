@@ -660,9 +660,9 @@ document.getElementById('logout-btn').onclick = async () => {
 };
 async function initSession() {
   const boot = document.getElementById('boot-screen');
-  const res = await fetch('/portfolio/api/auth/me');
+  const res = await fetch('/portfolio/api/auth/me', { credentials: 'same-origin' });
   if (boot) boot.style.display = 'none';
-  if (!res.ok) {
+  if (res.status === 401) {
     document.getElementById('app-screen').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'block';
     return;

@@ -902,6 +902,38 @@ fn extract_session_token(headers: &HeaderMap) -> Option<String> {
 }
 const SESSION_IDLE_TTL_SECS: i64 = 1_800;
 
+async fn sliding_session_cookie(
+    State(state): State<Arc<AppState>>,
+    req: axum::extract::Request,
+    next: axum::middleware::Next,
+) -> axum::response::Response {
+    let token = extract_session_token(req.headers());
+    let mut res = next.run(req).await;
+    if let Some(tok) = token {
+        if res.status().is_success() && !res.headers().contains_key(SET_COOKIE) {
+            let now = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs() as i64;
+            let valid: Option<(i64,)> = sqlx::query_as(
+                "SELECT expires_at FROM sessions WHERE token = ? AND expires_at > ?",
+            )
+            .bind(&tok)
+            .bind(now)
+            .fetch_optional(&state.db)
+            .await
+            .ok()
+            .flatten();
+            if valid.is_some() {
+                if let Ok(hv) = make_session_cookie(&tok, SESSION_IDLE_TTL_SECS).parse() {
+                    res.headers_mut().insert(SET_COOKIE, hv);
+                }
+            }
+        }
+    }
+    res
+}
+
 async fn current_user(db: &SqlitePool, headers: &HeaderMap) -> Option<AuthUser> {
     let token = extract_session_token(headers)?;
     let now = SystemTime::now()
@@ -2365,6 +2397,10 @@ fn build_router(state: AppState, interval_secs: u64) -> Router {
         .route("/api/auth/register", post(auth_register))
         .route("/api/auth/login", post(auth_login))
         .route("/api/auth/logout", post(auth_logout))
+        .layer(axum::middleware::from_fn_with_state(
+            state.clone(),
+            sliding_session_cookie,
+        ))
         .route("/api/auth/google", get(auth_google_start))
         .route("/api/auth/google/callback", get(auth_google_callback))
         .route("/api/holdings", post(add_holding))
