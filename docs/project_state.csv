@@ -12,4 +12,5 @@ DONE,UI,Mobile & Desktop SPA,crates/server/src/index.html,"Grouped symbol rows (
 TODO,Auth,GitHub OAuth2,crates/server/src/main.rs,Implement GET /portfolio/api/auth/github & /github/callback with verified primary email lookup and account merge
 TODO,Mobile,Native iOS & Android,crates/portfolio-core,Generate UniFFI Kotlin & Swift bindings and build native mobile apps matching the responsive mobile SPA
 TODO,Infra,Named Tunnel & K3s,k8s/ & .env,Cut over Google OAuth redirect URI to permanent Named Tunnel domain and verify ArgoCD k3s deployment sync
+TODO,Integrations,Broker Import (Trading 212),crates/server/src/main.rs,"Read-only API key import (Trading 212 equity/portfolio, Binance, IBKR Flex + CSV) with ticker mapping & idempotent sync"
 RULE,Gotcha,Workflow Guardrails,Workspace / Chat,Never restart active quick tunnel without updating Google OAuth URI; split hostnames in scripts; keep pastes <45 lines; run cargo fmt + clippy -D warnings + test

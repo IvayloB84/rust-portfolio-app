@@ -15,3 +15,4 @@
 1. **GitHub OAuth2**: Add `/portfolio/api/auth/github` and `/portfolio/api/auth/github/callback` with verified primary email lookup and account merge.
 2. **Native Mobile Clients (UniFFI)**: Generate Kotlin (Android) and Swift (iOS) bindings from `crates/portfolio-core` and build native screens matching the mobile web UX.
 3. **Permanent Named Tunnel & K3s ArgoCD Verification**: Cut over from ephemeral `trycloudflare.com` quick tunnels to the permanent Named Tunnel domain (`TUNNEL_TOKEN` in `.env`) and verify k3s/ArgoCD image sync.
+4. **Broker & Tracker Portfolio Import (API Key + CSV)**: Add read-only API key connectors (Trading 212 `/api/v0/equity/portfolio`, Binance Spot, IBKR Flex) with ticker normalization (`AAPL_US_EQ` -> `AAPL`, `APC_DE_EQ` -> `APC.DE`) and idempotent sync.
