@@ -900,13 +900,28 @@ fn extract_session_token(headers: &HeaderMap) -> Option<String> {
             .map(String::from)
     })
 }
+const SESSION_IDLE_TTL_SECS: i64 = 1_800;
+
 async fn current_user(db: &SqlitePool, headers: &HeaderMap) -> Option<AuthUser> {
     let token = extract_session_token(headers)?;
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs() as i64;
-    sqlx::query_as::<_, AuthUser>("SELECT u.id, u.email, u.name, u.provider FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token = ? AND s.expires_at > ?").bind(token).bind(now).fetch_optional(db).await.ok().flatten()
+    let user = sqlx::query_as::<_, AuthUser>("SELECT u.id, u.email, u.name, u.provider FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token = ? AND s.expires_at > ?")
+        .bind(&token)
+        .bind(now)
+        .fetch_optional(db)
+        .await
+        .ok()
+        .flatten()?;
+    let _ = sqlx::query("UPDATE sessions SET expires_at = ? WHERE token = ? AND expires_at < ?")
+        .bind(now + SESSION_IDLE_TTL_SECS)
+        .bind(&token)
+        .bind(now + SESSION_IDLE_TTL_SECS - 60)
+        .execute(db)
+        .await;
+    Some(user)
 }
 fn make_session_cookie(token: &str, max_age: i64) -> String {
     format!(
@@ -919,11 +934,15 @@ async fn create_session(db: &SqlitePool, user_id: i64) -> Result<String, String>
     let mut bytes = [0u8; 32];
     rand::thread_rng().fill_bytes(&mut bytes);
     let token: String = bytes.iter().map(|b| format!("{:02x}", b)).collect();
-    let exp = SystemTime::now()
+    let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
-        .as_secs() as i64
-        + 2_592_000;
+        .as_secs() as i64;
+    let _ = sqlx::query("DELETE FROM sessions WHERE expires_at <= ?")
+        .bind(now)
+        .execute(db)
+        .await;
+    let exp = now + SESSION_IDLE_TTL_SECS;
     sqlx::query("INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)")
         .bind(&token)
         .bind(user_id)
@@ -1001,7 +1020,9 @@ async fn auth_register(
     .into_response();
     resp.headers_mut().insert(
         SET_COOKIE,
-        make_session_cookie(&token, 2_592_000).parse().unwrap(),
+        make_session_cookie(&token, SESSION_IDLE_TTL_SECS)
+            .parse()
+            .unwrap(),
     );
     resp
 }
@@ -1044,7 +1065,9 @@ async fn auth_login(
     .into_response();
     resp.headers_mut().insert(
         SET_COOKIE,
-        make_session_cookie(&token, 2_592_000).parse().unwrap(),
+        make_session_cookie(&token, SESSION_IDLE_TTL_SECS)
+            .parse()
+            .unwrap(),
     );
     resp
 }
@@ -1262,7 +1285,9 @@ async fn auth_google_callback(
     let mut resp = Redirect::temporary("/portfolio").into_response();
     resp.headers_mut().append(
         SET_COOKIE,
-        make_session_cookie(&st, 2_592_000).parse().unwrap(),
+        make_session_cookie(&st, SESSION_IDLE_TTL_SECS)
+            .parse()
+            .unwrap(),
     );
     resp.headers_mut().append(
         SET_COOKIE,
