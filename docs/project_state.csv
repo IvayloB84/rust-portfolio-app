@@ -1,12 +1,12 @@
 Area,Component / Endpoint,File / Location,Status,Technical Specification & Invariants
-Infra,Server & Port,crates/server/src/main.rs,Live,Axum 0.8 server on 0.0.0.0:8083; all routes under /portfolio; GET / redirects 308 to /portfolio
+Infra,Server & Port,crates/server/src/main.rs,Live,Axum 0.8 server on 0.0.0.0:8083; all routes under /portfolio; Cache-Control: no-store on HTML
 Infra,Process Manager,start.sh,Live,"Sources .env, kills old server, waits in while-loop until PID exits (prevents SQLite WAL / port lock), starts daemon -> server.log"
-Infra,Cloudflare Tunnel,/tmp/cloudflared.log,Live,Quick Tunnel + Named tunnel connector -> port 8083; GitOps ArgoCD k3s deployment
-Core,Forex Lot & Orders,crates/portfolio-core/src/lib.rs,Live,"AssetType::Forex multiplies qty by 100,000; supports Long/Short, Pending/Open, SL/TP & 10-pip/0.35% near-trigger alerts (UniFFI exported)"
+Infra,Cloudflare Tunnel,/tmp/cloudflared.log,Live,Quick Tunnel + Named tunnel connector (TUNNEL_TOKEN via .env) -> 127.0.0.1:8083; GitOps ArgoCD k3s deployment
+Core,Forex Lot & Orders,crates/portfolio-core/src/lib.rs,Live,"AssetType::Forex multiplies qty by 100,000; Long/Short, Pending/Open ($0 MV/CB while Pending), SL/TP & 10-pip/0.35% near-trigger alerts (UniFFI)"
 DB,users & sessions,SQLite (DATABASE_URL),Live,"users (Argon2id + Google OAuth); sessions (64-char hex token, sliding idle TTL SESSION_IDLE_TTL_SECS auto-renewed on 2xx responses)"
-DB,holdings & closed_trades,SQLite (DATABASE_URL),Live,"holdings (side, status, trigger_dir, stop_loss, take_profit, user_id); closed_trades archives Manual/StopLoss/TakeProfit exits"
+DB,holdings & closed_trades,SQLite (DATABASE_URL),Live,holdings (OPEN qty & entry immutable; PENDING fully editable; cancelled PENDING deleted cleanly); closed_trades archives Manual/SL/TP exits
 API,Auth & OAuth,/portfolio/api/auth/*,Live,"POST /register, /login, /logout; GET /me, /google, /google/callback (merges by email)"
-API,"Portfolio, Orders & Trades",/portfolio/api/*,Live,GET /portfolio (?base=NATIVE|USD|EUR); POST/PUT/DELETE /holdings; POST /holdings/{id}/close; GET /trades; GET /search & /history (14D ATR)
-API,Live WS Stream,GET /portfolio/ws/prices,Live,WebSocket pushing live PriceTick updates + LIVE/CLOSED status and running process_symbol_triggers
-UI,Mobile & Desktop SPA,crates/server/src/index.html,Live,"Vanilla HTML/CSS/JS; in-place WS DOM updates; Universal mobile zero-scroll cards (360px+ Android/iOS flex-wrapped status badges); XTB slide-in chart (Candles/Line, 1:1 CTM crosshair); EU comma input"
+API,"Portfolio, Orders & Search",/portfolio/api/*,Live,GET /portfolio; POST/PUT/DELETE /holdings; POST /holdings/{id}/close; GET /trades; multi-region US/DE/GB/IT/FR /search; live EU/US/FX/Crypto/Index polling
+API,Live WS Stream,GET /portfolio/ws/prices,Live,WebSocket pushing live PriceTick updates + LIVE/MKT CLOSED status and running process_symbol_triggers
+UI,Mobile & Desktop SPA,crates/server/src/index.html,Live,"Grouped symbol rows (×N, weighted avg entry) with individual position selector; sub-cent P&L precision; collapsible SL/TP & +New Position drawer; full-screen Trade History window"
 Gotcha,URL Copy-Paste & Clippy,Workspace / Chat,Rule,Split hostnames in pasted scripts; keep pastes <45 lines; run cargo fmt && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace

@@ -190,8 +190,8 @@ pub fn evaluate_position(
     if status == OrderStatus::Pending {
         return HoldingValuation {
             symbol: holding.symbol.clone(),
-            market_value: cost_basis,
-            cost_basis,
+            market_value: Decimal::ZERO,
+            cost_basis: Decimal::ZERO,
             unrealized_pnl: Decimal::ZERO,
             pnl_percent: Decimal::ZERO,
         };

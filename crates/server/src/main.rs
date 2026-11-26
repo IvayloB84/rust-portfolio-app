@@ -391,9 +391,50 @@ async fn run_stock_quote_fallback(state: AppState) {
     loop {
         ticker.tick().await;
 
-        let finnhub_key = std::env::var("FINNHUB_API_KEY").unwrap_or_default();
-        if finnhub_key.trim().is_empty() {
-            continue;
+        let yf_host = ["query1", "finance", "yahoo", "com"].join(".");
+        let stock_rows: Vec<(String,)> =
+            sqlx::query_as("SELECT DISTINCT symbol FROM holdings WHERE asset_type = 'Stock'")
+                .fetch_all(&state.db)
+                .await
+                .unwrap_or_default();
+        for (sym,) in stock_rows {
+            let url = format!(
+                "https://{}/v8/finance/chart/{}?interval=1m&range=1d",
+                yf_host,
+                sym.trim().to_uppercase()
+            );
+            if let Ok(resp) = client
+                .get(&url)
+                .header("User-Agent", "Mozilla/5.0")
+                .send()
+                .await
+                && let Ok(parsed) = resp.json::<YahooChartResp>().await
+                && let Some(meta) = parsed
+                    .chart
+                    .and_then(|c| c.result)
+                    .and_then(|r| r.into_iter().next())
+                    .and_then(|f| f.meta)
+                && let Some(price) = meta.regular_market_price.filter(|p| *p > 0.0)
+                && let Ok(dec) = Decimal::from_str(&format!("{:.4}", price))
+            {
+                let now_s = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs() as i64;
+                let badge = meta
+                    .regular_market_time
+                    .map(|mt| {
+                        if now_s - mt < 2400 || meta.market_state.as_deref() == Some("REGULAR") {
+                            "LIVE".to_string()
+                        } else {
+                            meta.market_state
+                                .clone()
+                                .unwrap_or_else(|| "CLOSED".to_string())
+                        }
+                    })
+                    .or_else(|| meta.market_state.clone());
+                update_price_meta(&state, &sym, dec, meta.regular_market_volume, badge).await;
+            }
         }
 
         let crypto_rows: Vec<(String,)> =
@@ -428,7 +469,6 @@ async fn run_stock_quote_fallback(state: AppState) {
                 .await
                 .unwrap_or_default();
 
-        let yf_host = ["query1", "finance", "yahoo", "com"].join(".");
         for (sym,) in index_rows {
             let up = sym.trim().to_uppercase();
             let mapped = match up.as_str() {
@@ -511,7 +551,8 @@ async fn run_stock_quote_fallback(state: AppState) {
                     let session_badge = meta
                         .regular_market_time
                         .map(|mt| {
-                            if now_s - mt < 2400 {
+                            if now_s - mt < 2400 || meta.market_state.as_deref() == Some("REGULAR")
+                            {
                                 "LIVE".to_string()
                             } else {
                                 meta.market_state
@@ -740,6 +781,14 @@ async fn archive_and_close_holding(
     exit_price: Decimal,
     reason: &str,
 ) -> anyhow::Result<()> {
+    if row.status.eq_ignore_ascii_case("PENDING") {
+        sqlx::query("DELETE FROM holdings WHERE id = ? AND user_id = ?")
+            .bind(row.id)
+            .bind(row.user_id)
+            .execute(db)
+            .await?;
+        return Ok(());
+    }
     let qty = Decimal::from_str(&row.quantity).unwrap_or(Decimal::ZERO);
     let entry = Decimal::from_str(&row.avg_buy_price).unwrap_or(Decimal::ZERO);
     let val = evaluate_position(
@@ -1333,7 +1382,19 @@ async fn auth_google_callback(
 async fn index() -> impl IntoResponse {
     (
         [("Cache-Control", "no-store, must-revalidate")],
-        Html(include_str!("index.html")),
+        (
+            [(
+                axum::http::header::CACHE_CONTROL,
+                "no-store, no-cache, must-revalidate",
+            )],
+            (
+                [(
+                    axum::http::header::CACHE_CONTROL,
+                    "no-store, no-cache, must-revalidate",
+                )],
+                Html(include_str!("index.html")),
+            ),
+        ),
     )
 }
 
@@ -1669,7 +1730,7 @@ async fn fetch_yahoo_quote(
     let badge = meta
         .regular_market_time
         .map(|mt| {
-            if now_s - mt < 2400 {
+            if now_s - mt < 2400 || meta.market_state.as_deref() == Some("REGULAR") {
                 "LIVE".to_string()
             } else {
                 meta.market_state
@@ -1914,18 +1975,28 @@ async fn search_symbols(Query(q): Query<SearchQuery>) -> Json<Vec<SearchItem>> {
     }
 
     let yf_host = ["query1", "finance", "yahoo", "com"].join(".");
-    let mut queries = if term.contains('.') {
-        vec![term.clone()]
+    let mut queries: Vec<(String, &'static str)> = if term.contains('.') {
+        vec![(term.clone(), "US")]
     } else {
-        vec![term.clone(), format!("{}.DE", term)]
+        vec![
+            (term.clone(), "US"),
+            (format!("{} XETRA", term), "DE"),
+            (term.clone(), "DE"),
+            (term.clone(), "GB"),
+            (term.clone(), "IT"),
+            (term.clone(), "FR"),
+            (format!("{}.DE", term), "DE"),
+            (format!("{}.MI", term), "IT"),
+            (format!("{}.L", term), "GB"),
+        ]
     };
     let mut idx = 0;
     while idx < queries.len() {
-        let q_str = queries[idx].clone();
+        let (q_str, reg) = queries[idx].clone();
         idx += 1;
         let surl = format!(
-            "https://{}/v1/finance/search?q={}&quotesCount=10&newsCount=0",
-            yf_host, q_str
+            "https://{}/v1/finance/search?q={}&region={}&quotesCount=6&newsCount=0",
+            yf_host, q_str, reg
         );
         if let Ok(r) = client
             .get(&surl)
@@ -1969,7 +2040,7 @@ async fn search_symbols(Query(q): Query<SearchQuery>) -> Json<Vec<SearchItem>> {
                 if idx == 1 && !sym.contains('.') && queries.len() < 3 {
                     let fw = label.split_whitespace().next().unwrap_or("");
                     if fw.len() >= 3 && fw.to_uppercase() != term {
-                        queries.push(fw.to_string());
+                        queries.push((fw.to_string(), "DE"));
                     }
                 }
                 if seen.insert(sym.clone()) {
@@ -1979,7 +2050,7 @@ async fn search_symbols(Query(q): Query<SearchQuery>) -> Json<Vec<SearchItem>> {
         }
     }
 
-    raw_items.truncate(8);
+    raw_items.truncate(16);
     let futs = raw_items.into_iter().map(|(sym, name, at)| {
         let c = client.clone();
         async move {
@@ -2244,9 +2315,21 @@ async fn update_holding(
         )
             .into_response();
     }
-    match sqlx::query(
-        "UPDATE holdings SET quantity = ?, avg_buy_price = ?, stop_loss = ?, take_profit = ? WHERE id = ? AND user_id = ?",
-    )
+    let is_open =
+        sqlx::query_as::<_, (String,)>("SELECT status FROM holdings WHERE id = ? AND user_id = ?")
+            .bind(id)
+            .bind(user.id)
+            .fetch_optional(&state.db)
+            .await
+            .ok()
+            .flatten()
+            .map(|(s,)| s.eq_ignore_ascii_case("OPEN"))
+            .unwrap_or(false);
+    match if is_open {
+        sqlx::query("UPDATE holdings SET quantity = quantity, avg_buy_price = avg_buy_price, stop_loss = ?, take_profit = ? WHERE id = ? AND user_id = ?")
+    } else {
+        sqlx::query("UPDATE holdings SET quantity = ?, avg_buy_price = ?, stop_loss = ?, take_profit = ? WHERE id = ? AND user_id = ?")
+    }
     .bind(input.quantity.to_string())
     .bind(input.avg_buy_price.to_string())
     .bind(input.stop_loss.filter(|v| *v > Decimal::ZERO).map(|v| v.to_string()))
