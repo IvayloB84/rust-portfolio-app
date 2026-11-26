@@ -15,9 +15,6 @@ spec:
   system: rust-portfolio-system
   providesApis:
     - portfolio-rest-ws-api
-  dependsOn:
-    - component:portfolio-core
-    - resource:portfolio-sqlite-db
 ---
 apiVersion: backstage.io/v1alpha1
 kind: System
