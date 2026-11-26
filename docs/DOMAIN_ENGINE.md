@@ -6,7 +6,7 @@
 |---|---|---|
 | `AssetType` | `Stock`, `Forex`, `Crypto`, `Index` | Asset classification (`Forex` uses `100,000` units/lot contract multiplier). |
 | `OrderSide` | `Long`, `Short` | Position direction (`Long` profits when `price > entry`; `Short` profits when `price < entry`). |
-| `OrderStatus` | `Pending`, `Open` | `Pending` orders yield `$0.00` Unrealized P&L until live price crosses `entry_price`. |
+| `OrderStatus` | `Pending`, `Open` | `Pending` orders yield `$0.00` Market Value, Cost Basis, and Unrealized P&L until live price crosses `entry_price`. |
 | `TriggerDir` | `Above`, `Below` | Direction required for a `Pending` limit/stop order to fill into `Open`. |
 | `CloseReason` | `Manual`, `StopLoss`, `TakeProfit` | Reason recorded when archiving an order to `closed_trades`. |
 
