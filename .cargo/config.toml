@@ -1,2 +1,0 @@
-[build]
-rustflags = ["--remap-path-prefix=/media/theone/HDD/docker-files/rust_language/rust-portfolio-app=/app"]

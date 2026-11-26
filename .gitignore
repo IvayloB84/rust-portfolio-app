@@ -47,3 +47,23 @@ local.sqlite3*
 
 /bindings/
 local.sqlite3*
+
+# Local runtime & generated bindings
+local.sqlite3*
+*.log
+/bindings/
+
+.env
+server.log
+*.sqlite3*
+cloudflared.log
+.cargo/config.toml
+
+# Local-only handoff docs, secrets, databases, and logs
+.local/
+.env
+*.sqlite*
+*.log
+
+# Local helper scripts
+*.sh

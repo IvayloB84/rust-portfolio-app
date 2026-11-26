@@ -1,7 +1,8 @@
-# Rust Articles App (`axum` + `sqlx`)
+# Rust Portfolio & Forex Tracker (`axum + sqlx + UniFFI`)
 
-Lightweight Rust web service backed by SQLite (WAL mode) on a `2Gi` Kubernetes PersistentVolumeClaim, built via GitHub Actions and deployed to k3s through ArgoCD.
+Real-time multi-currency portfolio and simulated order management microservice for **Stocks, Forex, Crypto & Indices**, backed by SQLite (WAL mode), built via GitHub Actions, and deployed to k3s via ArgoCD.
 
-- **Web UI & API:** `/rust/articles` (`GET` & `POST`)
-- **Health Check:** `/rust/health`
-- **Container Image:** `ghcr.io/ivaylob84/rust-portfolio-app:latest` (~8 MB Alpine runtime)
+- **Web UI & API:** `/portfolio` (`GET/POST /portfolio/api/holdings`, `/portfolio/api/trades`, `/portfolio/ws/prices`)
+- **Health Check:** `/portfolio/health`
+- **Container Image:** `ghcr.io/ivaylob84/rust-portfolio-app:latest`
+- **Backstage TechDocs:** See `catalog-info.yaml` and `docs/` (`Architecture`, `Domain Engine`, `API Reference`, `Runbook`).

@@ -20,9 +20,9 @@ jobs:
       - name: Check formatting & lints
         run: |
           cargo fmt --check
-          cargo clippy -- -D warnings
+          cargo clippy --workspace -- -D warnings
       - name: Run tests
-        run: cargo test
+        run: cargo test --workspace
 
   secret-scan:
     runs-on: ubuntu-latest

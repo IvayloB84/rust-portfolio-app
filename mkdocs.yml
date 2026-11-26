@@ -1,0 +1,5 @@
+site_name: rust-portfolio-app TechDocs
+nav:
+  - Architecture Overview: index.md
+  - Domain Engine (portfolio-core): DOMAIN_ENGINE.md
+  - API & WebSocket Reference: API_REFERENCE.md
