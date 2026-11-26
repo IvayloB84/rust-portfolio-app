@@ -52,7 +52,7 @@ spec:
   owner: "user:default/IvayloB84"
   system: rust-portfolio-system
   definition:
-    $text: ./docs/API_REFERENCE.md
+    $text: ./docs/openapi.yaml
 ---
 apiVersion: backstage.io/v1alpha1
 kind: Resource

@@ -1,0 +1,191 @@
+openapi: 3.0.3
+info:
+  title: Rust Portfolio & Forex Microservice API
+  version: 1.0.0
+  description: REST JSON endpoints and WebSocket price feed under /portfolio.
+servers:
+  - url: http://localhost:8083
+paths:
+  /portfolio/health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Service healthy
+  /portfolio/api/auth/register:
+    post:
+      summary: Register user & set HTTP-only session cookie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+                name: { type: string }
+      responses:
+        "200":
+          description: Registered and authenticated
+  /portfolio/api/auth/login:
+    post:
+      summary: Authenticate & set session cookie
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email }
+                password: { type: string }
+      responses:
+        "200":
+          description: Authenticated
+  /portfolio/api/auth/logout:
+    post:
+      summary: Clear session cookie
+      responses:
+        "200":
+          description: Logged out
+  /portfolio/api/auth/me:
+    get:
+      summary: Return current user profile or 401
+      responses:
+        "200":
+          description: User profile
+        "401":
+          description: Unauthenticated
+  /portfolio/api/auth/google:
+    get:
+      summary: Start Google OAuth2 login flow
+      responses:
+        "302":
+          description: Redirect to Google OAuth2
+  /portfolio/api/portfolio:
+    get:
+      summary: Live portfolio holdings, valuations, SL/TP proximity & P&L
+      parameters:
+        - in: query
+          name: base
+          schema:
+            type: string
+            enum: [NATIVE, USD, EUR]
+      responses:
+        "200":
+          description: Portfolio snapshot
+  /portfolio/api/holdings:
+    post:
+      summary: Create OPEN market order or PENDING limit/stop order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [symbol, asset_type, quantity, avg_buy_price, currency]
+              properties:
+                symbol: { type: string }
+                asset_type: { type: string }
+                side: { type: string, enum: [LONG, SHORT] }
+                quantity: { type: number }
+                avg_buy_price: { type: number }
+                stop_loss: { type: number, nullable: true }
+                take_profit: { type: number, nullable: true }
+                currency: { type: string }
+      responses:
+        "200":
+          description: Created holding
+  /portfolio/api/holdings/{id}:
+    put:
+      summary: Update position size, entry/trigger price, or SL/TP levels
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity: { type: number }
+                avg_buy_price: { type: number }
+                stop_loss: { type: number, nullable: true }
+                take_profit: { type: number, nullable: true }
+      responses:
+        "200":
+          description: Updated holding
+    delete:
+      summary: Delete holding without archiving to history
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+  /portfolio/api/holdings/{id}/close:
+    post:
+      summary: Close position at live/exit price and archive to closed_trades
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                exit_price: { type: number, nullable: true }
+      responses:
+        "200":
+          description: Position closed
+  /portfolio/api/trades:
+    get:
+      summary: List closed trades with native and converted realized P&L
+      parameters:
+        - in: query
+          name: base
+          schema:
+            type: string
+            enum: [EUR, USD]
+      responses:
+        "200":
+          description: Closed trade history
+  /portfolio/api/search:
+    get:
+      summary: Symbol autocomplete across Yahoo Finance & static index/FX catalog
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Matching symbols
+  /portfolio/api/history:
+    get:
+      summary: OHLC candles, 52-week range, and 14-day ATR
+      parameters:
+        - in: query
+          name: symbol
+          required: true
+          schema: { type: string }
+        - in: query
+          name: asset_type
+          schema: { type: string }
+        - in: query
+          name: range
+          schema: { type: string, default: 1d }
+      responses:
+        "200":
+          description: Historical OHLC & indicators
