@@ -474,6 +474,7 @@ async fn run_stock_quote_fallback(state: AppState) {
             let mapped = match up.as_str() {
                 "JP225" | "JPN225" | "NIKKEI225" => Some("NKD=F"),
                 "US500" | "SPX500" | "SP500" | "SPX" => Some("ES=F"),
+                "VIX" => Some("^VIX"),
                 "NAS100" | "US100" | "USTEC" | "NDX" => Some("NQ=F"),
                 "US30" | "DJ30" | "WS30" | "DJI" => Some("YM=F"),
                 "DE40" | "GER40" | "DE30" | "DAX40" | "DAX" => Some("^GDAXI"),
@@ -865,7 +866,8 @@ async fn update_price_meta(
     volume: Option<u64>,
     market_state: Option<String>,
 ) {
-    let is_reg = matches!(market_state.as_deref(), Some("REGULAR" | "LIVE" | "24/7"));
+    let is_reg = !symbol.starts_with('^')
+        && matches!(market_state.as_deref(), Some("REGULAR" | "LIVE" | "24/7"));
     let mut price_map = state.prices.write().await;
     if !is_valid_market_tick(
         price,
@@ -1948,7 +1950,8 @@ async fn fetch_yahoo_quote(
     let yf_host = ["query1", "finance", "yahoo", "com"].join(".");
     let url = format!(
         "https://{}/v8/finance/chart/{}?interval=1m&range=1d",
-        yf_host, ticker
+        yf_host,
+        ticker.replace('^', "%5E")
     );
     let resp = client
         .get(&url)
