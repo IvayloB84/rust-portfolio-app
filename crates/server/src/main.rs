@@ -866,14 +866,13 @@ async fn update_price_meta(
     volume: Option<u64>,
     market_state: Option<String>,
 ) {
-    let is_reg = !symbol.starts_with('^')
-        && matches!(market_state.as_deref(), Some("REGULAR" | "LIVE" | "24/7"));
+    let is_live = matches!(market_state.as_deref(), Some("REGULAR" | "LIVE" | "24/7"));
     let mut price_map = state.prices.write().await;
     if !is_valid_market_tick(
         price,
         price_map.get(symbol).map(|t| t.price),
         volume,
-        is_reg,
+        !symbol.starts_with('^') && is_live,
     ) {
         return;
     }
@@ -895,7 +894,7 @@ async fn update_price_meta(
     );
     let ticks: Vec<PriceTick> = price_map.values().cloned().collect();
     drop(price_map);
-    if is_reg {
+    if is_live {
         process_symbol_triggers(&state.db, symbol, price).await;
     }
     let _ = state.price_tx.send(ticks);
