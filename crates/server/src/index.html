@@ -15,7 +15,7 @@
   .card { background: #1e293b; padding: 1rem; border-radius: 0.75rem; border: 1px solid #334155; }
   .card small { color: #94a3b8; display: block; margin-bottom: 0.25rem; }
   .card strong { font-size: 1.4rem; }
-  form { display: grid; grid-template-columns: minmax(210px, 2.2fr) 0.85fr 1fr 0.85fr 1fr 0.9fr 0.9fr auto; gap: 0.45rem; background: #1e293b; padding: 0.85rem; border-radius: 0.75rem; margin-bottom: 0.5rem; position: relative; align-items: center; }
+  form { display: grid; grid-template-columns: minmax(200px, 2.1fr) 0.85fr 0.95fr 0.8fr 0.95fr 0.85fr 0.85fr auto auto; gap: 0.45rem; background: #1e293b; padding: 0.85rem; border-radius: 0.75rem; margin-bottom: 0.5rem; position: relative; align-items: center; }
   @media (min-width: 681px) { #add-form input, #add-form select, #add-form button { padding: 0.5rem 0.55rem; font-size: 0.88rem; } }
   .sym-wrap { position: relative; } .sym-wrap input { width: 100%; box-sizing: border-box; }
   #ac-list { position: absolute; top: calc(100% + 4px); left: 0; min-width: 440px; background: #0f172a; border: 1px solid #475569; border-radius: 0.5rem; z-index: 30; max-height: 280px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
@@ -29,16 +29,20 @@
   button:disabled { opacity: 0.6; cursor: wait; }
   button.del { background: #dc2626; padding: 0.3rem 0.6rem; font-size: 0.8rem; width: auto; }
   #err-msg { color: #f87171; font-size: 0.85rem; margin-bottom: 0.75rem; min-height: 1.2rem; }
-  table { width: 100%; min-width: 960px; table-layout: fixed; border-collapse: collapse; background: #1e293b; border-radius: 0.75rem; overflow: hidden; font-variant-numeric: tabular-nums; }
+  table { width: 100%; min-width: 960px; table-layout: fixed; border-collapse: collapse; background: #1e293b; font-variant-numeric: tabular-nums; }
   .card strong { font-variant-numeric: tabular-nums; }
   .px-cell { transition: color 0.35s ease; }
   .cell-flex { display: inline-flex; flex-wrap: nowrap; align-items: center; gap: 0.38rem; white-space: nowrap; }
   .cell-flex .pill { margin-left: 0.35rem; white-space: nowrap; }
   th, td { padding: 0.7rem 0.75rem; text-align: left; border-bottom: 1px solid #334155; white-space: nowrap; }
-  th { color: #94a3b8; font-size: 0.85rem; }
+  th { color: #94a3b8; font-size: 0.85rem; background: #1e293b; }
   .pos { color: #4ade80; } .neg { color: #f87171; }
   .sub { display: block; font-size: 0.75rem; color: #94a3b8; }
-  .tbl-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 0.75rem; }
+  .tbl-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; border-radius: 0.75rem; border: 1px solid #334155; background: #1e293b; }
+  .pos-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.55rem; }
+  .pos-tabs { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .pos-tab { width: auto; padding: 0.28rem 0.65rem; font-size: 0.78rem; border-radius: 999px; background: #1e293b; color: #94a3b8; border: 1px solid #334155; font-weight: 600; }
+  .pos-tab.active { background: #0f172a; color: #fbbf24; border-color: #f59e0b; }
   .hdr-controls { display: flex; align-items: center; gap: 0.4rem; }
   #base-ccy { width: auto; font-size: 0.75rem; line-height: 1.2; padding: 0.2rem 0.65rem; border-radius: 999px; background: #1e293b; color: #f8fafc; border: 1px solid #334155; cursor: pointer; appearance: none; -webkit-appearance: none; text-align: center; }
   @media (max-width: 680px) {
@@ -48,7 +52,7 @@
     .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem; margin: 0.85rem 0; }
     .card { padding: 0.7rem 0.85rem; } .card strong { font-size: 1.15rem; }
     form { grid-template-columns: 1fr 1fr; gap: 0.45rem; }
-    .sym-wrap { grid-column: 1 / -1; } #add-btn { grid-column: 1 / -1; }
+    .sym-wrap { grid-column: 1 / -1; } #add-btn, #csv-open-btn { grid-column: 1 / -1; }
     #ac-list { min-width: 100%; max-width: 92vw; }
     table { min-width: 0; table-layout: auto; background: transparent; }
     colgroup, thead { display: none; }
@@ -119,8 +123,8 @@
   #d-chart { width: 100%; height: 460px !important; } @media (max-width: 680px) { #d-chart { height: 340px !important; } } #d-chart { background: #131c2e; border-radius: 0.65rem; border: 1px solid #1e293b; }
   .d-tabs .d-tab { font-size: 0.84rem; padding: 0.38rem 0.72rem; }
   .d-grid { gap: 0.6rem; margin-top: 0.85rem; }
-  .d-stat { background: #1e293b; padding: 0.75rem; border-radius: 0.6rem; border: 1px solid #334155; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start !important; gap: 0.25rem; }
-  .d-stat small { font-size: 0.76rem; color: #94a3b8; display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap; } .d-stat .pill { font-size: 0.6rem; padding: 0.05rem 0.22rem; margin-left: 0.2rem; line-height: 1.2; flex-shrink: 0; } @media (max-width: 680px) { .d-stat { padding: 0.55rem 0.42rem !important; overflow: hidden; } .d-stat small { font-size: 0.72rem !important; } .d-stat strong { font-size: clamp(0.72rem, 3.4vw, 0.84rem) !important; letter-spacing: -0.015em; } }
+  .d-stat { background: #1e293b; padding: 0.75rem; border-radius: 0.6rem; border: 1px solid #334155; min-width: 0; display: flex; flex-direction: column; justify-content: space-between !important; gap: 0.35rem; }
+  .d-stat small { font-size: 0.76rem; color: #94a3b8; display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap; } .d-stat .pill { font-size: 0.6rem; padding: 0.05rem 0.22rem; margin-left: 0.2rem; line-height: 1.2; flex-shrink: 0; } @media (max-width: 680px) { .d-stat { padding: 0.6rem 0.55rem !important; } .d-stat small { font-size: 0.76rem !important; } .d-stat strong { font-size: 0.86rem !important; line-height: 1.32; white-space: normal; letter-spacing: -0.01em; } }
   .d-stat strong { font-size: 0.98rem; margin-top: 0.22rem; display: block; }
   #detail-box input, #detail-box button#edit-save { font-size: 1rem; padding: 0.6rem 0.75rem; }
   #xtb-bar { display: flex; justify-content: space-between; align-items: center; margin: 0.55rem 0; }
@@ -170,10 +174,17 @@
     .d-stat small { font-size: 0.82rem !important; }
     .d-stat strong { font-size: 1.12rem !important; margin-top: 0.4rem !important; }
   }
-  #mob-add-btn { display: none; }
+  #mob-add-btn, #mob-csv-btn { display: none; }
   @media (max-width: 680px) {
-    #mob-add-btn { display: flex !important; align-items: center; justify-content: center; width: 100%; height: 48px !important; margin-bottom: 0.75rem !important; background: #1e293b !important; border: 1px solid #f59e0b !important; color: #f59e0b !important; font-weight: 600 !important; font-size: 0.98rem !important; padding: 0.75rem 1rem !important; border-radius: 0.65rem !important; }
+    #mob-add-btn { display: flex !important; align-items: center; justify-content: center; width: 100%; height: 46px !important; margin-bottom: 0.5rem !important; background: #1e293b !important; border: 1px solid #f59e0b !important; color: #f59e0b !important; font-weight: 600 !important; font-size: 0.95rem !important; padding: 0.7rem 1rem !important; border-radius: 0.65rem !important; }
+    #mob-csv-btn { display: flex !important; align-items: center; justify-content: center; width: 100%; height: 44px !important; margin-bottom: 0.75rem !important; background: #1e293b !important; border: 1px solid rgba(56,189,248,0.5) !important; color: #38bdf8 !important; font-weight: 600 !important; font-size: 0.92rem !important; padding: 0.65rem 1rem !important; border-radius: 0.65rem !important; }
     #add-form.mob-hidden { display: none !important; }
+    #csv-open-btn { display: none !important; }
+    .pos-bar { flex-direction: column; align-items: stretch; gap: 0.45rem; }
+    .pos-tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 0.1rem; }
+    .pos-tabs::-webkit-scrollbar { display: none; }
+    .pos-tab { flex-shrink: 0; padding: 0.3rem 0.62rem; font-size: 0.76rem; }
+    #pos-search { width: 100% !important; }
   }
 .pill.long{background:rgba(74,222,128,.14);color:#4ade80;border:1px solid rgba(74,222,128,.35)}.pill.short{background:rgba(248,113,113,.14);color:#f87171;border:1px solid rgba(248,113,113,.35)}.pill.pend{background:rgba(250,204,21,.16);color:#facc15;border:1px solid rgba(250,204,21,.4)}.pill.warn{background:rgba(251,146,60,.2);color:#fb923c;border:1px solid rgba(251,146,60,.5);animation:pulse 1.4s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}#hist-bg{display:block!important;position:fixed;inset:0;background:#0f172a;z-index:65;overflow-y:auto;transform:translateX(100%);transition:transform .24s cubic-bezier(.22,1,.36,1);visibility:hidden;pointer-events:none;padding:.9rem 1rem 2rem}#hist-bg.open{transform:translateX(0);visibility:visible;pointer-events:auto}#hist-box{max-width:1180px;margin:0 auto;background:transparent;border:none;padding:0}#hist-box .d-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding-bottom:.75rem;margin-bottom:.85rem;border-bottom:1px solid #1e293b}#h-back{display:inline-flex;align-items:center;gap:.3rem;width:auto;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:.42rem .75rem;border-radius:.55rem;font-size:.9rem;font-weight:600}#hist-box .d-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding-bottom:.75rem;margin-bottom:.85rem;border-bottom:1px solid #1e293b}#h-back{display:inline-flex;align-items:center;gap:.3rem;width:auto;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:.42rem .75rem;border-radius:.55rem;font-size:.9rem;font-weight:600}
 </style>
@@ -191,6 +202,7 @@
       <span class="pill" style="margin:0">Long / Short &amp; SL/TP</span>
       <span class="pill" style="margin:0">USD / EUR Live FX</span>
     </div>
+    <button type="button" id="demo-launch-btn" onclick="startDemoMode()" style="width:100%;margin-bottom:0.85rem;padding:0.65rem 0.85rem;background:linear-gradient(135deg,#0284c7,#2563eb);color:#f8fafc;border:1px solid rgba(56,189,248,0.55);border-radius:0.55rem;font-weight:700;font-size:0.92rem;display:flex;align-items:center;justify-content:center;gap:0.45rem;box-shadow:0 8px 20px rgba(2,132,199,0.28)">⚡ Try Live Demo (No Sign-Up Needed)</button>
     <div class="auth-tabs">
       <button type="button" id="tab-login" class="auth-tab active">Sign In</button>
       <button type="button" id="tab-reg" class="auth-tab">Create Account</button>
@@ -199,6 +211,8 @@
       <input id="auth-name" autocomplete="name" placeholder="Display Name (optional)" style="display:none">
       <input id="auth-email" type="email" autocomplete="email" placeholder="Email address" required>
       <input id="auth-pass" type="password" autocomplete="current-password" minlength="8" placeholder="Password (min 8 chars)" required>
+      <input id="auth-pass2" type="password" autocomplete="new-password" minlength="8" placeholder="Confirm password" style="display:none">
+      <div id="pw-rules" style="display:none;font-size:0.74rem;color:#94a3b8;line-height:1.4;padding:0.2rem 0.1rem">Use 8+ chars with uppercase, lowercase, and a number.</div>
       <button type="submit" id="auth-submit">Sign In</button>
     </form>
     <div id="auth-err" style="color:#f87171;font-size:0.82rem;min-height:1.1rem"></div>
@@ -221,8 +235,16 @@
         <select id="base-ccy"><option value="NATIVE">Currency: Original</option><option value="USD">Currency: USD ($)</option><option value="EUR">Currency: EUR (€)</option></select>
         <button type="button" id="hist-btn" style="margin-top:0.5rem;background:#1e293b;color:#f8fafc;border:1px solid #334155">Trade History</button>
         <button type="button" id="news-menu-btn" style="margin-top:0.5rem;background:#1e293b;color:#f8fafc;border:1px solid #334155">Market News</button>
+        <button type="button" id="csv-menu-btn" style="margin-top:0.5rem;background:#1e293b;color:#38bdf8;border:1px solid rgba(56,189,248,0.45)">Import CSV (T212 / Broker)</button>
         <button type="button" id="logout-btn">Logout</button>
       </div>
+    </div>
+  </div>
+  <div id="demo-banner" style="display:none;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:0.6rem;background:linear-gradient(90deg,rgba(2,132,199,0.18),rgba(30,41,59,0.95));border:1px solid rgba(56,189,248,0.45);border-radius:0.7rem;padding:0.6rem 0.85rem;margin-bottom:0.8rem">
+    <div style="font-size:0.82rem;color:#e0f2fe"><strong>⚡ Live Demo Sandbox</strong> — Exploring with sample multi-asset trades. Ready for your real portfolio?</div>
+    <div style="display:flex;flex-wrap:wrap;gap:0.4rem">
+      <button type="button" id="demo-reset-btn" onclick="resetDemoMode()" style="width:auto;padding:0.32rem 0.65rem;font-size:0.76rem;background:#0f172a;color:#38bdf8;border:1px solid rgba(56,189,248,0.45);border-radius:0.45rem;font-weight:600">↻ Reset Sample Data</button>
+      <button type="button" onclick="exitDemoToRegister()" style="width:auto;padding:0.32rem 0.7rem;font-size:0.76rem;background:#f59e0b;color:#0f172a;border:none;border-radius:0.45rem;font-weight:700">Create Real Account →</button>
     </div>
   </div>
   <div class="cards">
@@ -232,6 +254,7 @@
     <div class="card"><small>Realized P&amp;L</small><strong id="total-rpnl">$0.00</strong></div>
   </div>
   <button type="button" id="mob-add-btn">+ Add Instrument</button>
+  <button type="button" id="mob-csv-btn" onclick="openCsvModal()">↑ Import CSV (Trading 212 / Broker)</button>
   <form id="add-form" class="mob-hidden" autocomplete="off">
     <div class="sym-wrap"><input id="symbol" placeholder="Search symbol (AAPL, US500, EURUSD)" required><div id="ac-list"></div></div>
     <select id="asset_type"><option value="Stock">Stock</option><option value="Forex">Forex</option><option value="Crypto">Crypto</option><option value="Index">Index</option></select>
@@ -241,13 +264,27 @@
     <input id="stop_loss" type="text" inputmode="decimal" placeholder="Stop Loss (opt)">
     <input id="take_profit" type="text" inputmode="decimal" placeholder="Take Profit (opt)">
     <button id="add-btn" type="submit">Add</button>
+    <button type="button" id="csv-open-btn" style="background:#1e293b;color:#38bdf8;border:1px solid rgba(56,189,248,0.45)">↑ CSV</button>
   </form>
   <div id="err-msg"></div>
+  <div class="pos-bar">
+    <div class="pos-tabs" id="pos-tabs">
+      <button type="button" class="pos-tab active" data-filter="ALL" onclick="setPosFilter('ALL')">All <span id="cnt-all"></span></button>
+      <button type="button" class="pos-tab" data-filter="Stock" onclick="setPosFilter('Stock')">Stocks <span id="cnt-Stock"></span></button>
+      <button type="button" class="pos-tab" data-filter="Forex" onclick="setPosFilter('Forex')">Forex <span id="cnt-Forex"></span></button>
+      <button type="button" class="pos-tab" data-filter="Crypto" onclick="setPosFilter('Crypto')">Crypto <span id="cnt-Crypto"></span></button>
+      <button type="button" class="pos-tab" data-filter="Index" onclick="setPosFilter('Index')">Indices <span id="cnt-Index"></span></button>
+    </div>
+    <input id="pos-search" type="text" placeholder="Filter symbol..." oninput="applyPosFilter()" style="width:170px;padding:0.32rem 0.6rem;font-size:0.8rem;border-radius:999px;background:#1e293b;border:1px solid #334155">
+  </div>
   <div class="tbl-wrap"><table>
     <colgroup><col style="width:26%"><col style="width:7%"><col style="width:7%"><col style="width:11%"><col style="width:17%"><col style="width:13%"><col style="width:17%"><col style="width:5%"></colgroup><thead><tr><th>Symbol</th><th>Type</th><th>Qty</th><th>Avg Buy</th><th>Live Price &amp; Status</th><th>Market Value</th><th>Unrealized P&amp;L</th><th></th></tr></thead>
     <tbody id="rows"></tbody>
   </table></div>
-  <div id="macro-news-wrap" style="margin-top:1.1rem;background:#1e293b;border:1px solid #334155;border-radius:0.75rem;padding:0.8rem 0.9rem">
+  <div id="pos-more-wrap" style="display:none;margin-top:0.55rem;text-align:center">
+    <button type="button" id="pos-more-btn" onclick="togglePosExpand()" style="width:auto;padding:0.38rem 0.9rem;font-size:0.8rem;background:#1e293b;color:#cbd5e1;border:1px solid #334155;border-radius:999px;font-weight:600">Show all positions ▾</button>
+  </div>
+  <div id="macro-news-wrap" style="position:relative;clear:both;margin-top:1.5rem;background:#1e293b;border:1px solid #334155;border-radius:0.75rem;padding:0.85rem 0.95rem">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.55rem">
       <strong style="font-size:0.88rem;color:#f8fafc">Economic &amp; Market News</strong>
       <div style="display:flex;align-items:center;gap:0.35rem">
@@ -306,6 +343,49 @@
   </div>
   <div id="hist-bg"><div id="hist-box"><div class="d-head"><button type="button" id="h-back" onclick="closeHist()">← Back</button><strong style="font-size:1.1rem">Closed Trades &amp; Realized P&amp;L</strong><span style="width:4.2rem"></span></div><div id="hist-list" style="display:flex;flex-direction:column;gap:0.55rem"></div></div></div>
   <div id="news-bg" style="display:block;position:fixed;inset:0;background:#0f172a;z-index:65;overflow-y:auto;transform:translateX(100%);transition:transform .24s cubic-bezier(.22,1,.36,1);visibility:hidden;pointer-events:none;padding:.9rem 1rem 2rem"><div style="max-width:1180px;margin:0 auto"><div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding-bottom:.75rem;margin-bottom:.85rem;border-bottom:1px solid #1e293b"><button type="button" onclick="closeNewsModal()" style="display:inline-flex;align-items:center;gap:.3rem;width:auto;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:.42rem .75rem;border-radius:.55rem;font-size:.9rem;font-weight:600">← Back</button><strong style="font-size:1.05rem">Economic &amp; Market News</strong><div style="display:flex;align-items:center;gap:.35rem"><button type="button" id="news-pin-btn" onclick="toggleMacroNews(true);updateNewsPinBtn()" style="width:auto;padding:.35rem .6rem;font-size:.76rem;background:#1e293b;color:#fbbf24;border:1px solid rgba(245,158,11,.45);border-radius:.5rem">+ Home</button><button type="button" onclick="loadNewsModal()" style="width:auto;padding:.35rem .6rem;font-size:.76rem;background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:.5rem">↻</button></div></div><div id="news-modal-list" style="display:flex;flex-direction:column;gap:0.55rem;font-size:0.85rem;color:#94a3b8">Loading market headlines...</div></div></div>
+  <div id="csv-bg" style="display:block;position:fixed;inset:0;background:#0f172a;z-index:66;overflow-y:auto;transform:translateX(100%);transition:transform .24s cubic-bezier(.22,1,.36,1);visibility:hidden;pointer-events:none;padding:.9rem 1rem 2rem">
+    <div style="max-width:1080px;margin:0 auto">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding-bottom:.75rem;margin-bottom:.85rem;border-bottom:1px solid #1e293b">
+        <button type="button" onclick="closeCsvModal()" style="display:inline-flex;align-items:center;gap:.3rem;width:auto;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:.42rem .75rem;border-radius:.55rem;font-size:.9rem;font-weight:600">← Back</button>
+        <strong style="font-size:1.05rem">Import Positions via CSV</strong>
+        <span style="font-size:.75rem;color:#38bdf8;background:rgba(56,189,248,.12);border:1px solid rgba(56,189,248,.35);padding:.22rem .55rem;border-radius:.45rem">Trading 212 · IBKR · Generic</span>
+      </div>
+      <div style="background:#1e293b;border:1px solid #334155;border-radius:.75rem;padding:.9rem;margin-bottom:.85rem">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.6rem">
+          <div style="font-size:.82rem;color:#cbd5e1">Upload a <strong>.csv</strong> broker export or paste CSV rows below. Trading 212 orders are automatically aggregated into net positions.</div>
+          <div style="display:flex;flex-wrap:wrap;gap:.4rem">
+            <button type="button" onclick="loadSampleCsv('invest')" style="width:auto;padding:.34rem .65rem;font-size:.76rem;background:#0f172a;color:#fbbf24;border:1px solid rgba(245,158,11,.45);border-radius:.5rem;font-weight:600">Sample T212 Invest (Stocks)</button>
+            <button type="button" onclick="loadSampleCsv('cfd')" style="width:auto;padding:.34rem .65rem;font-size:.76rem;background:#0f172a;color:#38bdf8;border:1px solid rgba(56,189,248,.45);border-radius:.5rem;font-weight:600">Sample T212 CFD (FX/Crypto/Idx)</button>
+            <button type="button" onclick="downloadSampleT212Csv()" style="width:auto;padding:.34rem .65rem;font-size:.76rem;background:#0f172a;color:#94a3b8;border:1px solid #334155;border-radius:.5rem">↓ Download .csv</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:.55rem;align-items:center;margin-bottom:.6rem">
+          <input type="file" id="csv-file-input" accept=".csv,text/csv" style="width:auto;max-width:260px;font-size:.78rem;padding:.35rem;background:#0f172a;border:1px solid #334155;border-radius:.5rem;color:#cbd5e1">
+          <label style="display:inline-flex;align-items:center;gap:.35rem;font-size:.78rem;color:#cbd5e1;cursor:pointer">
+            <input type="checkbox" id="csv-skip-dups" checked style="width:auto;margin:0"> Skip duplicate open positions
+          </label>
+        </div>
+        <textarea id="csv-raw-input" rows="6" placeholder="Paste Trading 212, IBKR, or generic CSV rows here...&#10;Example:&#10;Action,Time,ISIN,Ticker,Name,No. of shares,Price / share,Currency (Price / share)&#10;Market buy,2026-11-20 14:30:00,US0378331005,AAPL,Apple Inc.,2.5,228.50,USD" style="width:100%;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:.55rem;padding:.6rem;font-family:monospace;font-size:.78rem;resize:vertical"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.55rem">
+          <span id="csv-parse-stat" style="font-size:.78rem;color:#94a3b8">No rows parsed yet.</span>
+          <button type="button" onclick="parseCsvPreview()" style="width:auto;padding:.4rem .85rem;font-size:.8rem;background:#334155;color:#f8fafc;border:1px solid #475569;border-radius:.5rem;font-weight:600">Preview Parsed Rows</button>
+        </div>
+      </div>
+      <div id="csv-preview-wrap" style="display:none;background:#1e293b;border:1px solid #334155;border-radius:.75rem;padding:.85rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem">
+          <strong style="font-size:.88rem;color:#f8fafc">Preview Positions to Import</strong>
+          <button type="button" id="csv-submit-btn" onclick="submitCsvImport()" style="width:auto;padding:.45rem .95rem;font-size:.82rem;background:#10b981;color:#052e16;border:none;border-radius:.55rem;font-weight:700">Import Selected Positions</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:.8rem">
+            <thead><tr style="color:#94a3b8;border-bottom:1px solid #334155;text-align:left"><th style="padding:.4rem"><input type="checkbox" id="csv-check-all" checked onchange="toggleAllCsvRows(this.checked)" style="width:auto"></th><th style="padding:.4rem">Symbol</th><th style="padding:.4rem">Type</th><th style="padding:.4rem">Side</th><th style="padding:.4rem">Qty / Vol</th><th style="padding:.4rem">Entry</th><th style="padding:.4rem">SL</th><th style="padding:.4rem">TP</th><th style="padding:.4rem">Ccy</th><th style="padding:.4rem">Format</th></tr></thead>
+            <tbody id="csv-preview-rows"></tbody>
+          </table>
+        </div>
+        <div id="csv-import-msg" style="margin-top:.65rem;font-size:.82rem"></div>
+      </div>
+    </div>
+  </div>
   <div id="sheet-bg" onclick="if(event.target===this)closeSheet()">
     <div id="sheet-box"></div>
   </div>
@@ -631,7 +711,7 @@ async function loadHistory() {
   const sideBadge = h.side === 'SHORT' ? '<span class="pill short">SHORT</span>' : '<span class="pill long">LONG</span>';
   const pendBadge = h.status === 'PENDING' ? '<span class="pill pend">PENDING</span>' : '';
   const b2Lbl = (h.status === 'PENDING' ? 'Order ' : 'Position ') + sideBadge + pendBadge;
-  const b2Val = h.quantity + szUnit + ' @ ' + cs + epNum.toFixed(isFx ? 3 : 2) + (h.status === 'PENDING' ? '' : ' <span class="' + (pnlVal >= 0 ? 'pos' : 'neg') + '">(' + pnlStr + ')</span>');
+  const b2Val = '<span style="white-space:nowrap">' + h.quantity + szUnit + ' @ ' + cs + epNum.toFixed(isFx ? 3 : 2) + '</span>' + (h.status === 'PENDING' ? '' : '<br><span class="' + (pnlVal >= 0 ? 'pos' : 'neg') + '" style="white-space:nowrap">(' + pnlStr + ')</span>');
   const units = isFx ? qtyNum * 100000 : qtyNum;
   const rFx = Number(window.lastEurUsdRate || 1) || 1;
   const acctSym = baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value);
@@ -649,7 +729,7 @@ async function loadHistory() {
   const pipVal = toAcct(units * pipSz);
   const mvStr = (h.status === 'PENDING' || !h.valuation) ? (acctSym + fmt(toAcct(units * epNum)) + ' ord') : (acctSym + fmt(h.valuation.market_value));
   const b3Lbl = isFx ? 'Pip Value · Exposure' : '1% Move · Market Value';
-  const b3Val = isFx ? (acctSym + pipVal.toFixed(2) + '/pip · ' + units.toLocaleString('en-US') + ' units') : ('±' + acctSym + toAcct(units * curNum * 0.01).toFixed(2) + ' · ' + mvStr);
+  const b3Val = isFx ? ('<span style="white-space:nowrap">' + acctSym + pipVal.toFixed(2) + '/pip</span><br><span style="font-size:0.86em;color:#cbd5e1;white-space:nowrap">' + units.toLocaleString('en-US') + ' units</span>') : ('<span style="white-space:nowrap">±' + acctSym + toAcct(units * curNum * 0.01).toFixed(2) + ' / 1%</span><br><span style="font-size:0.86em;color:#cbd5e1;white-space:nowrap">' + mvStr + '</span>');
   const slNum = h.stop_loss != null ? Number(h.stop_loss) : 0, tpNum = h.take_profit != null ? Number(h.take_profit) : 0;
   const fmtPips = p => p >= 10000 ? Math.round(p / 1000) + 'kp' : (p >= 1000 ? (p / 1000).toFixed(1) + 'kp' : (p >= 10 ? Math.round(p) + 'p' : p.toFixed(1) + 'p'));
   const fmtPct = p => p < 0.1 ? p.toFixed(2) + '%' : p.toFixed(1) + '%';
@@ -660,7 +740,7 @@ async function loadHistory() {
   const tpCash = tpNum > 0 ? '+' + acctSym + fmtBoxCash(toAcct(Math.abs(tpNum - epNum) * units)) : '';
   const rrTxt = (slNum > 0 && tpNum > 0 && Math.abs(epNum - slNum) > 0) ? ' · 1:' + (Math.abs(tpNum - epNum) / Math.abs(epNum - slNum)).toFixed(1) : '';
   const b4Lbl = 'SL / TP' + (rrTxt ? rrTxt : ' Risk-Reward');
-  const b4Val = (!slNum && !tpNum) ? '<span style="color:#94a3b8">Not set</span>' : ((slNum ? '<div style="display:flex;align-items:center;gap:0.18rem;white-space:nowrap"><span class="pill short" style="margin:0">SL</span><span class="neg">' + slDist + ' (' + slCash + ')</span></div>' : '') + (tpNum ? '<div style="display:flex;align-items:center;gap:0.18rem;white-space:nowrap;margin-top:' + (slNum ? '0.2rem' : '0') + '"><span class="pill long" style="margin:0">TP</span><span class="pos">' + tpDist + ' (' + tpCash + ')</span></div>' : ''));
+  const b4Val = (!slNum && !tpNum) ? '<span style="color:#94a3b8">Not set</span>' : ((slNum ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.35rem;line-height:1.25"><span class="pill short" style="margin:0">SL</span><span class="neg" style="font-size:0.88em;white-space:nowrap">' + slDist + ' (' + slCash + ')' + '</span></div>' : '') + (tpNum ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.35rem;line-height:1.25;margin-top:' + (slNum ? '0.28rem' : '0') + '"><span class="pill long" style="margin:0">TP</span><span class="pos" style="font-size:0.88em;white-space:nowrap">' + tpDist + ' (' + tpCash + ')' + '</span></div>' : ''));
   const nextStatsHtml =
     '<div class="d-stat"><small>' + b1Lbl + '</small><strong>' + b1Val + '</strong></div>' +
     '<div class="d-stat"><small>' + b2Lbl + '</small><strong id="d-box2-val">' + b2Val + '</strong></div>' +
@@ -796,9 +876,11 @@ async function load() {
       tr = tbody.querySelector('tr[data-sym="' + sym + '"]');
     }
     tr.dataset.id = rep.id;
+    tr.dataset.type = rep.asset_type;
     tr.onclick = e => { if (!e.target.closest('button')) openDetail(rep.id); };
     patchRow(tr, rep);
   });
+  applyPosFilter();
   if (activeHolding && holdingsMap[activeHolding.id]) {
     const prevSt = activeHolding.status;
     activeHolding = holdingsMap[activeHolding.id];
@@ -883,11 +965,18 @@ const userBtn = document.getElementById('user-btn'), userDd = document.getElemen
 userBtn.onclick = e => { e.stopPropagation(); userDd.style.display = userDd.style.display === 'block' ? 'none' : 'block'; };
 document.addEventListener('click', e => { if (!e.target.closest('.user-menu')) userDd.style.display = 'none'; });
 let authMode = 'login';
+function checkPwComplexity(pw) {
+  return pw.length >= 8 && /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /[0-9]/.test(pw);
+}
 document.getElementById('tab-login').onclick = () => {
   authMode = 'login';
   document.getElementById('tab-login').classList.add('active');
   document.getElementById('tab-reg').classList.remove('active');
-  document.getElementById('auth-name').style.display = 'none'; document.getElementById('auth-pass').autocomplete = 'current-password';
+  document.getElementById('auth-name').style.display = 'none';
+  document.getElementById('auth-pass2').style.display = 'none';
+  document.getElementById('auth-pass2').required = false;
+  document.getElementById('pw-rules').style.display = 'none';
+  document.getElementById('auth-pass').autocomplete = 'current-password';
   document.getElementById('auth-submit').textContent = 'Sign In';
   document.getElementById('auth-err').textContent = '';
 };
@@ -895,15 +984,31 @@ document.getElementById('tab-reg').onclick = () => {
   authMode = 'register';
   document.getElementById('tab-reg').classList.add('active');
   document.getElementById('tab-login').classList.remove('active');
-  document.getElementById('auth-name').style.display = 'block'; document.getElementById('auth-pass').autocomplete = 'new-password';
+  document.getElementById('auth-name').style.display = 'block';
+  document.getElementById('auth-pass2').style.display = 'block';
+  document.getElementById('auth-pass2').required = true;
+  document.getElementById('pw-rules').style.display = 'block';
+  document.getElementById('auth-pass').autocomplete = 'new-password';
   document.getElementById('auth-submit').textContent = 'Create Account';
   document.getElementById('auth-err').textContent = '';
 };
 document.getElementById('auth-form').onsubmit = async e => {
   e.preventDefault();
   const errEl = document.getElementById('auth-err'); errEl.textContent = '';
+  const pw = document.getElementById('auth-pass').value;
+  if (authMode === 'register') {
+    const pw2 = document.getElementById('auth-pass2').value;
+    if (!checkPwComplexity(pw)) {
+      errEl.textContent = 'Password must be 8+ chars with uppercase, lowercase, and a number.';
+      return;
+    }
+    if (pw !== pw2) {
+      errEl.textContent = 'Passwords do not match.';
+      return;
+    }
+  }
   const url = authMode === 'register' ? '/portfolio/api/auth/register' : '/portfolio/api/auth/login';
-  const body = { email: document.getElementById('auth-email').value, password: document.getElementById('auth-pass').value };
+  const body = { email: document.getElementById('auth-email').value, password: pw };
   if (authMode === 'register') body.name = document.getElementById('auth-name').value;
   const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (!res.ok) { errEl.textContent = await res.text(); return; }
@@ -1057,6 +1162,405 @@ setInterval(() => {
   loadMacroNews();
   if (activeHolding) loadSymbolNews(activeHolding.symbol, true);
 }, 120000);
+
+
+const SAMPLE_T212_INVEST_CSV = `Action,Time,ISIN,Ticker,Name,No. of shares,Price / share,Currency (Price / share),Exchange rate,Result,Total
+Market buy,2026-11-18 15:31:10,US0378331005,AAPL,Apple Inc.,3.0,226.40,USD,1.08,0.00,679.20
+Limit buy,2026-11-21 16:05:22,US0378331005,AAPL,Apple Inc.,2.0,231.10,USD,1.08,0.00,462.20
+Market buy,2026-11-19 14:40:05,US67066G1040,NVDA,NVIDIA Corporation,4.5,142.80,USD,1.08,0.00,642.60
+Market buy,2026-11-22 10:12:44,NL0010273215,ASML.AS,ASML Holding N.V.,0.5,658.00,EUR,1.00,0.00,329.00
+Market buy,2026-11-24 17:15:00,US5949181045,MSFT,Microsoft Corporation,1.5,418.50,USD,1.08,0.00,627.75`;
+
+const SAMPLE_T212_CFD_CSV = `Action,Time,Instrument,Ticker,Direction,Quantity,Open price,Stop loss,Take profit,Currency (Open price),Result
+Open position,2026-11-25 09:15:00,EUR/USD,EURUSD,Buy,0.05,1.0920,1.0600,1.1400,USD,0.00
+Open position,2026-11-25 11:20:00,USD/JPY,USDJPY,Sell,0.04,159.800,164.000,152.000,JPY,0.00
+Open position,2026-11-26 14:05:00,Bitcoin,BTC/USD,Buy,0.015,61200.00,55000.00,72000.00,USD,0.00
+Open position,2026-11-26 16:30:00,USA 500,US500,Buy,1.0,7050.00,6500.00,7800.00,USD,0.00`;
+
+let parsedCsvRows = [];
+let lastSampleKind = 'invest';
+
+function openCsvModal() {
+  const dd = document.getElementById('user-dd'); if (dd) dd.style.display = 'none';
+  const el = document.getElementById('csv-bg');
+  el.style.visibility = 'visible'; el.style.pointerEvents = 'auto'; el.style.transform = 'translateX(0)';
+}
+function closeCsvModal() {
+  const el = document.getElementById('csv-bg');
+  el.style.transform = 'translateX(100%)'; el.style.pointerEvents = 'none';
+  setTimeout(() => { if (el.style.pointerEvents === 'none') el.style.visibility = 'hidden'; }, 260);
+}
+const csvMenuBtn = document.getElementById('csv-menu-btn'); if (csvMenuBtn) csvMenuBtn.onclick = openCsvModal;
+const csvOpenBtn = document.getElementById('csv-open-btn'); if (csvOpenBtn) csvOpenBtn.onclick = openCsvModal;
+
+function loadSampleCsv(kind) {
+  lastSampleKind = kind || 'invest';
+  document.getElementById('csv-raw-input').value = lastSampleKind === 'cfd' ? SAMPLE_T212_CFD_CSV : SAMPLE_T212_INVEST_CSV;
+  parseCsvPreview();
+}
+function downloadSampleT212Csv() {
+  const txt = document.getElementById('csv-raw-input').value.trim() || (lastSampleKind === 'cfd' ? SAMPLE_T212_CFD_CSV : SAMPLE_T212_INVEST_CSV);
+  const blob = new Blob([txt], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = lastSampleKind === 'cfd' ? 'trading212-cfd-sample.csv' : 'trading212-invest-sample.csv';
+  a.click();
+}
+const csvFileInput = document.getElementById('csv-file-input');
+if (csvFileInput) {
+  csvFileInput.onchange = e => {
+    const f = e.target.files && e.target.files;
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = ev => { document.getElementById('csv-raw-input').value = String(ev.target.result || ''); parseCsvPreview(); };
+    reader.readAsText(f);
+  };
+}
+
+function splitCsvLine(line) {
+  const out = []; let cur = '', inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQ = !inQ; }
+    else if (ch === ',' && !inQ) { out.push(cur.trim()); cur = ''; }
+    else { cur += ch; }
+  }
+  out.push(cur.trim());
+  return out;
+}
+
+const FX_CCYS = new Set(['USD','EUR','GBP','JPY','CHF','AUD','CAD','NZD','SEK','NOK','PLN','CZK','HUF','TRY','ZAR','MXN']);
+const CRYPTO_BASES = new Set(['BTC','ETH','SOL','XRP','ADA','DOGE','DOT','AVAX','LINK','LTC','BNB','MATIC','UNI','ATOM']);
+const CRYPTO_NAMES = { 'BITCOIN': 'BTC', 'ETHEREUM': 'ETH', 'SOLANA': 'SOL', 'RIPPLE': 'XRP', 'CARDANO': 'ADA', 'DOGECOIN': 'DOGE' };
+const INDEX_MAP = {
+  'US500': '^GSPC', 'USA500': '^GSPC', 'SPX500': '^GSPC', 'SP500': '^GSPC',
+  'USTEC': '^NDX', 'US100': '^NDX', 'NAS100': '^NDX', 'NDX100': '^NDX',
+  'US30': '^DJI', 'WALLST30': '^DJI', 'DJ30': '^DJI',
+  'UK100': '^FTSE', 'FTSE100': '^FTSE',
+  'DE40': '^GDAXI', 'GER40': '^GDAXI', 'DAX40': '^GDAXI',
+  'FR40': '^FCHI', 'EU50': '^STOXX50E', 'JP225': '^N225'
+};
+
+function normalizeSymbolAndType(rawSym, rawType, rawCcy) {
+  let sym = String(rawSym || '').toUpperCase().trim().replace(/\s+/g, '');
+  if (CRYPTO_NAMES[sym]) sym = CRYPTO_NAMES[sym] + '-' + (String(rawCcy || 'USD').toUpperCase().trim() || 'USD');
+  let ccy = String(rawCcy || 'USD').toUpperCase().trim();
+  if (ccy === 'GBX') ccy = 'GBP';
+  const rt = String(rawType || '').trim().toLowerCase();
+
+  if (INDEX_MAP[sym]) return { symbol: INDEX_MAP[sym], asset_type: 'Index', currency: ccy || 'USD' };
+  if (sym.startsWith('^') || rt === 'index' || rt === 'indices') return { symbol: sym, asset_type: 'Index', currency: ccy || 'USD' };
+
+  const parts = sym.split(/[\/-]/);
+  if (parts.length === 2 && CRYPTO_BASES.has(parts.at(0))) {
+    const q = parts.at(1) || ccy || 'USD';
+    return { symbol: parts.at(0) + '-' + q, asset_type: 'Crypto', currency: q };
+  }
+  for (const base of CRYPTO_BASES) {
+    if (sym.startsWith(base) && sym.length > base.length && FX_CCYS.has(sym.slice(base.length))) {
+      const q = sym.slice(base.length);
+      return { symbol: base + '-' + q, asset_type: 'Crypto', currency: q };
+    }
+  }
+  if (rt === 'crypto' || rt === 'cryptocurrency') {
+    const s = sym.includes('-') ? sym : (sym + '-' + (ccy || 'USD'));
+    return { symbol: s, asset_type: 'Crypto', currency: ccy || 'USD' };
+  }
+
+  const cleanFx = sym.replace(/[\/-]/g, '');
+  if (cleanFx.length === 6 && FX_CCYS.has(cleanFx.slice(0, 3)) && FX_CCYS.has(cleanFx.slice(3))) {
+    return { symbol: cleanFx, asset_type: 'Forex', currency: cleanFx.slice(3) };
+  }
+  if (rt === 'forex' || rt === 'fx' || rt === 'cash') {
+    return { symbol: cleanFx, asset_type: 'Forex', currency: cleanFx.length === 6 ? cleanFx.slice(3) : (ccy || 'USD') };
+  }
+
+  return { symbol: sym, asset_type: 'Stock', currency: ccy || 'USD' };
+}
+
+function parseCsvPreview() {
+  const raw = (document.getElementById('csv-raw-input').value || '').trim();
+  const stat = document.getElementById('csv-parse-stat');
+  const wrap = document.getElementById('csv-preview-wrap');
+  const msg = document.getElementById('csv-import-msg');
+  msg.textContent = '';
+  if (!raw) { stat.textContent = 'Paste or upload a CSV file first.'; wrap.style.display = 'none'; return; }
+  const lines = raw.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+  if (lines.length < 2) { stat.textContent = 'CSV needs a header row and at least 1 data row.'; wrap.style.display = 'none'; return; }
+
+  const headers = splitCsvLine(lines[0]).map(h => h.toLowerCase());
+  const idxOf = (...names) => headers.findIndex(h => names.some(n => h === n || h.includes(n)));
+
+  const hasAction = headers.some(h => h === 'action');
+  const hasDirection = headers.some(h => h === 'direction');
+  const isT212Cfd = hasAction && hasDirection;
+  const isT212Invest = hasAction && !hasDirection && headers.some(h => h.includes('ticker'));
+  const t212Net = {};
+  const out = [];
+
+  if (isT212Invest) {
+    const iAct = idxOf('action'), iTick = idxOf('ticker'), iQty = idxOf('no. of shares', 'shares', 'quantity'),
+          iPx = idxOf('price / share', 'price'), iCcy = idxOf('currency (price / share)', 'currency');
+    for (let r = 1; r < lines.length; r++) {
+      const cols = splitCsvLine(lines[r]);
+      const act = (cols[iAct] || '').toLowerCase();
+      if (!act.includes('buy') && !act.includes('sell')) continue;
+      const qty = Math.abs(parseFloat((cols[iQty] || '0').replace(/,/g, '')));
+      const px = Math.abs(parseFloat((cols[iPx] || '0').replace(/,/g, '')));
+      const norm = normalizeSymbolAndType(cols[iTick], '', cols[iCcy]);
+      if (!norm.symbol || !(qty > 0) || !(px > 0)) continue;
+      const key = norm.symbol + '|' + norm.currency;
+      if (!t212Net[key]) t212Net[key] = { ...norm, qty: 0, cost: 0 };
+      if (act.includes('buy')) { t212Net[key].qty += qty; t212Net[key].cost += qty * px; }
+      else {
+        const avg = t212Net[key].qty > 0 ? t212Net[key].cost / t212Net[key].qty : px;
+        t212Net[key].qty = Math.max(0, t212Net[key].qty - qty);
+        t212Net[key].cost = t212Net[key].qty * avg;
+      }
+    }
+    Object.values(t212Net).forEach(p => {
+      if (p.qty > 0.000001) {
+        out.push({
+          symbol: p.symbol, asset_type: p.asset_type, side: 'LONG',
+          quantity: Number(p.qty.toFixed(6)).toString(),
+          avg_buy_price: Number((p.cost / p.qty).toFixed(4)).toString(),
+          currency: p.currency, stop_loss: null, take_profit: null,
+          source: 'T212 Invest', checked: true
+        });
+      }
+    });
+  } else {
+    const iSym = headers.indexOf('ticker') >= 0 ? headers.indexOf('ticker') : (headers.indexOf('symbol') >= 0 ? headers.indexOf('symbol') : idxOf('instrument')), iType = idxOf('asset_type', 'type', 'assetcategory'),
+          iSide = idxOf('direction', 'side', 'buy/sell'), iQty = idxOf('quantity', 'qty', 'shares', 'volume'),
+          iPx = idxOf('open price', 'avg_buy_price', 'entry', 'costbasisprice', 'tradeprice', 'price'),
+          iCcy = idxOf('currency (open price)', 'currency', 'currencyprimary', 'ccy'),
+          iSl = idxOf('stop loss', 'stop_loss', 'sl'), iTp = idxOf('take profit', 'take_profit', 'tp'),
+          iAct = idxOf('action');
+    for (let r = 1; r < lines.length; r++) {
+      const cols = splitCsvLine(lines[r]);
+      if (iAct >= 0) {
+        const act = (cols[iAct] || '').toLowerCase();
+        if (act && act.includes('close')) continue;
+      }
+      const rawSym = cols[iSym >= 0 ? iSym : 0] || '';
+      const qty = Math.abs(parseFloat((cols[iQty >= 0 ? iQty : 1] || '0').replace(/,/g, '')));
+      const px = Math.abs(parseFloat((cols[iPx >= 0 ? iPx : 2] || '0').replace(/,/g, '')));
+      if (!rawSym || !(qty > 0) || !(px > 0)) continue;
+      const rawSide = (iSide >= 0 ? cols[iSide] : 'LONG').toUpperCase();
+      const side = (rawSide.includes('SHORT') || rawSide.includes('SELL')) ? 'SHORT' : 'LONG';
+      const norm = normalizeSymbolAndType(rawSym, iType >= 0 ? cols[iType] : '', iCcy >= 0 ? cols[iCcy] : 'USD');
+      const slVal = iSl >= 0 && cols[iSl] ? parseFloat(cols[iSl].replace(/,/g, '')) : NaN;
+      const tpVal = iTp >= 0 && cols[iTp] ? parseFloat(cols[iTp].replace(/,/g, '')) : NaN;
+      out.push({
+        symbol: norm.symbol, asset_type: norm.asset_type, side,
+        quantity: Number(qty.toFixed(6)).toString(),
+        avg_buy_price: Number(px.toFixed(5)).toString(),
+        currency: norm.currency,
+        stop_loss: slVal > 0 ? slVal.toString() : null,
+        take_profit: tpVal > 0 ? tpVal.toString() : null,
+        source: isT212Cfd ? 'T212 CFD' : 'Broker CSV',
+        checked: true
+      });
+    }
+  }
+
+  parsedCsvRows = out;
+  if (!out.length) {
+    stat.textContent = 'No valid open/buy positions detected. Check column headers.';
+    wrap.style.display = 'none';
+    return;
+  }
+  const label = isT212Invest ? 'Trading 212 Invest' : (isT212Cfd ? 'Trading 212 CFD' : 'Multi-Broker CSV');
+  stat.textContent = 'Ready: ' + out.length + ' position(s) parsed (' + label + '). Edit any cell before importing.';
+  renderCsvPreviewTable();
+  wrap.style.display = 'block';
+}
+
+function toggleAllCsvRows(v) {
+  parsedCsvRows.forEach(r => { r.checked = v; });
+  renderCsvPreviewTable();
+}
+
+function renderCsvPreviewTable() {
+  const tbody = document.getElementById('csv-preview-rows');
+  tbody.innerHTML = parsedCsvRows.map((r, idx) => `<tr style="border-bottom:1px solid #334155">
+    <td style="padding:.35rem"><input type="checkbox" ${r.checked ? 'checked' : ''} onchange="parsedCsvRows[${idx}].checked=this.checked" style="width:auto"></td>
+    <td style="padding:.35rem"><input value="${r.symbol}" onchange="parsedCsvRows[${idx}].symbol=this.value.trim().toUpperCase()" style="width:88px;padding:.22rem .35rem;font-size:.78rem;font-weight:700"></td>
+    <td style="padding:.35rem"><select onchange="parsedCsvRows[${idx}].asset_type=this.value" style="width:84px;padding:.22rem .3rem;font-size:.76rem">
+      <option ${r.asset_type==='Stock'?'selected':''}>Stock</option>
+      <option ${r.asset_type==='Forex'?'selected':''}>Forex</option>
+      <option ${r.asset_type==='Crypto'?'selected':''}>Crypto</option>
+      <option ${r.asset_type==='Index'?'selected':''}>Index</option>
+    </select></td>
+    <td style="padding:.35rem"><select onchange="parsedCsvRows[${idx}].side=this.value" style="width:78px;padding:.22rem .3rem;font-size:.76rem;color:${r.side==='SHORT'?'#f87171':'#34d399'}">
+      <option value="LONG" ${r.side==='LONG'?'selected':''}>LONG</option>
+      <option value="SHORT" ${r.side==='SHORT'?'selected':''}>SHORT</option>
+    </select></td>
+    <td style="padding:.35rem"><input value="${r.quantity}" onchange="parsedCsvRows[${idx}].quantity=this.value.trim()" style="width:74px;padding:.22rem .35rem;font-size:.78rem"></td>
+    <td style="padding:.35rem"><input value="${r.avg_buy_price}" onchange="parsedCsvRows[${idx}].avg_buy_price=this.value.trim()" style="width:84px;padding:.22rem .35rem;font-size:.78rem"></td>
+    <td style="padding:.35rem"><input value="${r.stop_loss || ''}" placeholder="-" onchange="parsedCsvRows[${idx}].stop_loss=this.value.trim()||null" style="width:72px;padding:.22rem .35rem;font-size:.76rem"></td>
+    <td style="padding:.35rem"><input value="${r.take_profit || ''}" placeholder="-" onchange="parsedCsvRows[${idx}].take_profit=this.value.trim()||null" style="width:72px;padding:.22rem .35rem;font-size:.76rem"></td>
+    <td style="padding:.35rem"><input value="${r.currency}" onchange="parsedCsvRows[${idx}].currency=this.value.trim().toUpperCase()" style="width:52px;padding:.22rem .35rem;font-size:.76rem"></td>
+    <td style="padding:.35rem;color:#94a3b8;font-size:.74rem">${r.source}</td>
+  </tr>`).join('');
+}
+
+async function submitCsvImport() {
+  const selected = parsedCsvRows.filter(r => r.checked).map(({ source, checked, ...rest }) => rest);
+  const msg = document.getElementById('csv-import-msg');
+  const btn = document.getElementById('csv-submit-btn');
+  if (!selected.length) { msg.style.color = '#fbbf24'; msg.textContent = 'Select at least one row to import.'; return; }
+  btn.disabled = true; btn.textContent = 'Importing...';
+  try {
+    const res = await fetch('/portfolio/api/import/holdings', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        items: selected,
+        skip_duplicates: document.getElementById('csv-skip-dups').checked
+      })
+    });
+    if (!res.ok) {
+      msg.style.color = '#f87171';
+      msg.textContent = await res.text();
+      return;
+    }
+    const data = await res.json();
+    const summary = `Imported ${data.imported} position(s)` + (data.skipped_duplicates ? `, skipped ${data.skipped_duplicates} duplicate(s)` : '') + (data.errors?.length ? ` · ${data.errors.join(' | ')}` : '.');
+    msg.style.color = data.errors?.length ? '#fbbf24' : '#34d399';
+    msg.textContent = summary;
+    if (data.imported > 0) {
+      activePosFilter = 'ALL';
+      posExpanded = true;
+      document.querySelectorAll('#pos-tabs .pos-tab').forEach(b => b.classList.toggle('active', b.dataset.filter === 'ALL'));
+      await load();
+      const errEl = document.getElementById('err-msg');
+      if (errEl) { errEl.style.color = '#34d399'; errEl.textContent = '✓ ' + summary; setTimeout(() => { errEl.textContent = ''; errEl.style.color = ''; }, 7000); }
+      if (!(data.errors && data.errors.length)) {
+        closeCsvModal();
+      }
+    }
+  } finally {
+    btn.disabled = false; btn.textContent = 'Import Selected Positions';
+  }
+}
+
+let activePosFilter = 'ALL';
+let posExpanded = false;
+const POS_PAGE_LIMIT = 8;
+
+function setPosFilter(f) {
+  activePosFilter = f;
+  posExpanded = false;
+  document.querySelectorAll('#pos-tabs .pos-tab').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+  applyPosFilter();
+}
+
+function togglePosExpand() {
+  posExpanded = !posExpanded;
+  applyPosFilter();
+}
+
+function applyPosFilter() {
+  const rows = Array.from(document.querySelectorAll('#rows tr[data-sym]'));
+  const q = (document.getElementById('pos-search')?.value || '').trim().toUpperCase();
+  const counts = { ALL: rows.length, Stock: 0, Forex: 0, Crypto: 0, Index: 0 };
+  rows.forEach(tr => { if (counts[tr.dataset.type] !== undefined) counts[tr.dataset.type]++; });
+  Object.entries(counts).forEach(([k, v]) => {
+    const el = document.getElementById(k === 'ALL' ? 'cnt-all' : 'cnt-' + k);
+    if (el) el.textContent = v > 0 ? '(' + v + ')' : '';
+  });
+
+  const matched = rows.filter(tr => {
+    const okType = activePosFilter === 'ALL' || tr.dataset.type === activePosFilter;
+    const okSym = !q || (tr.dataset.sym || '').includes(q);
+    return okType && okSym;
+  });
+
+  const matchSet = new Set(matched);
+  let shown = 0;
+  rows.forEach(tr => {
+    if (!matchSet.has(tr)) {
+      tr.style.display = 'none';
+    } else if (!posExpanded && shown >= POS_PAGE_LIMIT) {
+      tr.style.display = 'none';
+      shown++;
+    } else {
+      tr.style.display = '';
+      shown++;
+    }
+  });
+
+  const moreWrap = document.getElementById('pos-more-wrap');
+  const moreBtn = document.getElementById('pos-more-btn');
+  if (moreWrap && moreBtn) {
+    if (matched.length > POS_PAGE_LIMIT) {
+      moreWrap.style.display = 'block';
+      moreBtn.textContent = posExpanded
+        ? 'Show fewer positions ▴'
+        : 'Show all ' + matched.length + ' positions ▾';
+    } else {
+      moreWrap.style.display = 'none';
+    }
+  }
+}
+
+
+async function startDemoMode() {
+  const btn = document.getElementById('demo-launch-btn');
+  const err = document.getElementById('auth-err');
+  if (btn) { btn.disabled = true; btn.textContent = 'Preparing Live Demo Sandbox...'; }
+  if (err) err.textContent = '';
+  try {
+    const res = await fetch('/portfolio/api/auth/demo', { method: 'POST' });
+    if (!res.ok) {
+      if (err) err.textContent = await res.text();
+      return;
+    }
+    location.reload();
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '⚡ Try Live Demo (No Sign-Up Needed)'; }
+  }
+}
+
+async function resetDemoMode() {
+  const btn = document.getElementById('demo-reset-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Resetting...'; }
+  try {
+    const res = await fetch('/portfolio/api/auth/demo/reset', { method: 'POST' });
+    if (res.ok) await load();
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '↻ Reset Sample Data'; }
+  }
+}
+
+async function exitDemoToRegister() {
+  await fetch('/portfolio/api/auth/logout', { method: 'POST' });
+  localStorage.setItem('prefer_register_tab', '1');
+  location.reload();
+}
+
+(async function syncDemoUi() {
+  try {
+    const res = await fetch('/portfolio/api/auth/me');
+    if (res.ok) {
+      const u = await res.json();
+      const isDemo = u && u.provider === 'demo';
+      const db = document.getElementById('demo-banner');
+      if (db) db.style.display = isDemo ? 'flex' : 'none';
+      const cBtn = document.getElementById('csv-open-btn');
+      if (cBtn) cBtn.style.display = isDemo ? 'none' : '';
+      const mcBtn = document.getElementById('mob-csv-btn');
+      if (mcBtn) mcBtn.style.setProperty('display', isDemo ? 'none' : '', isDemo ? 'important' : '');
+      const cMenu = document.getElementById('csv-menu-btn');
+      if (cMenu) cMenu.style.display = isDemo ? 'none' : 'flex';
+    } else if (localStorage.getItem('prefer_register_tab') === '1') {
+      localStorage.removeItem('prefer_register_tab');
+      const regTab = document.getElementById('tab-reg');
+      if (regTab) regTab.click();
+    }
+  } catch (_) {}
+})();
 
 </script>
 </body>

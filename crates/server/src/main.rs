@@ -1054,10 +1054,13 @@ async fn auth_register(
     if !email.contains('@') || email.len() < 5 {
         return (StatusCode::BAD_REQUEST, "Enter a valid email.").into_response();
     }
-    if input.password.len() < 8 {
+    let has_upper = input.password.chars().any(|c| c.is_ascii_uppercase());
+    let has_lower = input.password.chars().any(|c| c.is_ascii_lowercase());
+    let has_digit = input.password.chars().any(|c| c.is_ascii_digit());
+    if input.password.len() < 8 || !has_upper || !has_lower || !has_digit {
         return (
             StatusCode::BAD_REQUEST,
-            "Password must be at least 8 characters.",
+            "Password must be 8+ chars with uppercase, lowercase, and a number.",
         )
             .into_response();
     }
@@ -1110,6 +1113,243 @@ async fn auth_register(
     );
     resp
 }
+async fn seed_demo_portfolio(state: &AppState, user_id: i64) {
+    let _ = sqlx::query("DELETE FROM holdings WHERE user_id = ?")
+        .bind(user_id)
+        .execute(&state.db)
+        .await;
+    let _ = sqlx::query("DELETE FROM closed_trades WHERE user_id = ?")
+        .bind(user_id)
+        .execute(&state.db)
+        .await;
+
+    let sample_holdings = [
+        (
+            "AAPL",
+            "Stock",
+            "LONG",
+            "8",
+            "218.50",
+            "USD",
+            Some("195.00"),
+            Some("265.00"),
+        ),
+        (
+            "NVDA",
+            "Stock",
+            "LONG",
+            "12",
+            "128.40",
+            "USD",
+            Some("110.00"),
+            Some("165.00"),
+        ),
+        (
+            "ASML.AS",
+            "Stock",
+            "LONG",
+            "1.5",
+            "1150.00",
+            "EUR",
+            None,
+            Some("1450.00"),
+        ),
+        (
+            "EURUSD",
+            "Forex",
+            "LONG",
+            "0.05",
+            "1.0820",
+            "USD",
+            Some("1.0500"),
+            Some("1.1350"),
+        ),
+        (
+            "BTC-USD",
+            "Crypto",
+            "LONG",
+            "0.08",
+            "58500.00",
+            "USD",
+            Some("49000.00"),
+            Some("75000.00"),
+        ),
+        (
+            "^GSPC",
+            "Index",
+            "LONG",
+            "2",
+            "5790.00",
+            "USD",
+            Some("5400.00"),
+            Some("6400.00"),
+        ),
+    ];
+
+    for (sym, atype, side, qty, px, ccy, sl, tp) in sample_holdings {
+        let _ = sqlx::query(
+            "INSERT INTO holdings (user_id, symbol, asset_type, quantity, avg_buy_price, currency, side, status, trigger_dir, stop_loss, take_profit) VALUES (?, ?, ?, ?, ?, ?, ?, 'OPEN', 'BELOW', ?, ?)",
+        )
+        .bind(user_id)
+        .bind(sym)
+        .bind(atype)
+        .bind(qty)
+        .bind(px)
+        .bind(ccy)
+        .bind(side)
+        .bind(sl)
+        .bind(tp)
+        .execute(&state.db)
+        .await;
+
+        let parsed_atype = match atype {
+            "Forex" => AssetType::Forex,
+            "Crypto" => AssetType::Crypto,
+            "Index" => AssetType::Index,
+            _ => AssetType::Stock,
+        };
+        if let (Ok(d_px), Ok((live_px, live_vol, live_st))) = (
+            Decimal::from_str(px),
+            verify_asset_live(
+                sym,
+                &parsed_atype,
+                Decimal::from_str(px).unwrap_or(Decimal::ONE),
+            )
+            .await,
+        ) {
+            let _ = d_px;
+            update_price_meta(state, sym, live_px, live_vol, live_st).await;
+        }
+    }
+
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs() as i64;
+    let sample_trades = [
+        (
+            "MSFT",
+            "Stock",
+            "LONG",
+            "USD",
+            "5",
+            "402.00",
+            "438.50",
+            "182.50",
+            "TP",
+            now - 172800,
+        ),
+        (
+            "USDJPY",
+            "Forex",
+            "SHORT",
+            "JPY",
+            "0.04",
+            "161.200",
+            "159.400",
+            "46.80",
+            "MANUAL",
+            now - 86400,
+        ),
+        (
+            "ETH-USD",
+            "Crypto",
+            "LONG",
+            "USD",
+            "0.6",
+            "2890.00",
+            "2740.00",
+            "-90.00",
+            "SL",
+            now - 43200,
+        ),
+    ];
+    for (sym, atype, side, ccy, qty, entry, exit, rpnl, reason, closed_at) in sample_trades {
+        let _ = sqlx::query(
+            "INSERT INTO closed_trades (user_id, symbol, asset_type, side, currency, quantity, entry_price, exit_price, realized_pnl, close_reason, closed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(user_id)
+        .bind(sym)
+        .bind(atype)
+        .bind(side)
+        .bind(ccy)
+        .bind(qty)
+        .bind(entry)
+        .bind(exit)
+        .bind(rpnl)
+        .bind(reason)
+        .bind(closed_at)
+        .execute(&state.db)
+        .await;
+    }
+}
+
+async fn auth_demo(State((state, _)): State<(AppState, u64)>) -> impl IntoResponse {
+    let demo_email = "demo@portfolio.local";
+    let demo_name = "Demo Trader";
+    let _ =
+        sqlx::query("INSERT OR IGNORE INTO users (email, name, provider) VALUES (?, ?, 'demo')")
+            .bind(demo_email)
+            .bind(demo_name)
+            .execute(&state.db)
+            .await;
+
+    let Some((user_id,)) = sqlx::query_as::<_, (i64,)>("SELECT id FROM users WHERE email = ?")
+        .bind(demo_email)
+        .fetch_optional(&state.db)
+        .await
+        .ok()
+        .flatten()
+    else {
+        return (StatusCode::INTERNAL_SERVER_ERROR, "Demo user init failed.").into_response();
+    };
+
+    let count: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM holdings WHERE user_id = ?")
+        .bind(user_id)
+        .fetch_one(&state.db)
+        .await
+        .unwrap_or((0,));
+    if count.0 == 0 {
+        seed_demo_portfolio(&state, user_id).await;
+    }
+
+    let Ok(token) = create_session(&state.db, user_id).await else {
+        return (StatusCode::INTERNAL_SERVER_ERROR, "Session failed.").into_response();
+    };
+    let mut resp = Json(AuthUser {
+        id: user_id,
+        email: demo_email.into(),
+        name: demo_name.into(),
+        provider: "demo".into(),
+    })
+    .into_response();
+    resp.headers_mut().insert(
+        SET_COOKIE,
+        make_session_cookie(&token, SESSION_IDLE_TTL_SECS)
+            .parse()
+            .unwrap(),
+    );
+    resp
+}
+
+async fn auth_demo_reset(
+    State((state, _)): State<(AppState, u64)>,
+    headers: HeaderMap,
+) -> impl IntoResponse {
+    let Some(user) = current_user(&state.db, &headers).await else {
+        return (StatusCode::UNAUTHORIZED, "Sign in first.").into_response();
+    };
+    if user.provider != "demo" {
+        return (
+            StatusCode::FORBIDDEN,
+            "Reset is only available in Demo Mode.",
+        )
+            .into_response();
+    }
+    seed_demo_portfolio(&state, user.id).await;
+    StatusCode::OK.into_response()
+}
+
 async fn auth_login(
     State((state, _)): State<(AppState, u64)>,
     Json(input): Json<LoginInput>,
@@ -2785,6 +3025,156 @@ async fn get_news(Query(nq): Query<NewsQuery>) -> Json<Vec<NewsItem>> {
     items.truncate(24);
     Json(items)
 }
+#[derive(Deserialize)]
+struct BulkImportRequest {
+    items: Vec<CreateHoldingRequest>,
+    #[serde(default = "default_true")]
+    skip_duplicates: bool,
+}
+
+fn default_true() -> bool {
+    true
+}
+
+#[derive(Serialize)]
+struct BulkImportResponse {
+    imported: usize,
+    skipped_duplicates: usize,
+    errors: Vec<String>,
+}
+
+async fn import_holdings(
+    State((state, _)): State<(AppState, u64)>,
+    headers: HeaderMap,
+    Json(payload): Json<BulkImportRequest>,
+) -> impl IntoResponse {
+    let Some(user) = current_user(&state.db, &headers).await else {
+        return (StatusCode::UNAUTHORIZED, "Please sign in first.").into_response();
+    };
+    if user.provider == "demo" {
+        return (
+            StatusCode::FORBIDDEN,
+            "Broker CSV import is disabled in Demo Mode. Create a free real account to import your trades.",
+        )
+            .into_response();
+    }
+    if payload.items.is_empty() {
+        return (StatusCode::BAD_REQUEST, "No rows provided for import.").into_response();
+    }
+    if payload.items.len() > 250 {
+        return (
+            StatusCode::BAD_REQUEST,
+            "Maximum 250 rows per import batch.",
+        )
+            .into_response();
+    }
+
+    let existing: Vec<(String, String, String, String)> = sqlx::query_as(
+        "SELECT symbol, side, quantity, avg_buy_price FROM holdings WHERE user_id = ?",
+    )
+    .bind(user.id)
+    .fetch_all(&state.db)
+    .await
+    .unwrap_or_default();
+
+    let mut imported = 0usize;
+    let mut skipped_duplicates = 0usize;
+    let mut errors = Vec::new();
+
+    for (idx, input) in payload.items.into_iter().enumerate() {
+        let row_num = idx + 1;
+        if let Err(msg) = validate_holding_input(
+            &input.symbol,
+            input.asset_type.clone(),
+            input.quantity,
+            input.avg_buy_price,
+            &input.currency,
+        ) {
+            errors.push(format!(
+                "Row {} ({}): {}",
+                row_num,
+                input.symbol.trim(),
+                msg
+            ));
+            continue;
+        }
+        let asset_type_str = match input.asset_type {
+            AssetType::Stock => "Stock",
+            AssetType::Forex => "Forex",
+            AssetType::Crypto => "Crypto",
+            AssetType::Index => "Index",
+        };
+        let mut symbol = input.symbol.trim().to_uppercase();
+        let mut currency = input.currency.trim().to_uppercase();
+        if input.asset_type == AssetType::Forex {
+            symbol = symbol.replace(['/', '-'], "");
+            if symbol.len() == 6 {
+                currency = symbol[3..].to_string();
+            }
+        }
+        let side = if input
+            .side
+            .as_deref()
+            .unwrap_or("LONG")
+            .eq_ignore_ascii_case("SHORT")
+        {
+            "SHORT"
+        } else {
+            "LONG"
+        };
+        let qty_str = input.quantity.normalize().to_string();
+        let px_str = input.avg_buy_price.normalize().to_string();
+
+        if payload.skip_duplicates
+            && existing.iter().any(|(es, eside, eq, epx)| {
+                es == &symbol
+                    && eside == side
+                    && Decimal::from_str(eq).ok() == Some(input.quantity)
+                    && Decimal::from_str(epx).ok() == Some(input.avg_buy_price)
+            })
+        {
+            skipped_duplicates += 1;
+            continue;
+        }
+
+        match sqlx::query(
+            "INSERT INTO holdings (user_id, symbol, asset_type, quantity, avg_buy_price, currency, side, status, trigger_dir, stop_loss, take_profit) VALUES (?, ?, ?, ?, ?, ?, ?, 'OPEN', 'BELOW', ?, ?)",
+        )
+        .bind(user.id)
+        .bind(&symbol)
+        .bind(asset_type_str)
+        .bind(&qty_str)
+        .bind(&px_str)
+        .bind(&currency)
+        .bind(side)
+        .bind(input.stop_loss.filter(|v| *v > Decimal::ZERO).map(|v| v.to_string()))
+        .bind(input.take_profit.filter(|v| *v > Decimal::ZERO).map(|v| v.to_string()))
+        .execute(&state.db)
+        .await
+        {
+            Ok(_) => {
+                imported += 1;
+                if let Ok((live_px, live_vol, live_st)) =
+                    verify_asset_live(&symbol, &input.asset_type, input.avg_buy_price).await
+                {
+                    update_price_meta(&state, &symbol, live_px, live_vol, live_st).await;
+                }
+            }
+            Err(err) => errors.push(format!("Row {} ({}): DB error {}", row_num, symbol, err)),
+        }
+    }
+
+    (
+        StatusCode::OK,
+        Json(BulkImportResponse {
+            imported,
+            skipped_duplicates,
+            errors,
+        }),
+    )
+        .into_response()
+}
+
 fn build_router(state: AppState, interval_secs: u64) -> Router {
     let portfolio_routes = Router::new()
         .route("/", get(index))
@@ -2796,6 +3186,8 @@ fn build_router(state: AppState, interval_secs: u64) -> Router {
         .route("/api/auth/me", get(auth_me))
         .route("/api/auth/register", post(auth_register))
         .route("/api/auth/login", post(auth_login))
+        .route("/api/auth/demo", post(auth_demo))
+        .route("/api/auth/demo/reset", post(auth_demo_reset))
         .route("/api/auth/logout", post(auth_logout))
         .layer(axum::middleware::from_fn_with_state(
             state.clone(),
@@ -2804,6 +3196,7 @@ fn build_router(state: AppState, interval_secs: u64) -> Router {
         .route("/api/auth/google", get(auth_google_start))
         .route("/api/auth/google/callback", get(auth_google_callback))
         .route("/api/holdings", post(add_holding))
+        .route("/api/import/holdings", post(import_holdings))
         .route("/api/holdings/{id}/close", post(close_holding))
         .route("/api/trades", get(list_trades))
         .route("/api/trades/{id}", delete(delete_trade))
@@ -2888,7 +3281,7 @@ mod tests {
             .uri("/portfolio/api/auth/register")
             .header("content-type", "application/json")
             .body(Body::from(
-                r#"{"email":"ci-trader@example.com","password":"password123"}"#,
+                r#"{"email":"ci-trader@example.com","password":"Password123"}"#,
             ))
             .unwrap();
         let reg_res = app.clone().oneshot(reg_req).await.unwrap();
@@ -2913,6 +3306,74 @@ mod tests {
             .unwrap();
         let res = app.clone().oneshot(create_req).await.unwrap();
         assert_eq!(res.status(), StatusCode::CREATED);
+
+        // Verify weak password without uppercase is rejected
+        let weak_req = Request::builder()
+            .method("POST")
+            .uri("/portfolio/api/auth/register")
+            .header("content-type", "application/json")
+            .body(Body::from(
+                r#"{"email":"weak@example.com","password":"password123"}"#,
+            ))
+            .unwrap();
+        let weak_res = app.clone().oneshot(weak_req).await.unwrap();
+        assert_eq!(weak_res.status(), StatusCode::BAD_REQUEST);
+
+        // Verify bulk multi-asset CSV import + duplicate skipping on real account
+        let imp_req = Request::builder()
+            .method("POST")
+            .uri("/portfolio/api/import/holdings")
+            .header("content-type", "application/json")
+            .header("cookie", &cookie)
+            .body(Body::from(
+                r#"{"skip_duplicates":true,"items":[{"symbol":"AAPL","asset_type":"Stock","side":"LONG","quantity":"5","avg_buy_price":"228.28","currency":"USD"},{"symbol":"BTC-USD","asset_type":"Crypto","side":"LONG","quantity":"0.015","avg_buy_price":"61200","currency":"USD","stop_loss":"55000","take_profit":"72000"}]}"#,
+            ))
+            .unwrap();
+        let imp_res = app.clone().oneshot(imp_req).await.unwrap();
+        assert_eq!(imp_res.status(), StatusCode::OK);
+
+        let dup_req = Request::builder()
+            .method("POST")
+            .uri("/portfolio/api/import/holdings")
+            .header("content-type", "application/json")
+            .header("cookie", &cookie)
+            .body(Body::from(
+                r#"{"skip_duplicates":true,"items":[{"symbol":"AAPL","asset_type":"Stock","side":"LONG","quantity":"5","avg_buy_price":"228.28","currency":"USD"}]}"#,
+            ))
+            .unwrap();
+        let dup_res = app.clone().oneshot(dup_req).await.unwrap();
+        assert_eq!(dup_res.status(), StatusCode::OK);
+
+        // Verify 1-Click Demo Sandbox creation & CSV import restriction in Demo Mode
+        let demo_req = Request::builder()
+            .method("POST")
+            .uri("/portfolio/api/auth/demo")
+            .body(Body::empty())
+            .unwrap();
+        let demo_res = app.clone().oneshot(demo_req).await.unwrap();
+        assert_eq!(demo_res.status(), StatusCode::OK);
+        let demo_cookie = demo_res
+            .headers()
+            .get("set-cookie")
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .split(";")
+            .next()
+            .unwrap()
+            .to_string();
+
+        let demo_imp_req = Request::builder()
+            .method("POST")
+            .uri("/portfolio/api/import/holdings")
+            .header("content-type", "application/json")
+            .header("cookie", &demo_cookie)
+            .body(Body::from(
+                r#"{"skip_duplicates":true,"items":[{"symbol":"AAPL","asset_type":"Stock","side":"LONG","quantity":"1","avg_buy_price":"200","currency":"USD"}]}"#,
+            ))
+            .unwrap();
+        let demo_imp_res = app.clone().oneshot(demo_imp_req).await.unwrap();
+        assert_eq!(demo_imp_res.status(), StatusCode::FORBIDDEN);
 
         let list_req = Request::builder()
             .uri("/portfolio/api/portfolio")

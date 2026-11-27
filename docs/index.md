@@ -16,3 +16,13 @@
 2. **Native Mobile Clients (UniFFI)**: Generate Kotlin (Android) and Swift (iOS) bindings from `crates/portfolio-core` and build native screens matching the mobile web UX.
 3. **Permanent Named Tunnel & K3s ArgoCD Verification**: Cut over from ephemeral `trycloudflare.com` quick tunnels to the permanent Named Tunnel domain (`TUNNEL_TOKEN` in `.env`) and verify k3s/ArgoCD image sync.
 4. **Broker & Tracker Portfolio Import (API Key + CSV)**: Add read-only API key connectors (Trading 212 `/api/v0/equity/portfolio`, Binance Spot, IBKR Flex) + CSV fallback with ticker normalization and idempotent sync.
+
+## Multi-Broker & Trading 212 CSV Bulk Import (`POST /portfolio/api/import/holdings`)
+
+- Supports **Trading 212 Invest** exports (aggregating buy/sell fills into net weighted-average positions), **Trading 212 CFD** exports (Long/Short, Forex, Crypto, Indices, Stop Loss & Take Profit), **Interactive Brokers (IBKR)** Flex exports, and generic CSV files.
+- Includes an interactive inline-editable preview table, duplicate position skipping (`skip_duplicates: true`), immediate live price seeding, and portfolio asset-class filter tabs (`All`, `Stocks`, `Forex`, `Crypto`, `Indices`).
+
+## Live Demo Sandbox & Registration Security (`POST /portfolio/api/auth/demo`)
+
+- Provides a 1-click **Live Demo Sandbox** pre-seeded with multi-asset positions and historical trades, plus one-click sample reset (`POST /portfolio/api/auth/demo/reset`).
+- Enforces password confirmation and complexity rules (`8+` characters with uppercase, lowercase, and numeric characters) on registration.
