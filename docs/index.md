@@ -26,3 +26,11 @@
 
 - Provides a 1-click **Live Demo Sandbox** pre-seeded with multi-asset positions and historical trades, plus one-click sample reset (`POST /portfolio/api/auth/demo/reset`).
 - Enforces password confirmation and complexity rules (`8+` characters with uppercase, lowercase, and numeric characters) on registration.
+
+## TradingView-Inspired Portfolio Analytics & CSV Export
+
+- **Portfolio Analytics Panel:** Interactive SVG Allocation Donut (Asset Class, Symbol, Currency), Top Gainer/Loser attribution, concentration %, total capital at risk to Stop-Loss, and Profit Factor.
+- **Portfolio Equity Curve vs. Benchmark (`^GSPC`):** Reconstructed historical portfolio value & % return curve overlaid against `^GSPC` or `BTC-USD` over `1W`, `1M`, `6M`, and `1Y`.
+- **CSV Portfolio & Trade History Export:** One-click CSV export of open holdings and closed trade history.
+- **Full User Account & Settings Page:** Dedicated profile & preferences screen (account details, password change, default display currency & benchmark, linked OAuth providers, and CSV import/export hub).
+- **Trailing 12M Dividend Yield & Payout:** `GET /portfolio/api/history` fetches trailing 12-month dividend distributions for stocks and surfaces `Div: X.XX% ($Y.YY/yr)` inside Box 3 on the Instrument Detail Page.

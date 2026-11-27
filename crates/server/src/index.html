@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Live Portfolio &amp; Forex Tracker</title>
 <style>
-  body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; max-width: 1040px; margin: 2rem auto; padding: 0 1rem; }
+  :root { --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; --fs-xs: 0.72rem; --fs-sm: 0.8rem; --fs-base: 0.9rem; --fs-lg: 1.15rem; --fs-xl: 1.45rem; }
+  body, input, select, button, textarea, svg { font-family: var(--font-sans); }
+  body { background: #0f172a; color: #f8fafc; max-width: 1040px; margin: 2rem auto; padding: 0 1rem; font-size: var(--fs-base); line-height: 1.45; }
+  #d-chart { font-variant-numeric: tabular-nums; }
   h1 { display: flex; justify-content: space-between; align-items: center; font-size: 1.5rem; }
   .badge { font-size: 0.75rem; padding: 0.2rem 0.55rem; border-radius: 999px; background: #1e293b; color: #f59e0b; border: 1px solid #334155; }
   .pill { display: inline-flex; align-items: center; justify-content: center; height: 1.25rem; min-width: 3.1rem; padding: 0 0.4rem; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.02em; line-height: 1; border-radius: 0.35rem; background: #0f172a; color: #94a3b8; border: 1px solid #334155; box-sizing: border-box; white-space: nowrap; vertical-align: middle; margin-left: 0.3rem; text-align: center; }
@@ -187,6 +190,25 @@
     #pos-search { width: 100% !important; }
   }
 .pill.long{background:rgba(74,222,128,.14);color:#4ade80;border:1px solid rgba(74,222,128,.35)}.pill.short{background:rgba(248,113,113,.14);color:#f87171;border:1px solid rgba(248,113,113,.35)}.pill.pend{background:rgba(250,204,21,.16);color:#facc15;border:1px solid rgba(250,204,21,.4)}.pill.warn{background:rgba(251,146,60,.2);color:#fb923c;border:1px solid rgba(251,146,60,.5);animation:pulse 1.4s infinite}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}#hist-bg{display:block!important;position:fixed;inset:0;background:#0f172a;z-index:65;overflow-y:auto;transform:translateX(100%);transition:transform .24s cubic-bezier(.22,1,.36,1);visibility:hidden;pointer-events:none;padding:.9rem 1rem 2rem}#hist-bg.open{transform:translateX(0);visibility:visible;pointer-events:auto}#hist-box{max-width:1180px;margin:0 auto;background:transparent;border:none;padding:0}#hist-box .d-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding-bottom:.75rem;margin-bottom:.85rem;border-bottom:1px solid #1e293b}#h-back{display:inline-flex;align-items:center;gap:.3rem;width:auto;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:.42rem .75rem;border-radius:.55rem;font-size:.9rem;font-weight:600}#hist-box .d-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding-bottom:.75rem;margin-bottom:.85rem;border-bottom:1px solid #1e293b}#h-back{display:inline-flex;align-items:center;gap:.3rem;width:auto;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:.42rem .75rem;border-radius:.55rem;font-size:.9rem;font-weight:600}
+  #analytics-wrap { background: #1e293b; border: 1px solid #334155; border-radius: 0.75rem; padding: 0.85rem 1rem; margin: 0 0 1.1rem; }
+  .an-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .an-grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 1rem; margin-top: 0.85rem; align-items: start; }
+  .an-box { background: #0f172a; border: 1px solid #1e293b; border-radius: 0.65rem; padding: 0.75rem 0.85rem; }
+  .an-donut-row { display: flex; align-items: center; gap: 1rem; margin-top: 0.6rem; }
+  .an-leg { flex: 1; display: flex; flex-direction: column; gap: 0.45rem; min-width: 0; font-size: var(--fs-base); font-variant-numeric: tabular-nums; }
+  .an-leg-item { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; }
+  .an-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; margin-top: 0.6rem; }
+  .an-kpi { background: #131c2e; border: 1px solid #1e293b; border-radius: 0.55rem; padding: 0.65rem 0.75rem; font-variant-numeric: tabular-nums; }
+  .an-kpi small { display: block; font-size: var(--fs-sm); color: #94a3b8; margin-bottom: 0.25rem; }
+  .an-kpi strong { font-size: 1rem; display: block; line-height: 1.3; }
+  @media (max-width: 680px) {
+    .an-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+    .an-donut-row { flex-direction: column; align-items: center; gap: 0.85rem; }
+    .an-leg { width: 100%; }
+    .an-kpis { grid-template-columns: 1fr; gap: 0.5rem; }
+    .an-kpi { display: flex; justify-content: space-between; align-items: center; padding: 0.55rem 0.7rem; }
+    .an-kpi small { margin-bottom: 0; }
+  }
 </style>
 </head>
 <body>
@@ -236,6 +258,7 @@
         <button type="button" id="hist-btn" style="margin-top:0.5rem;background:#1e293b;color:#f8fafc;border:1px solid #334155">Trade History</button>
         <button type="button" id="news-menu-btn" style="margin-top:0.5rem;background:#1e293b;color:#f8fafc;border:1px solid #334155">Market News</button>
         <button type="button" id="csv-menu-btn" style="margin-top:0.5rem;background:#1e293b;color:#38bdf8;border:1px solid rgba(56,189,248,0.45)">Import CSV (T212 / Broker)</button>
+          <button type="button" onclick="exportHoldingsCsv();document.getElementById('user-dd').style.display='none'" style="margin-top:0.5rem;background:#1e293b;color:#f8fafc;border:1px solid #334155">Export Positions CSV</button>
         <button type="button" id="logout-btn">Logout</button>
       </div>
     </div>
@@ -252,6 +275,53 @@
     <div class="card"><small>Cost Basis</small><strong id="total-cost">$0.00</strong></div>
     <div class="card"><small>Unrealized P&amp;L</small><strong id="total-pnl">$0.00</strong></div>
     <div class="card"><small>Realized P&amp;L</small><strong id="total-rpnl">$0.00</strong></div>
+  </div>
+  <div id="analytics-wrap">
+    <div class="an-head">
+      <div style="display:flex;align-items:center;gap:0.45rem;min-width:0;flex-wrap:wrap">
+        <strong style="font-size:var(--fs-lg);color:#f8fafc;white-space:nowrap">Portfolio Analytics</strong>
+        <span class="pill" style="margin:0">Allocation &amp; Risk</span>
+      </div>
+      <button type="button" id="an-toggle-btn" onclick="toggleAnalyticsPanel()" style="width:auto;flex-shrink:0;white-space:nowrap;padding:0.32rem 0.75rem;font-size:var(--fs-sm);background:#0f172a;color:#cbd5e1;border:1px solid #334155;border-radius:0.5rem;font-weight:600">Hide ▴</button>
+    </div>
+    <div id="an-body" class="an-grid">
+      <div class="an-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.4rem;flex-wrap:wrap">
+          <span style="font-size:var(--fs-base);font-weight:700;color:#cbd5e1">Allocation Breakdown</span>
+          <div style="display:flex;gap:0.28rem">
+            <button type="button" class="pos-tab active" data-an-mode="type" onclick="setAnalyticsMode('type')" style="padding:0.28rem 0.62rem;font-size:var(--fs-sm)">Asset Class</button>
+            <button type="button" class="pos-tab" data-an-mode="symbol" onclick="setAnalyticsMode('symbol')" style="padding:0.28rem 0.62rem;font-size:var(--fs-sm)">Symbol</button>
+            <button type="button" class="pos-tab" data-an-mode="currency" onclick="setAnalyticsMode('currency')" style="padding:0.28rem 0.62rem;font-size:var(--fs-sm)">Currency</button>
+          </div>
+        </div>
+        <div class="an-donut-row">
+          <svg id="an-donut" width="136" height="136" viewBox="0 0 136 136" style="flex-shrink:0"></svg>
+          <div id="an-legend" class="an-leg"></div>
+        </div>
+      </div>
+      <div class="an-box">
+        <span style="font-size:var(--fs-base);font-weight:700;color:#cbd5e1">Performance &amp; Risk Attribution</span>
+        <div id="an-kpis" class="an-kpis"></div>
+      </div>
+      <div class="an-box" style="grid-column:1 / -1">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.55rem">
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+            <span style="font-size:var(--fs-base);font-weight:700;color:#cbd5e1">Equity Curve vs. Benchmark</span>
+            <span id="eq-summary" style="font-size:var(--fs-sm);font-variant-numeric:tabular-nums;color:#94a3b8">Loading...</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap">
+            <button type="button" class="pos-tab active" data-eq-b="^GSPC" onclick="setEqBench('^GSPC')" style="padding:0.32rem 0.65rem;font-size:var(--fs-sm)">S&amp;P 500</button>
+            <button type="button" class="pos-tab" data-eq-b="BTC-USD" onclick="setEqBench('BTC-USD')" style="padding:0.32rem 0.65rem;font-size:var(--fs-sm)">BTC</button>
+            <span style="color:#334155">|</span>
+            <button type="button" class="pos-tab" data-eq-r="5d" onclick="setEqRange('5d')" style="padding:0.32rem 0.58rem;font-size:var(--fs-sm)">1W</button>
+            <button type="button" class="pos-tab active" data-eq-r="1mo" onclick="setEqRange('1mo')" style="padding:0.32rem 0.58rem;font-size:var(--fs-sm)">1M</button>
+            <button type="button" class="pos-tab" data-eq-r="6mo" onclick="setEqRange('6mo')" style="padding:0.32rem 0.58rem;font-size:var(--fs-sm)">6M</button>
+            <button type="button" class="pos-tab" data-eq-r="1y" onclick="setEqRange('1y')" style="padding:0.32rem 0.58rem;font-size:var(--fs-sm)">1Y</button>
+          </div>
+        </div>
+        <svg id="eq-chart" style="width:100%;height:205px;background:#131c2e;border:1px solid #1e293b;border-radius:0.55rem;display:block;font-variant-numeric:tabular-nums"></svg>
+      </div>
+    </div>
   </div>
   <button type="button" id="mob-add-btn">+ Add Instrument</button>
   <button type="button" id="mob-csv-btn" onclick="openCsvModal()">↑ Import CSV (Trading 212 / Broker)</button>
@@ -275,7 +345,7 @@
       <button type="button" class="pos-tab" data-filter="Crypto" onclick="setPosFilter('Crypto')">Crypto <span id="cnt-Crypto"></span></button>
       <button type="button" class="pos-tab" data-filter="Index" onclick="setPosFilter('Index')">Indices <span id="cnt-Index"></span></button>
     </div>
-    <input id="pos-search" type="text" placeholder="Filter symbol..." oninput="applyPosFilter()" style="width:170px;padding:0.32rem 0.6rem;font-size:0.8rem;border-radius:999px;background:#1e293b;border:1px solid #334155">
+    <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap"><input id="pos-search" type="text" placeholder="Filter symbol..." oninput="applyPosFilter()" style="width:170px;padding:0.32rem 0.6rem;font-size:0.8rem;border-radius:999px;background:#1e293b;border:1px solid #334155"><button type="button" onclick="exportHoldingsCsv()" style="width:auto;padding:0.32rem 0.68rem;font-size:var(--fs-sm);border-radius:0.5rem;background:#1e293b;color:#cbd5e1;border:1px solid #334155;font-weight:600;white-space:nowrap">↓ Export CSV</button></div>
   </div>
   <div class="tbl-wrap"><table>
     <colgroup><col style="width:26%"><col style="width:7%"><col style="width:7%"><col style="width:11%"><col style="width:17%"><col style="width:13%"><col style="width:17%"><col style="width:5%"></colgroup><thead><tr><th>Symbol</th><th>Type</th><th>Qty</th><th>Avg Buy</th><th>Live Price &amp; Status</th><th>Market Value</th><th>Unrealized P&amp;L</th><th></th></tr></thead>
@@ -288,7 +358,7 @@
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.55rem">
       <strong style="font-size:0.88rem;color:#f8fafc">Economic &amp; Market News</strong>
       <div style="display:flex;align-items:center;gap:0.35rem">
-        <button type="button" onclick="loadMacroNews()" style="width:auto;padding:0.22rem 0.55rem;font-size:0.74rem;background:#0f172a;color:#94a3b8;border:1px solid #334155">↻ Refresh</button>
+        <button type="button" onclick="loadMacroNews()" style="width:auto;padding:0.36rem 0.72rem;font-size:0.76rem;background:#0f172a;color:#94a3b8;border:1px solid #334155">↻ Refresh</button>
         <button type="button" onclick="toggleMacroNews(false)" title="Hide news" style="width:auto;padding:0.22rem 0.5rem;font-size:0.74rem;background:#0f172a;color:#94a3b8;border:1px solid #334155">✕</button>
       </div>
     </div>
@@ -335,13 +405,13 @@
         </div>
         <div id="edit-msg" style="color:#f87171;font-size:0.78rem;margin-top:0.35rem"></div>
       </div>
-      <div id="d-news-wrap" style="margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid #334155">
+      <div id="d-news-wrap" style="margin-top:0.85rem;padding-top:0.75rem;padding-bottom:1.6rem;border-top:1px solid #334155">
         <div style="font-size:0.8rem;font-weight:700;color:#cbd5e1;margin-bottom:0.45rem">Latest Headlines</div>
         <div id="d-news-list" style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.8rem;color:#94a3b8">Loading headlines...</div>
       </div>
     </div>
   </div>
-  <div id="hist-bg"><div id="hist-box"><div class="d-head"><button type="button" id="h-back" onclick="closeHist()">← Back</button><strong style="font-size:1.1rem">Closed Trades &amp; Realized P&amp;L</strong><span style="width:4.2rem"></span></div><div id="hist-list" style="display:flex;flex-direction:column;gap:0.55rem"></div></div></div>
+  <div id="hist-bg"><div id="hist-box"><div class="d-head"><button type="button" id="h-back" onclick="closeHist()">← Back</button><strong style="font-size:1.1rem">Closed Trades &amp; Realized P&amp;L</strong><button type="button" onclick="exportClosedTradesCsv()" style="width:auto;padding:0.36rem 0.72rem;font-size:var(--fs-sm);border-radius:0.5rem;background:#1e293b;color:#38bdf8;border:1px solid rgba(56,189,248,0.45);font-weight:600;white-space:nowrap">↓ Export CSV</button></div><div id="hist-list" style="display:flex;flex-direction:column;gap:0.55rem"></div></div></div>
   <div id="news-bg" style="display:block;position:fixed;inset:0;background:#0f172a;z-index:65;overflow-y:auto;transform:translateX(100%);transition:transform .24s cubic-bezier(.22,1,.36,1);visibility:hidden;pointer-events:none;padding:.9rem 1rem 2rem"><div style="max-width:1180px;margin:0 auto"><div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding-bottom:.75rem;margin-bottom:.85rem;border-bottom:1px solid #1e293b"><button type="button" onclick="closeNewsModal()" style="display:inline-flex;align-items:center;gap:.3rem;width:auto;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:.42rem .75rem;border-radius:.55rem;font-size:.9rem;font-weight:600">← Back</button><strong style="font-size:1.05rem">Economic &amp; Market News</strong><div style="display:flex;align-items:center;gap:.35rem"><button type="button" id="news-pin-btn" onclick="toggleMacroNews(true);updateNewsPinBtn()" style="width:auto;padding:.35rem .6rem;font-size:.76rem;background:#1e293b;color:#fbbf24;border:1px solid rgba(245,158,11,.45);border-radius:.5rem">+ Home</button><button type="button" onclick="loadNewsModal()" style="width:auto;padding:.35rem .6rem;font-size:.76rem;background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:.5rem">↻</button></div></div><div id="news-modal-list" style="display:flex;flex-direction:column;gap:0.55rem;font-size:0.85rem;color:#94a3b8">Loading market headlines...</div></div></div>
   <div id="csv-bg" style="display:block;position:fixed;inset:0;background:#0f172a;z-index:66;overflow-y:auto;transform:translateX(100%);transition:transform .24s cubic-bezier(.22,1,.36,1);visibility:hidden;pointer-events:none;padding:.9rem 1rem 2rem">
     <div style="max-width:1080px;margin:0 auto">
@@ -365,7 +435,7 @@
             <input type="checkbox" id="csv-skip-dups" checked style="width:auto;margin:0"> Skip duplicate open positions
           </label>
         </div>
-        <textarea id="csv-raw-input" rows="6" placeholder="Paste Trading 212, IBKR, or generic CSV rows here...&#10;Example:&#10;Action,Time,ISIN,Ticker,Name,No. of shares,Price / share,Currency (Price / share)&#10;Market buy,2026-11-20 14:30:00,US0378331005,AAPL,Apple Inc.,2.5,228.50,USD" style="width:100%;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:.55rem;padding:.6rem;font-family:monospace;font-size:.78rem;resize:vertical"></textarea>
+        <textarea id="csv-raw-input" rows="6" placeholder="Paste Trading 212, IBKR, or generic CSV rows here...&#10;Example:&#10;Action,Time,ISIN,Ticker,Name,No. of shares,Price / share,Currency (Price / share)&#10;Market buy,2026-11-20 14:30:00,US0378331005,AAPL,Apple Inc.,2.5,228.50,USD" style="box-sizing:border-box;display:block;width:100%;max-width:100%;background:#0f172a;color:#e2e8f0;border:1px solid #334155;border-radius:.55rem;padding:.6rem;font-family:monospace;font-size:.78rem;resize:vertical"></textarea>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.55rem">
           <span id="csv-parse-stat" style="font-size:.78rem;color:#94a3b8">No rows parsed yet.</span>
           <button type="button" onclick="parseCsvPreview()" style="width:auto;padding:.4rem .85rem;font-size:.8rem;background:#334155;color:#f8fafc;border:1px solid #475569;border-radius:.5rem;font-weight:600">Preview Parsed Rows</button>
@@ -497,6 +567,19 @@ document.getElementById('dca-toggle').onclick = () => {
   if (!dcaMode) enterNewPosMode();
   else setEditFields(activeHolding);
 };
+function checkSlTpDir(side, refPx, slStr, tpStr) {
+  const isShort = (side || 'LONG').toUpperCase() === 'SHORT';
+  const sl = slStr ? Number(slStr) : 0, tp = tpStr ? Number(tpStr) : 0;
+  if (sl > 0 && refPx > 0) {
+    if (!isShort && sl >= refPx) return 'For LONG positions, Stop Loss must be below entry price.';
+    if (isShort && sl <= refPx) return 'For SHORT positions, Stop Loss must be above entry price.';
+  }
+  if (tp > 0 && refPx > 0) {
+    if (!isShort && tp <= refPx) return 'For LONG positions, Take Profit must be above entry price.';
+    if (isShort && tp >= refPx) return 'For SHORT positions, Take Profit must be below entry price.';
+  }
+  return '';
+}
 document.getElementById('edit-save').onclick = async () => {
   if (!activeHolding) return;
   const msgEl = document.getElementById('edit-msg'); msgEl.textContent = '';
@@ -506,16 +589,26 @@ document.getElementById('edit-save').onclick = async () => {
   const isOpenPos = !dcaMode && activeHolding.status === 'OPEN';
   const sendQty = isOpenPos ? String(activeHolding.quantity) : qIn.toString();
   const sendPx = isOpenPos ? String(activeHolding.avg_buy_price) : pIn.toString();
+  const chkSide = dcaMode ? (document.getElementById('edit-side').value || 'LONG') : (activeHolding.side || 'LONG');
+  const chkPx = isOpenPos ? Number(activeHolding.current_price ?? activeHolding.avg_buy_price) : pIn;
+  const dirErr = checkSlTpDir(chkSide, chkPx, slVal, tpVal);
+  if (dirErr) { msgEl.style.color = '#ef4444'; msgEl.textContent = dirErr; return; }
   const res = dcaMode
     ? await fetch('/portfolio/api/holdings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ symbol: activeHolding.symbol, asset_type: activeHolding.asset_type, side: document.getElementById('edit-side').value || 'LONG', quantity: qIn.toString(), avg_buy_price: pIn.toString(), stop_loss: slVal, take_profit: tpVal, currency: activeHolding.currency }) })
     : await fetch('/portfolio/api/holdings/' + activeHolding.id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ quantity: sendQty, avg_buy_price: sendPx, stop_loss: slVal, take_profit: tpVal }) });
-  if (!res.ok) { msgEl.style.color = '#f87171'; msgEl.textContent = await res.text(); return; }
+  if (!res.ok) { msgEl.style.color = '#ef4444'; msgEl.textContent = await res.text(); return; }
+  const wasDca = dcaMode, curSym = activeHolding.symbol;
   await load();
+  if (wasDca) {
+    const syms = Object.values(holdingsMap).filter(x => x.symbol === curSym);
+    if (syms.length) activeHolding = syms.reduce((a, b) => (b.id > a.id ? b : a), syms[0]);
+  }
   if (holdingsMap[activeHolding.id]) {
     activeHolding = holdingsMap[activeHolding.id];
     setEditFields(activeHolding);
+    if (typeof renderDetailStats === 'function') renderDetailStats(activeHolding, window.lastHistData || {});
     await loadHistory();
-    msgEl.style.color = '#4ade80'; msgEl.textContent = '✓ Saved';
+    msgEl.style.color = '#4ade80'; msgEl.textContent = wasDca ? '✓ Position added' : '✓ Saved';
     setTimeout(() => { if (msgEl.textContent === '✓ Saved') msgEl.textContent = ''; }, 2500);
   }
 };
@@ -573,7 +666,7 @@ async function loadHistory() {
   if (!activeHolding) return;
   const h = activeHolding;
   const res = await fetch('/portfolio/api/history?symbol=' + encodeURIComponent(h.symbol) + '&asset_type=' + encodeURIComponent(h.asset_type) + '&range=' + activeRange);
-  const d = await res.json();
+  const d = await res.json(); window.lastHistData = d;
   const cs = ccySym(h.asset_type === 'Forex' && h.symbol.length === 6 ? h.symbol.slice(3) : h.currency);
     document.getElementById('d-meta').textContent = (d.exchange || mktTag(h.symbol, h.asset_type)) + ' · ' + h.asset_type;
   const pts = d.points || [];
@@ -582,12 +675,12 @@ async function loadHistory() {
   if (pts.length > 1) {
     const dp = h.asset_type === 'Forex' ? 3 : 2;
     const isMob = window.innerWidth <= 680;
-    const yPad = isMob ? 52 : 56, W = isMob ? 380 : 860, H = isMob ? 280 : 360, plotR = W - yPad, plotW = plotR - 10, plotB = H - 34, plotH = plotB - 22;
+    const yPad = isMob ? 56 : 60, rightGap = isMob ? 14 : 22, W = isMob ? 380 : 860, H = isMob ? 280 : 360, plotR = W - yPad, plotW = plotR - 10 - rightGap, plotB = H - 34, plotH = plotB - 22;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     const maxBars = activeRange === '4h' ? (isMob ? 15 : 24) : (activeRange === '1mo' ? 32 : (['6mo','1y'].includes(activeRange) ? 160 : (isMob ? 45 : 80)));
     const viewPts = pts.length > maxBars ? pts.slice(-maxBars) : pts;
     const sameSymAll = Object.values(holdingsMap).filter(x => x.symbol === h.symbol);
-    const min = Math.min(...viewPts.map(p => p.low)), max = Math.max(...viewPts.map(p => p.high)), span = (max - min) || 1;
+    let rMin = Math.min(...viewPts.map(p => p.low)), rMax = Math.max(...viewPts.map(p => p.high)); const lPx0 = h.current_price != null ? Number(h.current_price) : 0, ePx0 = Number(h.avg_buy_price) || 0; if (lPx0 > 0) { rMin = Math.min(rMin, lPx0); rMax = Math.max(rMax, lPx0); } if (ePx0 > 0) { rMin = Math.min(rMin, ePx0); rMax = Math.max(rMax, ePx0); } if (h.stop_loss != null && Number(h.stop_loss) > 0) { rMin = Math.min(rMin, Number(h.stop_loss)); rMax = Math.max(rMax, Number(h.stop_loss)); } if (h.take_profit != null && Number(h.take_profit) > 0) { rMin = Math.min(rMin, Number(h.take_profit)); rMax = Math.max(rMax, Number(h.take_profit)); } const pSp = ((rMax - rMin) || 1) * 0.04, min = rMin - pSp, max = rMax + pSp, span = (max - min) || 1; window.activeChartBounds = { sym: h.symbol, min, max };
     const yOf = v => plotB - ((v - min) / span) * plotH;
     const livePx = h.current_price != null ? Number(h.current_price) : viewPts[viewPts.length - 1].close;
     if (activeRange === '1d' && d.prev_close != null && Number(d.prev_close) > 0) {
@@ -604,7 +697,7 @@ async function loadHistory() {
     }
     const baseDaily = window.activePrevClose;
     const mktOpen = ['LIVE', 'REGULAR', '24/7'].includes(h.market_state || '');
-    const up = livePx >= baseDaily, col = up ? '#4ade80' : '#f87171';
+    const up = livePx >= baseDaily, col = up ? '#4ade80' : '#ef4444';
     const pct = mktOpen ? (((livePx - baseDaily) / baseDaily) * 100).toFixed(2) : '0.00';
     const chgEl = document.getElementById('d-chg');
     chgEl.textContent = 'Today ' + (mktOpen ? ((up ? '+' : '') + pct + '%') : '0.00%');
@@ -615,21 +708,21 @@ async function loadHistory() {
       const tm = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
       const dd = dt.toLocaleDateString([], { day: '2-digit', month: 'short' });
       if (['1m','5m','15m','1h','1d'].includes(activeRange)) return tm;
-      if (['4h','1w','5d'].includes(activeRange)) return isMob ? dd : (dd + ' ' + tm);
+      if (['4h','1w','5d'].includes(activeRange)) { const dB = '<tspan font-weight="700" fill="#e2e8f0">' + dd + '</tspan>'; return isMob ? dB : (dB + ' ' + tm); }
       return dd;
     };
     const yTicks = Array.from({ length: 7 }, (_, k) => max - (span * k) / 6);
-    const grid = yTicks.map(v => '<line x1="6" y1="' + yOf(v).toFixed(1) + '" x2="' + plotR + '" y2="' + yOf(v).toFixed(1) + '" stroke="#1e293b" stroke-width="1"/><text x="' + (plotR + 4) + '" y="' + (yOf(v) + 3.5).toFixed(1) + '" fill="#64748b" font-size="9.5">' + v.toFixed(dp) + '</text>').join('');
+    const grid = yTicks.map(v => '<line x1="6" y1="' + yOf(v).toFixed(1) + '" x2="' + plotR + '" y2="' + yOf(v).toFixed(1) + '" stroke="#1e293b" stroke-width="1"/><text x="' + (plotR + 4) + '" y="' + (yOf(v) + 3.5).toFixed(1) + '" fill="#94a3b8" font-size="11.5">' + v.toFixed(dp) + '</text>').join('');
     const lastC = viewPts[viewPts.length - 1].close, curY = yOf(lastC).toFixed(1);
     const dispC = (h.current_price != null ? Number(h.current_price) : lastC), dispY = yOf(Math.max(min, Math.min(max, dispC))).toFixed(1);
     const badgeW = yPad - 4;
-    const curLine = '<line id="d-cline" x1="6" y1="' + dispY + '" x2="' + plotR + '" y2="' + dispY + '" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3,3"/><rect id="d-crect" x="' + (plotR + 2) + '" y="' + (Number(dispY) - 8).toFixed(1) + '" width="' + badgeW + '" height="16" rx="3" fill="#f59e0b"/><text id="d-ctxt" x="' + (plotR + 5) + '" y="' + (Number(dispY) + 3.5).toFixed(1) + '" fill="#0f172a" font-size="9.5" font-weight="700">' + dispC.toFixed(dp) + '</text>';
+    const curLine = '<line id="d-cline" x1="6" y1="' + dispY + '" x2="' + plotR + '" y2="' + dispY + '" stroke="#94a3b8" stroke-width="1.1" stroke-dasharray="3,3"/><rect id="d-crect" x="' + (plotR + 2) + '" y="' + (Number(dispY) - 9).toFixed(1) + '" width="' + badgeW + '" height="18" rx="3.5" fill="#0f172a" fill-opacity="0.62"/><rect x="' + (plotR + 2) + '" y="' + (Number(dispY) - 9).toFixed(1) + '" width="' + badgeW + '" height="18" rx="3.5" fill="#cbd5e1" fill-opacity="0.24" stroke="#94a3b8" stroke-width="0.9"/><text id="d-ctxt" x="' + (plotR + 5) + '" y="' + (Number(dispY) + 4).toFixed(1) + '" fill="#f1f5f9" font-size="11.5" font-weight="700">' + dispC.toFixed(dp) + '</text>';
     const xFracs = isMob ? new Array(0, 0.2, 0.4, 0.6, 0.8, 1) : new Array(0, 0.167, 0.333, 0.5, 0.667, 0.833, 1);
     const xAxis = xFracs.map((f, idx) => {
       const i = Math.min(viewPts.length - 1, Math.round(f * (viewPts.length - 1)));
       const x = idx === 0 ? 8 : (idx === xFracs.length - 1 ? plotR : (8 + f * plotW));
       const anc = idx === 0 ? 'start' : (idx === xFracs.length - 1 ? 'end' : 'middle');
-      return '<line x1="' + x.toFixed(1) + '" y1="22" x2="' + x.toFixed(1) + '" y2="' + plotB + '" stroke="#1e293b" stroke-width="0.8"/><text x="' + x.toFixed(1) + '" y="' + (H - 8) + '" fill="#94a3b8" font-size="9.5" text-anchor="' + anc + '">' + fmtTs(viewPts[i].ts) + '</text>';
+      return '<line x1="' + x.toFixed(1) + '" y1="22" x2="' + x.toFixed(1) + '" y2="' + plotB + '" stroke="#1e293b" stroke-width="0.8"/><text x="' + x.toFixed(1) + '" y="' + (H - 8) + '" fill="#94a3b8" font-size="12" text-anchor="' + anc + '">' + fmtTs(viewPts[i].ts) + '</text>';
     }).join('');
     let body = '';
     if (chartMode === 'line') {
@@ -642,22 +735,44 @@ async function loadHistory() {
         const contig = i > 0 && (p.ts - viewPts[i - 1].ts) <= maxGap;
         const op = (p.open === p.close && p.high === p.low && contig) ? viewPts[i - 1].close : p.open;
         const hi = Math.max(p.high, op, p.close), lo = Math.min(p.low, op, p.close);
-        const x = 8 + i * step + step / 2, c = p.close >= op ? '#4ade80' : '#f87171';
+        const x = 8 + i * step + step / 2, c = p.close >= op ? '#4ade80' : '#ef4444';
         const y1 = yOf(Math.max(op, p.close)), y2 = yOf(Math.min(op, p.close));
         return '<line x1="' + x.toFixed(1) + '" y1="' + yOf(hi).toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + yOf(lo).toFixed(1) + '" stroke="' + c + '" stroke-width="1.3"/><rect x="' + (x - bw / 2).toFixed(1) + '" y="' + y1.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(1.8, y2 - y1).toFixed(1) + '" fill="' + c + '" rx="0.8"/>';
       }).join('');
     }
     const fmtDist = (a, b) => !a || !b ? '' : (h.asset_type === 'Forex' ? ' (' + (Math.abs(a - b) / (h.symbol.endsWith('JPY') ? 0.01 : 0.0001)).toFixed(1) + 'p)' : ' (' + ((Math.abs(a - b) / b) * 100).toFixed(2) + '%)');
-    const drawTagLine = (val, colH, dash, txt, op) => {
-      if (!(val >= min && val <= max)) return '';
-      const y = yOf(val);
-      return '<line x1="6" y1="' + y.toFixed(1) + '" x2="' + plotR + '" y2="' + y.toFixed(1) + '" stroke="' + colH + '" stroke-width="1.2" opacity="' + (op || 1) + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + '/>';
+    const qtyNum2 = Number(h.quantity) || 0, epNum2 = Number(h.avg_buy_price) || 0, curNum2 = Number(h.current_price) || epNum2;
+    const isFx2 = h.asset_type === 'Forex', units2 = isFx2 ? qtyNum2 * 100000 : qtyNum2;
+    const rFx2 = Number(window.lastEurUsdRate || 1) || 1;
+    const acctSym2 = baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value);
+    const toAcct2 = qAmt => {
+      if (baseSel.value === 'NATIVE') return qAmt;
+      let usdAmt = qAmt;
+      if (isFx2 && h.symbol.length === 6) {
+        const bC = h.symbol.slice(0, 3), qC = h.symbol.slice(3);
+        usdAmt = qC === 'USD' ? qAmt : (bC === 'USD' && curNum2 > 0 ? qAmt / curNum2 : (bC === 'EUR' && curNum2 > 0 ? (qAmt / curNum2) * rFx2 : qAmt));
+      } else {
+        usdAmt = h.currency === 'EUR' ? qAmt * rFx2 : qAmt;
+      }
+      return baseSel.value === 'EUR' ? usdAmt / rFx2 : usdAmt;
     };
-    const refPx = h.current_price != null ? Number(h.current_price) : lastC, entryPx = Number(h.avg_buy_price), sw = (h.side || 'LONG') === 'SHORT' ? 'SELL' : 'BUY';
-    const entryLine = h.status === 'PENDING' ? drawTagLine(entryPx, '#c084fc', '5,3', 'PENDING ' + sw + ' @ ' + entryPx.toFixed(dp) + fmtDist(refPx, entryPx), 1) : drawTagLine(entryPx, '#38bdf8', '', sw + ' ' + h.quantity + ' @ ' + entryPx.toFixed(dp), 1);
-    const sibLines = sameSymAll.filter(x => x.id !== h.id).map(x => { const sp = Number(x.avg_buy_price), s2 = (x.side || 'LONG') === 'SHORT' ? 'SELL' : 'BUY'; return x.status === 'PENDING' ? drawTagLine(sp, '#a855f7', '3,3', 'PEND ' + s2 + ' @ ' + sp.toFixed(dp) + fmtDist(refPx, sp), 0.72) : drawTagLine(sp, '#0284c7', '2,2', s2 + ' ' + x.quantity + ' @ ' + sp.toFixed(dp), 0.65); }).join('');
-    const slLine = h.stop_loss != null ? drawTagLine(Number(h.stop_loss), '#f87171', '4,3', 'SL ' + Number(h.stop_loss).toFixed(dp) + fmtDist(Number(h.stop_loss), entryPx), 1) : '';
-    const tpLine = h.take_profit != null ? drawTagLine(Number(h.take_profit), '#4ade80', '4,3', 'TP ' + Number(h.take_profit).toFixed(dp) + fmtDist(Number(h.take_profit), entryPx), 1) : '';
+    const fmtFlagCash = v => { const a = Math.abs(v); return a >= 10000 ? (Math.floor(a / 100) / 10).toFixed(1) + 'k' : (a >= 1000 ? (Math.floor(a / 10) / 100).toFixed(2) + 'k' : (Math.floor(a * 100) / 100).toFixed(2)); };
+    const drawTagLine = (val, colH, dash, badgeTxt, op) => {
+      if (!(val >= min && val <= max)) return '';
+      const y = yOf(val), alpha = op || 1;
+      const tc = (colH === '#ef4444' || colH === '#94a3b8' || colH === '#64748b' || colH === '#0284c7') ? '#ffffff' : '#0f172a';
+      const rPill = '<rect x="' + (plotR + 2) + '" y="' + (y - 9).toFixed(1) + '" width="' + badgeW + '" height="18" rx="3.5" fill="#0f172a" fill-opacity="0.55"/><rect x="' + (plotR + 2) + '" y="' + (y - 9).toFixed(1) + '" width="' + badgeW + '" height="18" rx="3.5" fill="' + colH + '" fill-opacity="' + (0.34 * alpha).toFixed(2) + '" stroke="' + colH + '" stroke-width="0.9"/><text x="' + (plotR + 5) + '" y="' + (y + 4).toFixed(1) + '" fill="#f8fafc" font-size="11.5" font-weight="700">' + val.toFixed(dp) + '</text>';
+      const bw = Math.max(44, badgeTxt.length * 6.7 + 12);
+      const lFlag = badgeTxt ? '<rect x="10" y="' + (y - 9).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="18" rx="3.5" fill="#0f172a" fill-opacity="0.78"/><rect x="10" y="' + (y - 9).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="18" rx="3.5" fill="' + colH + '" fill-opacity="' + (0.24 * alpha).toFixed(2) + '" stroke="' + colH + '" stroke-width="1"/><text x="16" y="' + (y + 4).toFixed(1) + '" fill="' + colH + '" font-size="11" font-weight="700">' + badgeTxt + '</text>' : '';
+      return '<line x1="' + (badgeTxt ? (10 + bw).toFixed(1) : '6') + '" y1="' + y.toFixed(1) + '" x2="' + plotR + '" y2="' + y.toFixed(1) + '" stroke="' + colH + '" stroke-width="1.3" stroke-opacity="' + (0.88 * alpha).toFixed(2) + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + '/>' + lFlag + rPill;
+    };
+    const entryPx = Number(h.avg_buy_price), sw = (h.side || 'LONG') === 'SHORT' ? 'SELL' : 'BUY';
+    const entryLine = h.status === 'PENDING' ? drawTagLine(entryPx, '#f59e0b', '5,3', sw + ' ' + h.quantity, 1) : drawTagLine(entryPx, '#2dd4bf', '', sw + ' ' + h.quantity, 1);
+    const sibLines = sameSymAll.filter(x => x.id !== h.id).map(x => { const sp = Number(x.avg_buy_price), s2 = (x.side || 'LONG') === 'SHORT' ? 'SELL' : 'BUY'; return x.status === 'PENDING' ? drawTagLine(sp, '#d97706', '3,3', s2 + ' ' + x.quantity, 0.72) : drawTagLine(sp, '#14b8a6', '2,2', s2 + ' ' + x.quantity, 0.65); }).join('');
+    const slCashLbl = h.stop_loss != null ? 'SL -' + acctSym2 + fmtFlagCash(toAcct2(Math.abs(epNum2 - Number(h.stop_loss)) * units2)) : '';
+    const tpCashLbl = h.take_profit != null ? 'TP +' + acctSym2 + fmtFlagCash(toAcct2(Math.abs(Number(h.take_profit) - epNum2) * units2)) : '';
+    const slLine = h.stop_loss != null ? drawTagLine(Number(h.stop_loss), '#ef4444', '4,3', slCashLbl, 1) : '';
+    const tpLine = h.take_profit != null ? drawTagLine(Number(h.take_profit), '#22c55e', '4,3', tpCashLbl, 1) : '';
     const clipDef = '<defs><clipPath id="pclip"><rect x="6" y="18" width="' + (plotR - 6) + '" height="' + (plotB - 16) + '"/></clipPath></defs>'; svg.innerHTML = clipDef + grid + xAxis + '<g clip-path="url(#pclip)">' + body + '</g>' + sibLines + entryLine + slLine + tpLine + curLine + '<g id="d-xhair" visibility="hidden"><line id="d-xv" x1="0" y1="16" x2="0" y2="' + (plotB + 6) + '" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/><line id="d-yh" x1="6" y1="0" x2="' + plotR + '" y2="0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/><circle id="d-xdot" cx="0" cy="0" r="3.5" fill="#f59e0b" stroke="#0f172a" stroke-width="1.2"/><rect id="d-ytag" x="' + (plotR + 3) + '" y="0" width="70" height="18" rx="4" fill="#334155"/><text id="d-ytxt" x="' + (W - 6) + '" y="0" fill="#f8fafc" font-size="11" font-weight="bold" text-anchor="end"></text><rect id="d-xtag" x="0" y="' + (plotB + 4) + '" width="76" height="18" rx="4" fill="#334155"/><text id="d-xtxt" x="0" y="' + (plotB + 16) + '" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle"></text></g>';
     svg.onpointerleave = () => { const xh = document.getElementById('d-xhair'); if (xh) xh.setAttribute('visibility', 'hidden'); };
     svg.onpointermove = e => {
@@ -675,7 +790,7 @@ async function loadHistory() {
         const yt = document.getElementById('d-ytxt'); yt.setAttribute('y', (cy + 4).toFixed(1)); yt.textContent = pt.close.toFixed(dp);
         const tx = Math.max(40, Math.min(plotR - 40, cx));
         document.getElementById('d-xtag').setAttribute('x', (tx - 38).toFixed(1));
-        const xt = document.getElementById('d-xtxt'); xt.setAttribute('x', tx.toFixed(1)); xt.textContent = fmtTs(pt.ts);
+        const xt = document.getElementById('d-xtxt'); xt.setAttribute('x', tx.toFixed(1)); xt.textContent = fmtTs(pt.ts).replace(/<[^>]+>/g, '');
         xh.setAttribute('visibility', 'visible');
       }
     };
@@ -702,8 +817,11 @@ async function loadHistory() {
   const pipsVal = pts.length > 0 ? ((Math.max(...pts.map(x => x.high)) - Math.min(...pts.map(x => x.low))) / pipSz).toFixed(1) + 'p' + atrTxt : 'N/A';
   const dp52 = isFx ? 3 : 2;
   const rng52 = (d.low_52w != null && d.high_52w != null) ? cs + d.low_52w.toFixed(dp52) + '–' + cs + d.high_52w.toFixed(dp52) : 'N/A';
+  const divRate = d && d.dividend_rate != null ? Number(d.dividend_rate) : 0;
+  const divYld = d && d.dividend_yield != null ? Number(d.dividend_yield) : 0;
+  const hasDiv = !isFx && divRate > 0 && divYld > 0;
   const b1Lbl = isFx ? 'Range &amp; 52W High/Low' : 'Session Vol &amp; 52W';
-  const b1Val = (isFx ? pipsVal : (rawVol != null ? Number(rawVol).toLocaleString('en-US') + ' vol' : 'N/A')) + '<br><span style="font-size:0.85em;color:#cbd5e1">52W: ' + rng52 + '</span>';
+  const b1Val = (isFx ? pipsVal : (rawVol != null ? Number(rawVol).toLocaleString('en-US') + ' vol' : 'N/A')) + '<br><span style="font-size:0.86em;font-weight:400;color:#cbd5e1">52W: ' + rng52 + '</span>';
   const qtyNum = Number(h.quantity) || 0, epNum = Number(h.avg_buy_price) || 0, curNum = Number(h.current_price) || epNum;
   const szUnit = isFx ? ' vol' : ' qty';
   const pnlVal = h.valuation ? Number(h.valuation.unrealized_pnl) : 0;
@@ -711,7 +829,7 @@ async function loadHistory() {
   const sideBadge = h.side === 'SHORT' ? '<span class="pill short">SHORT</span>' : '<span class="pill long">LONG</span>';
   const pendBadge = h.status === 'PENDING' ? '<span class="pill pend">PENDING</span>' : '';
   const b2Lbl = (h.status === 'PENDING' ? 'Order ' : 'Position ') + sideBadge + pendBadge;
-  const b2Val = '<span style="white-space:nowrap">' + h.quantity + szUnit + ' @ ' + cs + epNum.toFixed(isFx ? 3 : 2) + '</span>' + (h.status === 'PENDING' ? '' : '<br><span class="' + (pnlVal >= 0 ? 'pos' : 'neg') + '" style="white-space:nowrap">(' + pnlStr + ')</span>');
+  const b2Val = '<span style="white-space:nowrap">' + h.quantity + szUnit + ' @ ' + cs + epNum.toFixed(isFx ? 3 : 2) + '</span>' + (h.status === 'PENDING' ? '' : '<br><span style="white-space:nowrap">(<span id="d-pos-pnl" class="' + (pnlVal >= 0 ? 'pos' : 'neg') + '">' + pnlStr + '</span>)</span>');
   const units = isFx ? qtyNum * 100000 : qtyNum;
   const rFx = Number(window.lastEurUsdRate || 1) || 1;
   const acctSym = baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value);
@@ -728,8 +846,9 @@ async function loadHistory() {
   };
   const pipVal = toAcct(units * pipSz);
   const mvStr = (h.status === 'PENDING' || !h.valuation) ? (acctSym + fmt(toAcct(units * epNum)) + ' ord') : (acctSym + fmt(h.valuation.market_value));
-  const b3Lbl = isFx ? 'Pip Value · Exposure' : '1% Move · Market Value';
-  const b3Val = isFx ? ('<span style="white-space:nowrap">' + acctSym + pipVal.toFixed(2) + '/pip</span><br><span style="font-size:0.86em;color:#cbd5e1;white-space:nowrap">' + units.toLocaleString('en-US') + ' units</span>') : ('<span style="white-space:nowrap">±' + acctSym + toAcct(units * curNum * 0.01).toFixed(2) + ' / 1%</span><br><span style="font-size:0.86em;color:#cbd5e1;white-space:nowrap">' + mvStr + '</span>');
+  const b3Lbl = isFx ? 'Pip Value · Exposure' : (hasDiv ? 'Dividend · Market Value' : '1% Move · Market Value');
+  const stockLine1 = hasDiv ? ('Div: ' + divYld.toFixed(2) + '% (' + cs + divRate.toFixed(2) + '/yr)') : ('±' + acctSym + toAcct(units * curNum * 0.01).toFixed(2) + ' / 1%');
+  const b3Val = isFx ? ('<span style="white-space:nowrap">' + acctSym + pipVal.toFixed(2) + '/pip</span><br><span style="font-size:0.86em;color:#cbd5e1;white-space:nowrap">' + units.toLocaleString('en-US') + ' units</span>') : ('<span style="white-space:nowrap">' + stockLine1 + '</span><br><span style="font-size:0.86em;color:#cbd5e1;white-space:nowrap">' + mvStr + '</span>');
   const slNum = h.stop_loss != null ? Number(h.stop_loss) : 0, tpNum = h.take_profit != null ? Number(h.take_profit) : 0;
   const fmtPips = p => p >= 10000 ? Math.round(p / 1000) + 'kp' : (p >= 1000 ? (p / 1000).toFixed(1) + 'kp' : (p >= 10 ? Math.round(p) + 'p' : p.toFixed(1) + 'p'));
   const fmtPct = p => p < 0.1 ? p.toFixed(2) + '%' : p.toFixed(1) + '%';
@@ -740,7 +859,7 @@ async function loadHistory() {
   const tpCash = tpNum > 0 ? '+' + acctSym + fmtBoxCash(toAcct(Math.abs(tpNum - epNum) * units)) : '';
   const rrTxt = (slNum > 0 && tpNum > 0 && Math.abs(epNum - slNum) > 0) ? ' · 1:' + (Math.abs(tpNum - epNum) / Math.abs(epNum - slNum)).toFixed(1) : '';
   const b4Lbl = 'SL / TP' + (rrTxt ? rrTxt : ' Risk-Reward');
-  const b4Val = (!slNum && !tpNum) ? '<span style="color:#94a3b8">Not set</span>' : ((slNum ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.35rem;line-height:1.25"><span class="pill short" style="margin:0">SL</span><span class="neg" style="font-size:0.88em;white-space:nowrap">' + slDist + ' (' + slCash + ')' + '</span></div>' : '') + (tpNum ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.35rem;line-height:1.25;margin-top:' + (slNum ? '0.28rem' : '0') + '"><span class="pill long" style="margin:0">TP</span><span class="pos" style="font-size:0.88em;white-space:nowrap">' + tpDist + ' (' + tpCash + ')' + '</span></div>' : ''));
+  const b4Val = (!slNum && !tpNum) ? '<div style="display:flex;align-items:center;justify-content:center;min-height:2.1rem;color:#94a3b8;font-weight:500">Not set</div>' : ((slNum ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.35rem;line-height:1.25"><span class="pill short" style="margin:0">SL</span><span class="neg" style="font-size:0.88em;white-space:nowrap">' + slDist + ' (' + slCash + ')</span></div>' : '') + (tpNum ? '<div style="display:flex;align-items:center;justify-content:space-between;gap:0.35rem;line-height:1.25;margin-top:' + (slNum ? '0.28rem' : '0') + '"><span class="pill long" style="margin:0">TP</span><span class="pos" style="font-size:0.88em;white-space:nowrap">' + tpDist + ' (' + tpCash + ')</span></div>' : ''));
   const nextStatsHtml =
     '<div class="d-stat"><small>' + b1Lbl + '</small><strong>' + b1Val + '</strong></div>' +
     '<div class="d-stat"><small>' + b2Lbl + '</small><strong id="d-box2-val">' + b2Val + '</strong></div>' +
@@ -814,9 +933,157 @@ function patchRow(tr, h) {
   mvCell.style.color = h.status === 'PENDING' ? '#64748b' : '';
   if (pnlCell.textContent !== nextPnl) pnlCell.textContent = nextPnl;
 }
+let analyticsMode = localStorage.getItem('an_mode') || 'type';
+function toggleAnalyticsPanel() {
+  const b = document.getElementById('an-body'), btn = document.getElementById('an-toggle-btn');
+  if (!b || !btn) return;
+  const hid = b.style.display === 'none';
+  b.style.display = hid ? '' : 'none';
+  btn.textContent = hid ? 'Hide ▴' : 'Show ▾';
+  localStorage.setItem('an_hidden', hid ? '0' : '1');
+}
+function setAnalyticsMode(m) {
+  analyticsMode = m;
+  localStorage.setItem('an_mode', m);
+  document.querySelectorAll('[data-an-mode]').forEach(el => el.classList.toggle('active', el.dataset.anMode === m));
+  if (window.lastPortfolioData) renderPortfolioAnalytics(window.lastPortfolioData);
+}
+function renderPortfolioAnalytics(data) {
+  window.lastPortfolioData = data;
+  const holdings = (data.holdings || []).filter(h => (h.status || 'OPEN') === 'OPEN' && h.valuation);
+  const sym = ccySym(baseSel.value === 'NATIVE' ? 'USD' : (data.base_currency || 'USD'));
+  const rFx = Number(data.eur_usd_rate || 1) || 1;
+  const palette = ['#f59e0b', '#2dd4bf', '#38bdf8', '#4ade80', '#f87171', '#c084fc', '#fb923c'];
+  const groups = {};
+  holdings.forEach(h => {
+    const k = analyticsMode === 'symbol' ? h.symbol : (analyticsMode === 'currency' ? (h.currency || 'USD') : (h.asset_type || 'Stock'));
+    const mv = Math.abs(Number(h.valuation.market_value || 0));
+    groups[k] = (groups[k] || 0) + mv;
+  });
+  const entries = Object.entries(groups).sort((a, b) => b[1] - a[1]);
+  const totalMv = entries.reduce((s, x) => s + x[1], 0);
+  const donut = document.getElementById('an-donut'), leg = document.getElementById('an-legend');
+  if (donut && leg) {
+    if (!entries.length || totalMv <= 0) {
+      donut.innerHTML = '<circle cx="68" cy="68" r="48" fill="none" stroke="#1e293b" stroke-width="18"/><text x="68" y="72" text-anchor="middle" fill="#64748b" font-size="11">No open pos</text>';
+      leg.innerHTML = '<div style="color:#64748b;font-size:0.78rem">Open positions appear here automatically.</div>';
+    } else {
+      const r = 48, cx = 68, cy = 68, circ = 2 * Math.PI * r;
+      let acc = 0;
+      const rings = entries.map(([k, v], idx) => {
+        const frac = v / totalMv, dash = frac * circ, off = -acc * circ;
+        acc += frac;
+        return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + palette[idx % palette.length] + '" stroke-width="18" stroke-dasharray="' + dash.toFixed(2) + ' ' + circ.toFixed(2) + '" stroke-dashoffset="' + off.toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"/>';
+      }).join('');
+      const centerTxt = totalMv >= 10000 ? sym + (totalMv / 1000).toFixed(1) + 'k' : sym + fmt(totalMv);
+      donut.innerHTML = rings + '<text x="68" y="65" text-anchor="middle" fill="#94a3b8" font-size="11.5">Active MV</text><text x="68" y="82" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="700">' + centerTxt + '</text>';
+      leg.innerHTML = entries.slice(0, 5).map(([k, v], idx) => {
+        const pct = ((v / totalMv) * 100).toFixed(1);
+        return '<div class="an-leg-item"><span style="display:inline-flex;align-items:center;gap:0.38rem;min-width:0"><span style="width:9px;height:9px;border-radius:2px;background:' + palette[idx % palette.length] + ';flex-shrink:0"></span><strong style="color:#e2e8f0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + k + '</strong></span><span style="color:#cbd5e1;white-space:nowrap">' + pct + '% · ' + sym + fmt(v) + '</span></div>';
+      }).join('');
+    }
+  }
+  const kpiEl = document.getElementById('an-kpis');
+  if (kpiEl) {
+    let topG = null, topL = null, maxSymW = 0, maxSymName = '—', slRisk = 0, noSlCnt = 0;
+    const bySymMv = {};
+    holdings.forEach(h => {
+      const u = Number(h.valuation.unrealized_pnl || 0), mv = Math.abs(Number(h.valuation.market_value || 0));
+      bySymMv[h.symbol] = (bySymMv[h.symbol] || 0) + mv;
+      if (!topG || u > topG.u) topG = { sym: h.symbol, u, pct: Number(h.valuation.pnl_percent || 0) };
+      if (!topL || u < topL.u) topL = { sym: h.symbol, u, pct: Number(h.valuation.pnl_percent || 0) };
+      const sl = h.stop_loss != null ? Number(h.stop_loss) : 0, ep = Number(h.avg_buy_price) || 0, q = Number(h.quantity) || 0;
+      if (sl > 0 && ep > 0 && q > 0) {
+        const units = h.asset_type === 'Forex' ? q * 100000 : q;
+        let qRisk = Math.abs(ep - sl) * units;
+        if (baseSel.value !== 'NATIVE') {
+          const usdR = h.currency === 'EUR' ? qRisk * rFx : qRisk;
+          qRisk = baseSel.value === 'EUR' ? usdR / rFx : usdR;
+        }
+        slRisk += qRisk;
+      } else { noSlCnt += 1; }
+    });
+    Object.entries(bySymMv).forEach(([s, v]) => { if (totalMv > 0 && (v / totalMv) * 100 > maxSymW) { maxSymW = (v / totalMv) * 100; maxSymName = s; } });
+    const gTxt = topG && topG.u > 0 ? '<span class="pos">' + topG.sym + ' +' + sym + fmt(topG.u) + '</span>' : '<span style="color:#94a3b8">—</span>';
+    const lTxt = topL && topL.u < 0 ? '<span class="neg">' + topL.sym + ' -' + sym + fmt(Math.abs(topL.u)) + '</span>' : '<span style="color:#94a3b8">None</span>';
+    const concCls = maxSymW > 55 ? 'style="color:#fbbf24"' : '';
+    const concTxt = totalMv > 0 ? '<span ' + concCls + '>' + maxSymName + ' (' + maxSymW.toFixed(1) + '%)</span>' : '—';
+    const riskTxt = slRisk > 0 ? '<span class="neg">-' + sym + fmt(slRisk) + '</span>' + (noSlCnt ? ' <span style="font-size:0.74em;color:#fbbf24">(' + noSlCnt + ' no SL)</span>' : '') : (noSlCnt ? '<span style="color:#fbbf24">' + noSlCnt + ' open without SL</span>' : '—');
+    kpiEl.innerHTML =
+      '<div class="an-kpi"><small>Top Gainer</small><strong>' + gTxt + '</strong></div>' +
+      '<div class="an-kpi"><small>Top Drawdown</small><strong>' + lTxt + '</strong></div>' +
+      '<div class="an-kpi"><small>Max Concentration</small><strong>' + concTxt + '</strong></div>' +
+      '<div class="an-kpi"><small>Capital at Risk (SL)</small><strong>' + riskTxt + '</strong></div>';
+  }
+}
+if (localStorage.getItem('an_hidden') === '1') { const b = document.getElementById('an-body'), btn = document.getElementById('an-toggle-btn'); if (b && btn) { b.style.display = 'none'; btn.textContent = 'Show ▾'; } }
+document.querySelectorAll('[data-an-mode]').forEach(el => el.classList.toggle('active', el.dataset.anMode === analyticsMode));
+
+let eqRange = '1mo', eqBench = '^GSPC', lastEqKey = '';
+function setEqRange(r) {
+  eqRange = r;
+  document.querySelectorAll('[data-eq-r]').forEach(b => b.classList.toggle('active', b.dataset.eqR === r));
+  loadEquityCurve(true);
+}
+function setEqBench(b) {
+  eqBench = b;
+  document.querySelectorAll('[data-eq-b]').forEach(el => el.classList.toggle('active', el.dataset.eqB === b));
+  loadEquityCurve(true);
+}
+async function loadEquityCurve(force) {
+  const key = eqRange + '|' + eqBench;
+  if (!force && key === lastEqKey) return;
+  lastEqKey = key;
+  const svg = document.getElementById('eq-chart'), sumEl = document.getElementById('eq-summary');
+  if (!svg || !sumEl) return;
+  const r = await fetch('/portfolio/api/equity?range=' + encodeURIComponent(eqRange) + '&bench=' + encodeURIComponent(eqBench));
+  if (!r.ok) return;
+  const d = await r.json();
+  const pts = d.points || [];
+  if (pts.length < 2) {
+    svg.innerHTML = '<text x="50%" y="50%" text-anchor="middle" fill="#64748b" font-size="13">Open at least 1 position to plot equity curve</text>';
+    sumEl.textContent = 'No active curve data';
+    return;
+  }
+  const last = pts[pts.length - 1];
+  const alpha = last.port_pct - last.bench_pct;
+  const pCol = last.port_pct >= 0 ? '#4ade80' : '#f87171';
+  const aCol = alpha >= 0 ? '#4ade80' : '#f87171';
+  sumEl.innerHTML =
+    '<span style="color:' + pCol + ';font-weight:700">Portfolio ' + (last.port_pct >= 0 ? '+' : '') + last.port_pct.toFixed(2) + '%</span>' +
+    ' · <span style="color:#38bdf8">' + d.benchmark + ' ' + (last.bench_pct >= 0 ? '+' : '') + last.bench_pct.toFixed(2) + '%</span>' +
+    ' · <span style="color:' + aCol + ';font-weight:700">Alpha ' + (alpha >= 0 ? '+' : '') + alpha.toFixed(2) + '%</span>';
+  const isMob = window.innerWidth <= 680;
+  const W = isMob ? 380 : 860, H = isMob ? 195 : 210, padL = 10, padR = isMob ? 52 : 58, padT = 16, padB = 28;
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const allV = pts.flatMap(p => [p.port_pct, p.bench_pct, 0]);
+  const rMin = Math.min(...allV), rMax = Math.max(...allV), padV = ((rMax - rMin) || 1) * 0.1;
+  const min = rMin - padV, max = rMax + padV, span = (max - min) || 1;
+  const xOf = i => padL + (i / (pts.length - 1)) * plotW;
+  const yOf = v => padT + plotH - ((v - min) / span) * plotH;
+  const yTicks = [max, (max + min) / 2, min];
+  const grid = yTicks.map(v => '<line x1="' + padL + '" y1="' + yOf(v).toFixed(1) + '" x2="' + (W - padR) + '" y2="' + yOf(v).toFixed(1) + '" stroke="#1e293b" stroke-width="1"/><text x="' + (W - padR + 6) + '" y="' + (yOf(v) + 4).toFixed(1) + '" fill="#94a3b8" font-size="12">' + (v >= 0 ? '+' : '') + v.toFixed(1) + '%</text>').join('');
+  const zeroLine = '<line x1="' + padL + '" y1="' + yOf(0).toFixed(1) + '" x2="' + (W - padR) + '" y2="' + yOf(0).toFixed(1) + '" stroke="#475569" stroke-width="1" stroke-dasharray="3,3"/>';
+  const bPoly = pts.map((p, i) => xOf(i).toFixed(1) + ',' + yOf(p.bench_pct).toFixed(1)).join(' ');
+  const pPoly = pts.map((p, i) => xOf(i).toFixed(1) + ',' + yOf(p.port_pct).toFixed(1)).join(' ');
+  const xIdxs = [0, Math.floor((pts.length - 1) / 2), pts.length - 1];
+  const xLbls = xIdxs.map((idx, k) => {
+    const dt = new Date(pts[idx].ts * 1000).toLocaleDateString([], { day: '2-digit', month: 'short' });
+    const anc = k === 0 ? 'start' : (k === 2 ? 'end' : 'middle');
+    return '<text x="' + xOf(idx).toFixed(1) + '" y="' + (H - 6) + '" fill="#94a3b8" font-size="11.5" text-anchor="' + anc + '">' + dt + '</text>';
+  }).join('');
+  svg.innerHTML = grid + zeroLine +
+    '<polyline fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="4,3" points="' + bPoly + '"/>' +
+    '<polyline fill="none" stroke="#f59e0b" stroke-width="2.4" points="' + pPoly + '"/>' +
+    xLbls;
+}
+
 async function load() {
   const res = await fetch('/portfolio/api/portfolio?base=' + encodeURIComponent(baseSel.value)); if (res.status === 401) { initSession(); return; } const data = await res.json();
   const rate = Number(data.eur_usd_rate || 1); window.lastEurUsdRate = rate;
+  renderPortfolioAnalytics(data);
+  loadEquityCurve(false);
   const mv = Number(data.total_market_value), cb = Number(data.total_cost_basis), pnl = Number(data.total_unrealized_pnl), rpnl = Number(data.total_realized_pnl || 0);
   const topSym = ccySym(data.base_currency || 'USD');
   const setH = (id, html) => { const el = document.getElementById(id); if (el && el.innerHTML !== html) el.innerHTML = html; };
@@ -892,14 +1159,13 @@ async function load() {
       if (pxEl && pxEl.textContent !== nextPx) pxEl.textContent = nextPx;
       const ct = document.getElementById('d-ctxt'); if (ct) { const dp = h.asset_type === 'Forex' ? 3 : 2; ct.textContent = Number(h.current_price).toFixed(dp); } const ce = document.getElementById('d-chg'); if (ce && window.activePrevClose > 0) { const isOp = ['LIVE', 'REGULAR', '24/7'].includes(h.market_state || ''); const lp = Number(h.current_price), dPct = isOp ? (((lp - window.activePrevClose) / window.activePrevClose) * 100).toFixed(2) : '0.00'; ce.textContent = 'Today ' + (isOp ? ((lp >= window.activePrevClose ? '+' : '') + dPct + '%') : '0.00%'); ce.className = isOp ? (lp >= window.activePrevClose ? 'pos' : 'neg') : ''; ce.style.color = isOp ? '' : '#94a3b8'; }
     }
-    const b2El = document.getElementById('d-box2-val');
-    if (b2El) {
-      const isFxW = h.asset_type === 'Forex', pSzW = h.symbol.endsWith('JPY') ? 0.01 : 0.0001;
-      const epW = Number(h.avg_buy_price) || 0, curW = Number(h.current_price) || epW;
+    const pnlEl = document.getElementById('d-pos-pnl');
+    if (pnlEl && h.status !== 'PENDING') {
       const pvW = Number(h.valuation?.unrealized_pnl || 0);
       const psW = (pvW >= 0 ? '+' : '-') + (baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value)) + fmtPnl(pvW);
-      const nxtB2 = h.quantity + (isFxW ? ' vol' : ' qty') + ' @ ' + cs + epW.toFixed(isFxW ? 3 : 2) + (h.status === 'PENDING' ? '' : ' <span class="' + (pvW >= 0 ? 'pos' : 'neg') + '">(' + psW + ')</span>');
-      if (b2El.innerHTML !== nxtB2) b2El.innerHTML = nxtB2;
+      const nxtCls = pvW >= 0 ? 'pos' : 'neg';
+      if (pnlEl.textContent !== psW) pnlEl.textContent = psW;
+      if (pnlEl.className !== nxtCls) pnlEl.className = nxtCls;
     }
     document.querySelectorAll('#d-pos-list [data-pid]').forEach(el => {
       const x = holdingsMap[el.dataset.pid]; if (!x) return;
@@ -924,6 +1190,8 @@ document.getElementById('add-form').onsubmit = async e => {
       const sr = await fetch('/portfolio/api/search?q=' + encodeURIComponent(symIn.value.trim()));
       if (sr.ok) { const its = await sr.json(); const m = its.find(x => x.symbol === symIn.value.trim().toUpperCase()) || its; if (m && m.price != null) buyIn.value = m.price; }
     }
+    const addDirErr = checkSlTpDir(document.getElementById('side').value, Number(cleanDec(buyIn.value)), cleanDec(document.getElementById('stop_loss').value), cleanDec(document.getElementById('take_profit').value));
+    if (addDirErr) { errEl.textContent = addDirErr; return; }
     const res = await fetch('/portfolio/api/holdings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ symbol: symIn.value, asset_type: document.getElementById('asset_type').value, side: document.getElementById('side').value, quantity: cleanDec(document.getElementById('quantity').value), avg_buy_price: cleanDec(buyIn.value), stop_loss: cleanDec(document.getElementById('stop_loss').value) || null, take_profit: cleanDec(document.getElementById('take_profit').value) || null, currency: window.pickedCurrency || '' }) });
     if (!res.ok) { errEl.textContent = await res.text(); return; }
     e.target.reset(); window.pickedCurrency = ''; addForm.classList.add('mob-hidden'); mobAddBtn.textContent = '+ Add Instrument'; load();
@@ -958,8 +1226,8 @@ function connectWS() {
   const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/portfolio/ws/prices');
   const badge = document.getElementById('ws-status');
   ws.onopen = () => { badge.textContent = 'Live WS Connected'; badge.classList.add('ok'); badge.style.color = '#4ade80'; };
-  ws.onmessage = () => load();
-  ws.onclose = () => { badge.textContent = 'Reconnecting WS...'; badge.classList.remove('ok'); badge.style.color = '#f87171'; setTimeout(connectWS, 3000); };
+  ws.onmessage = async () => { await load(); const b = window.activeChartBounds; if (b && activeHolding && activeHolding.symbol === b.sym && activeHolding.current_price != null) { const cp = Number(activeHolding.current_price); if (cp > b.max || cp < b.min) loadHistory(); } };
+  ws.onclose = () => { badge.textContent = 'Reconnecting WS...'; badge.classList.remove('ok'); badge.style.color = '#ef4444'; setTimeout(connectWS, 3000); };
 }
 const userBtn = document.getElementById('user-btn'), userDd = document.getElementById('user-dd');
 userBtn.onclick = e => { e.stopPropagation(); userDd.style.display = userDd.style.display === 'block' ? 'none' : 'block'; };
@@ -1014,6 +1282,58 @@ document.getElementById('auth-form').onsubmit = async e => {
   if (!res.ok) { errEl.textContent = await res.text(); return; }
   await initSession();
 };
+function downloadCsvFile(filename, rows) {
+  const esc = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const csv = '\uFEFF' + rows.map(r => r.map(esc).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+function exportHoldingsCsv() {
+  const list = Object.values(holdingsMap || {});
+  if (!list.length) return;
+  const dt = new Date().toISOString().slice(0, 10);
+  const valCcy = baseSel.value === 'NATIVE' ? 'NATIVE' : (window.lastPortfolioData?.base_currency || baseSel.value);
+  const header = ['Symbol', 'Asset Type', 'Side', 'Status', 'Quantity', 'Entry Price', 'Instrument Currency', 'Live Price', 'Market Value', 'Unrealized P&L', 'Unrealized P&L %', 'Valuation Currency', 'Stop Loss', 'Take Profit'];
+  const rows = list.map(h => {
+    const dp = h.asset_type === 'Forex' ? 3 : 2;
+    const isPend = (h.status || 'OPEN') === 'PENDING';
+    return [
+      h.symbol, h.asset_type, h.side || 'LONG', h.status || 'OPEN',
+      Number(h.quantity), Number(h.avg_buy_price).toFixed(dp), h.currency,
+      h.current_price != null ? Number(h.current_price).toFixed(dp) : '',
+      (!isPend && h.valuation) ? Number(h.valuation.market_value).toFixed(2) : '',
+      (!isPend && h.valuation) ? Number(h.valuation.unrealized_pnl).toFixed(2) : '',
+      (!isPend && h.valuation) ? Number(h.valuation.pnl_percent).toFixed(2) : '',
+      valCcy === 'NATIVE' ? h.currency : valCcy,
+      h.stop_loss != null ? Number(h.stop_loss).toFixed(dp) : '',
+      h.take_profit != null ? Number(h.take_profit).toFixed(dp) : ''
+    ];
+  });
+  downloadCsvFile('portfolio-positions-' + dt + '.csv', [header, ...rows]);
+}
+async function exportClosedTradesCsv() {
+  const r = await fetch('/portfolio/api/trades?base=' + encodeURIComponent(baseSel.value));
+  if (!r.ok) return;
+  const list = await r.json();
+  if (!list.length) return;
+  const dt = new Date().toISOString().slice(0, 10);
+  const header = ['Symbol', 'Asset Type', 'Side', 'Close Reason', 'Quantity', 'Entry Price', 'Exit Price', 'Instrument Currency', 'Realized P&L', 'Valuation Currency', 'Closed Date'];
+  const rows = list.map(t => {
+    const dp = t.asset_type === 'Forex' ? 3 : 2;
+    const closedStr = new Date((t.closed_at || 0) * 1000).toLocaleString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).replace(',', '');
+    return [
+      t.symbol, t.asset_type, t.side || 'LONG', t.close_reason || 'MANUAL',
+      Number(t.quantity), Number(t.entry_price).toFixed(dp), Number(t.exit_price).toFixed(dp),
+      t.currency, Number(t.converted_pnl ?? t.realized_pnl).toFixed(2),
+      t.display_currency || t.currency, closedStr
+    ];
+  });
+  downloadCsvFile('portfolio-closed-trades-' + dt + '.csv', [header, ...rows]);
+}
+
 function closeHist() { document.getElementById('hist-bg').classList.remove('open'); document.body.style.overflow = ''; }
 document.getElementById('hist-btn').onclick = async () => {
   userDd.style.display = 'none';
@@ -1093,10 +1413,10 @@ function renderNewsItems(el, items, page) {
     '</a>'
   ).join('');
   const nav = totalPages > 1
-    ? '<div style="display:flex;justify-content:flex-end;align-items:center;gap:0.4rem;margin-top:0.25rem">' +
-        '<button type="button" onclick="' + (cur <= 1 ? 'return false;' : 'renderNewsItems(document.getElementById(\'' + el.id + '\'),null,' + (cur - 1) + ')') + '" style="width:auto;padding:0.22rem 0.55rem;font-size:0.74rem;background:#0f172a;color:' + (cur <= 1 ? '#475569;opacity:0.45;cursor:default;pointer-events:none' : '#cbd5e1;cursor:pointer') + ';border:1px solid #334155;border-radius:0.45rem">‹ Prev</button>' +
+    ? '<div style="display:flex;justify-content:flex-end;align-items:center;gap:0.55rem;margin-top:0.65rem;padding-top:0.45rem">' +
+        '<button type="button" onclick="' + (cur <= 1 ? 'return false;' : 'renderNewsItems(document.getElementById(\'' + el.id + '\'),null,' + (cur - 1) + ')') + '" style="width:auto;padding:0.36rem 0.72rem;font-size:0.76rem;background:#0f172a;color:' + (cur <= 1 ? '#475569;opacity:0.45;cursor:default;pointer-events:none' : '#cbd5e1;cursor:pointer') + ';border:1px solid #334155;border-radius:0.45rem">‹ Prev</button>' +
         '<span style="font-size:0.74rem;color:#94a3b8;min-width:2.6rem;text-align:center">' + cur + ' / ' + totalPages + '</span>' +
-        '<button type="button" onclick="' + (cur >= totalPages ? 'return false;' : 'renderNewsItems(document.getElementById(\'' + el.id + '\'),null,' + (cur + 1) + ')') + '" style="width:auto;padding:0.22rem 0.55rem;font-size:0.74rem;background:#0f172a;color:' + (cur >= totalPages ? '#475569;opacity:0.45;cursor:default;pointer-events:none' : '#cbd5e1;cursor:pointer') + ';border:1px solid #334155;border-radius:0.45rem">Next ›</button>' +
+        '<button type="button" onclick="' + (cur >= totalPages ? 'return false;' : 'renderNewsItems(document.getElementById(\'' + el.id + '\'),null,' + (cur + 1) + ')') + '" style="width:auto;padding:0.36rem 0.72rem;font-size:0.76rem;background:#0f172a;color:' + (cur >= totalPages ? '#475569;opacity:0.45;cursor:default;pointer-events:none' : '#cbd5e1;cursor:pointer') + ';border:1px solid #334155;border-radius:0.45rem">Next ›</button>' +
       '</div>'
     : '';
   el.innerHTML = cards + nav;
@@ -1392,7 +1712,7 @@ function renderCsvPreviewTable() {
       <option ${r.asset_type==='Crypto'?'selected':''}>Crypto</option>
       <option ${r.asset_type==='Index'?'selected':''}>Index</option>
     </select></td>
-    <td style="padding:.35rem"><select onchange="parsedCsvRows[${idx}].side=this.value" style="width:78px;padding:.22rem .3rem;font-size:.76rem;color:${r.side==='SHORT'?'#f87171':'#34d399'}">
+    <td style="padding:.35rem"><select onchange="parsedCsvRows[${idx}].side=this.value" style="width:78px;padding:.22rem .3rem;font-size:.76rem;color:${r.side==='SHORT'?'#ef4444':'#34d399'}">
       <option value="LONG" ${r.side==='LONG'?'selected':''}>LONG</option>
       <option value="SHORT" ${r.side==='SHORT'?'selected':''}>SHORT</option>
     </select></td>
@@ -1421,7 +1741,7 @@ async function submitCsvImport() {
       })
     });
     if (!res.ok) {
-      msg.style.color = '#f87171';
+      msg.style.color = '#ef4444';
       msg.textContent = await res.text();
       return;
     }

@@ -2018,6 +2018,8 @@ struct HistoryResponse {
     high_52w: Option<f64>,
     low_52w: Option<f64>,
     atr_14d_pips: Option<f64>,
+    dividend_rate: Option<f64>,
+    dividend_yield: Option<f64>,
     points: Vec<HistoryPoint>,
 }
 
@@ -2074,6 +2076,8 @@ async fn get_history(Query(hq): Query<HistoryQuery>) -> Json<HistoryResponse> {
         high_52w: None,
         low_52w: None,
         atr_14d_pips: None,
+        dividend_rate: None,
+        dividend_yield: None,
         points: vec![],
     };
     let attempts: Vec<(&str, &str, usize)> =
@@ -2167,6 +2171,36 @@ async fn get_history(Query(hq): Query<HistoryQuery>) -> Json<HistoryResponse> {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+    if at == "Stock"
+        && let Ok(dr) = client
+            .get(format!(
+                "https://{}/v8/finance/chart/{}?interval=1mo&range=1y&events=div",
+                yf_host,
+                ticker.replace('^', "%5E")
+            ))
+            .send()
+            .await
+        && let Ok(dj) = dr.json::<serde_json::Value>().await
+        && let Some(dres) = dj["chart"]["result"].as_array().and_then(|a| a.first())
+    {
+        let last_px = dres["meta"]["regularMarketPrice"]
+            .as_f64()
+            .or_else(|| out.points.last().map(|p| p.close))
+            .unwrap_or(0.0);
+        if let Some(div_map) = dres["events"]["dividends"].as_object() {
+            let annual_div: f64 = div_map
+                .values()
+                .filter_map(|v| v["amount"].as_f64())
+                .filter(|&a| a > 0.0)
+                .sum();
+            if annual_div > 0.0 {
+                out.dividend_rate = Some((annual_div * 100.0).round() / 100.0);
+                if last_px > 0.0 {
+                    out.dividend_yield = Some(((annual_div / last_px) * 10000.0).round() / 100.0);
                 }
             }
         }
@@ -2544,6 +2578,33 @@ async fn verify_asset_live(
     Ok((live, vol, st))
 }
 
+fn validate_sl_tp_direction(
+    is_short: bool,
+    ref_px: Decimal,
+    sl: Option<Decimal>,
+    tp: Option<Decimal>,
+) -> Result<(), &'static str> {
+    if let Some(s) = sl.filter(|v| *v > Decimal::ZERO)
+        && ((!is_short && s >= ref_px) || (is_short && s <= ref_px))
+    {
+        return Err(if is_short {
+            "For SHORT positions, Stop Loss must be above entry price."
+        } else {
+            "For LONG positions, Stop Loss must be below entry price."
+        });
+    }
+    if let Some(t) = tp.filter(|v| *v > Decimal::ZERO)
+        && ((!is_short && t <= ref_px) || (is_short && t >= ref_px))
+    {
+        return Err(if is_short {
+            "For SHORT positions, Take Profit must be below entry price."
+        } else {
+            "For LONG positions, Take Profit must be above entry price."
+        });
+    }
+    Ok(())
+}
+
 async fn add_holding(
     State((state, _)): State<(AppState, u64)>,
     headers: HeaderMap,
@@ -2558,6 +2619,19 @@ async fn add_holding(
         input.quantity,
         input.avg_buy_price,
         &input.currency,
+    ) {
+        return (StatusCode::BAD_REQUEST, msg).into_response();
+    }
+    let is_short = input
+        .side
+        .as_deref()
+        .unwrap_or("LONG")
+        .eq_ignore_ascii_case("SHORT");
+    if let Err(msg) = validate_sl_tp_direction(
+        is_short,
+        input.avg_buy_price,
+        input.stop_loss,
+        input.take_profit,
     ) {
         return (StatusCode::BAD_REQUEST, msg).into_response();
     }
@@ -3124,6 +3198,15 @@ async fn import_holdings(
         } else {
             "LONG"
         };
+        if let Err(msg) = validate_sl_tp_direction(
+            side == "SHORT",
+            input.avg_buy_price,
+            input.stop_loss,
+            input.take_profit,
+        ) {
+            errors.push(format!("Row {} ({}): {}", row_num, symbol, msg));
+            continue;
+        }
         let qty_str = input.quantity.normalize().to_string();
         let px_str = input.avg_buy_price.normalize().to_string();
 
@@ -3177,6 +3260,149 @@ async fn import_holdings(
         .into_response()
 }
 
+#[derive(Deserialize)]
+struct EquityQuery {
+    range: Option<String>,
+    bench: Option<String>,
+}
+
+#[derive(Serialize)]
+struct EquityPoint {
+    ts: i64,
+    port_pct: f64,
+    bench_pct: f64,
+}
+
+#[derive(Serialize)]
+struct EquityResponse {
+    benchmark: String,
+    points: Vec<EquityPoint>,
+}
+
+async fn get_equity_curve(
+    State((state, _)): State<(AppState, u64)>,
+    headers: HeaderMap,
+    Query(eq): Query<EquityQuery>,
+) -> impl IntoResponse {
+    let Some(user) = current_user(&state.db, &headers).await else {
+        return StatusCode::UNAUTHORIZED.into_response();
+    };
+    let rng = eq.range.unwrap_or_else(|| "1mo".into());
+    let bench = eq
+        .bench
+        .unwrap_or_else(|| "^GSPC".into())
+        .trim()
+        .to_uppercase();
+    let bench_type = if bench.contains("BTC") || bench.contains("ETH") {
+        "Crypto"
+    } else {
+        "Index"
+    };
+
+    let rows: Vec<HoldingRow> = sqlx::query_as(
+        "SELECT id, user_id, symbol, asset_type, quantity, avg_buy_price, currency, side, status, trigger_dir, stop_loss, take_profit FROM holdings WHERE user_id = ? AND status = 'OPEN'",
+    )
+    .bind(user.id)
+    .fetch_all(&state.db)
+    .await
+    .unwrap_or_default();
+
+    let bench_hist = get_history(Query(HistoryQuery {
+        symbol: bench.clone(),
+        asset_type: Some(bench_type.into()),
+        range: Some(rng.clone()),
+    }))
+    .await
+    .0;
+
+    if bench_hist.points.len() < 2 {
+        return Json(EquityResponse {
+            benchmark: bench,
+            points: vec![],
+        })
+        .into_response();
+    }
+
+    let mut futs = Vec::with_capacity(rows.len());
+    for r in &rows {
+        let sym = r.symbol.clone();
+        let at = r.asset_type.clone();
+        let rg = rng.clone();
+        futs.push(async move {
+            let h = get_history(Query(HistoryQuery {
+                symbol: sym,
+                asset_type: Some(at),
+                range: Some(rg),
+            }))
+            .await
+            .0;
+            h.points
+        });
+    }
+    let all_pts = futures_util::future::join_all(futs).await;
+
+    let b0 = bench_hist.points.first().map(|p| p.close).unwrap_or(1.0);
+    let mut out = Vec::with_capacity(bench_hist.points.len());
+    let mut base_port_val: Option<f64> = None;
+
+    for bp in &bench_hist.points {
+        let mut tot_val = 0.0_f64;
+        let mut valid_cnt = 0usize;
+        for (idx, r) in rows.iter().enumerate() {
+            let pts = &all_pts[idx];
+            if pts.is_empty() {
+                continue;
+            }
+            let c_px = pts
+                .iter()
+                .rev()
+                .find(|p| p.ts <= bp.ts)
+                .or_else(|| pts.first())
+                .map(|p| p.close)
+                .unwrap_or(0.0);
+            if c_px <= 0.0 {
+                continue;
+            }
+            let qty = r.quantity.parse::<f64>().unwrap_or(0.0);
+            let entry = r.avg_buy_price.parse::<f64>().unwrap_or(c_px);
+            let mult = if r.asset_type == "Forex" {
+                100_000.0
+            } else {
+                1.0
+            };
+            let is_short = r.side.eq_ignore_ascii_case("SHORT");
+            let pos_val = if is_short {
+                (entry + (entry - c_px)).max(0.0) * qty * mult
+            } else {
+                c_px * qty * mult
+            };
+            tot_val += pos_val;
+            valid_cnt += 1;
+        }
+        if valid_cnt == 0 {
+            continue;
+        }
+        let v0 = *base_port_val.get_or_insert(tot_val.max(1.0));
+        let port_pct = ((tot_val - v0) / v0) * 100.0;
+        let bench_pct = if b0 > 0.0 {
+            ((bp.close - b0) / b0) * 100.0
+        } else {
+            0.0
+        };
+        out.push(EquityPoint {
+            ts: bp.ts,
+            port_pct: (port_pct * 100.0).round() / 100.0,
+            bench_pct: (bench_pct * 100.0).round() / 100.0,
+        });
+    }
+
+    Json(EquityResponse {
+        benchmark: bench,
+        points: out,
+    })
+    .into_response()
+}
+
 fn build_router(state: AppState, interval_secs: u64) -> Router {
     let portfolio_routes = Router::new()
         .route("/", get(index))
@@ -3184,6 +3410,7 @@ fn build_router(state: AppState, interval_secs: u64) -> Router {
         .route("/api/portfolio", get(get_portfolio))
         .route("/api/search", get(search_symbols))
         .route("/api/history", get(get_history))
+        .route("/api/equity", get(get_equity_curve))
         .route("/api/news", get(get_news))
         .route("/api/auth/me", get(auth_me))
         .route("/api/auth/register", post(auth_register))
