@@ -189,3 +189,13 @@ paths:
       responses:
         "200":
           description: Historical OHLC & indicators
+  /portfolio/api/news:
+    get:
+      summary: Macro or instrument-specific financial news headlines (up to 24 items)
+      parameters:
+        - in: query
+          name: symbol
+          schema: { type: string }
+      responses:
+        "200":
+          description: Array of news items with title, publisher, link, and pub_date

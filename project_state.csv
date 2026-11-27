@@ -6,11 +6,12 @@ DONE,Core,Forex Lot & Orders,crates/portfolio-core/src/lib.rs,"Forex 100,000 uni
 DONE,DB,users & sessions,SQLite (DATABASE_URL),"users (Argon2id + Google OAuth); sessions (64-char hex token, sliding idle TTL SESSION_IDLE_TTL_SECS auto-renewed on 2xx)"
 DONE,DB,holdings & closed_trades,SQLite (DATABASE_URL),OPEN qty & entry immutable (SL/TP editable); PENDING fully editable; cancelled PENDING deleted cleanly; closed_trades archives exits
 DONE,API,Auth & Google OAuth,/portfolio/api/auth/*,"POST /register, /login, /logout; GET /me, /google, /google/callback (merges by email)"
-DONE,API,"Portfolio, Orders & Search",/portfolio/api/*,GET /portfolio; POST/PUT/DELETE /holdings; POST /holdings/{id}/close; GET /trades; multi-region US/DE/GB/IT/FR/CH /search; live EU/US/FX/Crypto/Index polling
+DONE,API,"Portfolio, Orders, Search & News",/portfolio/api/*,GET /portfolio; POST/PUT/DELETE /holdings; POST /holdings/{id}/close; GET /trades; multi-region US/DE/GB/IT/FR/CH /search; GET /history (1d->5d->1mo fallback); GET /news (Yahoo+Google RSS merged up to 24 items)
 DONE,API,Live WS Stream,GET /portfolio/ws/prices,WebSocket pushing PriceTick updates + LIVE/MKT CLOSED status and running process_symbol_triggers
-DONE,UI,Mobile & Desktop SPA,crates/server/src/index.html,"Grouped symbol rows (xN, weighted avg, L/S badge) + individual position selector & Close All sheet; sub-cent P&L; XTB chart; Long/Short +New Position drawer; centered Account menu; full-screen Trade History"
+DONE,UI,Mobile & Desktop SPA,crates/server/src/index.html,"Grouped symbol rows (xN, weighted avg, L/S badge) + 2-step confirmation on Close/Cancel/Delete; truncated exact SL/TP cash & sub-0.1% precision; Forex Volume labels; XTB chart; prominent +New Position button; paginated Economic & Instrument News (home card + full-screen slide-over)"
 TODO,Auth,GitHub OAuth2,crates/server/src/main.rs,Implement GET /portfolio/api/auth/github & /github/callback with verified primary email lookup and account merge
 TODO,Mobile,Native iOS & Android,crates/portfolio-core,Generate UniFFI Kotlin & Swift bindings and build native mobile apps matching the responsive mobile SPA
 TODO,Infra,Named Tunnel & K3s,k8s/ & .env,Cut over Google OAuth redirect URI to permanent Named Tunnel domain and verify ArgoCD k3s deployment sync
 TODO,Integrations,Broker Import (Trading 212),crates/server/src/main.rs,"Read-only API key import (Trading 212 equity/portfolio, Binance, IBKR Flex + CSV) with ticker mapping & idempotent sync"
 RULE,Gotcha,Workflow Guardrails,Workspace / Chat,Never restart active quick tunnel without updating Google OAuth URI; split hostnames in scripts; keep pastes <45 lines; run cargo fmt + clippy -D warnings + test
+RULE,Backup,Local + Cloudflare R2,$HOME/backups/backup-r2.sh,"Run $HOME/backups/backup-r2.sh before major edits/releases: saves online SQLite snapshot + tar.gz to $HOME/backups/ and uploads privately to Cloudflare R2 (rust-portfolio-backups, Standard 10GB Always Free)"

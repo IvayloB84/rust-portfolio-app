@@ -893,7 +893,9 @@ async fn update_price_meta(
     );
     let ticks: Vec<PriceTick> = price_map.values().cloned().collect();
     drop(price_map);
-    process_symbol_triggers(&state.db, symbol, price).await;
+    if is_reg {
+        process_symbol_triggers(&state.db, symbol, price).await;
+    }
     let _ = state.price_tx.send(ticks);
 }
 
@@ -1795,21 +1797,27 @@ async fn get_history(Query(hq): Query<HistoryQuery>) -> Json<HistoryResponse> {
         raw.clone()
     };
     let range = match hq.range.as_deref() {
-        Some("5m") => ("1d", "5m", 1usize),
+        Some("1m") => ("1d", "1m", 1usize),
+        Some("5m") => ("5d", "5m", 1usize),
         Some("15m") => ("5d", "15m", 1),
         Some("1h") => ("5d", "1h", 1),
         Some("4h") => ("1mo", "1h", 4),
-        Some("5d") => ("5d", "1h", 1),
+        Some("1w") | Some("7d") | Some("5d") => ("5d", "1h", 1),
         Some("1mo") => ("1mo", "1d", 1),
         Some("6mo") => ("6mo", "1d", 1),
         Some("1y") => ("1y", "1wk", 1),
         _ => ("1d", "15m", 1),
     };
-    let yf_host = ["query1", "finance", "yahoo", "com"].join(".");
-    let url = format!(
-        "https://{}/v8/finance/chart/{}?interval={}&range={}",
-        yf_host, ticker, range.1, range.0
-    );
+    let yf_hosts = [
+        ["query1", "finance", "yahoo", "com"].join("."),
+        ["query2", "finance", "yahoo", "com"].join("."),
+    ];
+    let yf_host = yf_hosts.first().unwrap();
+    let pre_post = if at == "Stock" && !ticker.contains('.') {
+        "&includePrePost=true"
+    } else {
+        ""
+    };
     let client = reqwest::Client::builder()
         .user_agent("Mozilla/5.0")
         .timeout(Duration::from_secs(6))
@@ -1826,59 +1834,96 @@ async fn get_history(Query(hq): Query<HistoryQuery>) -> Json<HistoryResponse> {
         atr_14d_pips: None,
         points: vec![],
     };
-    if let Ok(resp) = client
-        .get(&url)
-        .header("User-Agent", "Mozilla/5.0")
-        .send()
-        .await
-        && let Ok(val) = resp.json::<serde_json::Value>().await
-        && let Some(res) = val["chart"]["result"].as_array().and_then(|a| a.first())
-    {
-        let meta = &res["meta"];
-        out.exchange = meta["exchangeName"].as_str().map(String::from);
-        out.currency = meta["currency"].as_str().map(String::from);
-        out.volume = meta["regularMarketVolume"].as_u64();
-        out.prev_close = meta["chartPreviousClose"].as_f64();
-        out.high_52w = meta["fiftyTwoWeekHigh"].as_f64();
-        out.low_52w = meta["fiftyTwoWeekLow"].as_f64();
-        let q = &res["indicators"]["quote"][0];
-        if let (Some(ts_arr), Some(cl_arr)) = (res["timestamp"].as_array(), q["close"].as_array()) {
-            let op_arr = q["open"].as_array();
-            let hi_arr = q["high"].as_array();
-            let lo_arr = q["low"].as_array();
-            for (i, (t, c)) in ts_arr.iter().zip(cl_arr.iter()).enumerate() {
-                if let (Some(ts), Some(close)) = (t.as_i64(), c.as_f64())
-                    && close > 0.0
+    let attempts: Vec<(&str, &str, usize)> =
+        if matches!(range.0, "1mo" | "6mo" | "1y") && range.2 == 1 {
+            vec![(range.0, range.1, 1), ("1mo", "1h", 4), ("5d", "1h", 4)]
+        } else {
+            vec![range, ("5d", "15m", 1), ("1mo", "1d", 1)]
+        };
+    for (r_span, r_int, r_grp) in attempts {
+        if out.points.len() > 1 {
+            break;
+        }
+        out.points.clear();
+        let ev = "";
+        for host in &yf_hosts {
+            if !out.points.is_empty() {
+                break;
+            }
+            let url = format!(
+                "https://{}/v8/finance/chart/{}?interval={}&range={}{}{}",
+                host, ticker, r_int, r_span, pre_post, ev
+            );
+            if let Ok(resp) = client
+                .get(&url)
+                .header("User-Agent", "Mozilla/5.0")
+                .send()
+                .await
+                && let Ok(val) = resp.json::<serde_json::Value>().await
+                && let Some(res) = val["chart"]["result"].as_array().and_then(|a| a.first())
+            {
+                let meta = &res["meta"];
+                out.exchange = meta["exchangeName"].as_str().map(String::from);
+                out.currency = meta["currency"].as_str().map(String::from);
+                out.volume = meta["regularMarketVolume"].as_u64();
+                out.prev_close = meta["regularMarketPreviousClose"]
+                    .as_f64()
+                    .or_else(|| meta["previousClose"].as_f64())
+                    .or_else(|| meta["chartPreviousClose"].as_f64());
+                out.high_52w = meta["fiftyTwoWeekHigh"].as_f64();
+                out.low_52w = meta["fiftyTwoWeekLow"].as_f64();
+                let q = &res["indicators"]["quote"][0];
+                if let (Some(ts_arr), Some(cl_arr)) =
+                    (res["timestamp"].as_array(), q["close"].as_array())
                 {
-                    let open = op_arr
-                        .and_then(|a| a.get(i))
-                        .and_then(|v| v.as_f64())
-                        .filter(|&x| x > 0.0)
-                        .unwrap_or(close);
-                    let high = hi_arr
-                        .and_then(|a| a.get(i))
-                        .and_then(|v| v.as_f64())
-                        .filter(|&x| x > 0.0)
-                        .unwrap_or(close.max(open));
-                    let low = lo_arr
-                        .and_then(|a| a.get(i))
-                        .and_then(|v| v.as_f64())
-                        .filter(|&x| x > 0.0)
-                        .unwrap_or(close.min(open));
-                    if range.2 > 1 && !out.points.is_empty() && (i % range.2 != 0) {
-                        if let Some(last) = out.points.last_mut() {
-                            last.high = last.high.max(high);
-                            last.low = last.low.min(low);
-                            last.close = close;
+                    let op_arr = q["open"].as_array();
+                    let hi_arr = q["high"].as_array();
+                    let lo_arr = q["low"].as_array();
+                    let adj_arr = res["indicators"]["adjclose"][0]["adjclose"].as_array();
+                    for (i, (t, c)) in ts_arr.iter().zip(cl_arr.iter()).enumerate() {
+                        let cl_val = c
+                            .as_f64()
+                            .or_else(|| adj_arr.and_then(|a| a.get(i)).and_then(|v| v.as_f64()));
+                        if let (Some(ts), Some(close)) = (t.as_i64(), cl_val)
+                            && close > 0.0
+                        {
+                            let open = op_arr
+                                .and_then(|a| a.get(i))
+                                .and_then(|v| v.as_f64())
+                                .filter(|&x| x > 0.0)
+                                .unwrap_or(close);
+                            let high = hi_arr
+                                .and_then(|a| a.get(i))
+                                .and_then(|v| v.as_f64())
+                                .filter(|&x| x > 0.0)
+                                .unwrap_or(close.max(open));
+                            let low = lo_arr
+                                .and_then(|a| a.get(i))
+                                .and_then(|v| v.as_f64())
+                                .filter(|&x| x > 0.0)
+                                .unwrap_or(close.min(open));
+                            if r_grp > 1
+                                && out.points.last().is_some_and(|l| {
+                                    (ts - l.ts) > 0
+                                        && (ts - l.ts) < (r_grp as i64 * 3600)
+                                        && (ts / 86_400 == l.ts / 86_400)
+                                })
+                            {
+                                if let Some(last) = out.points.last_mut() {
+                                    last.high = last.high.max(high);
+                                    last.low = last.low.min(low);
+                                    last.close = close;
+                                }
+                            } else {
+                                out.points.push(HistoryPoint {
+                                    ts,
+                                    open,
+                                    high,
+                                    low,
+                                    close,
+                                });
+                            }
                         }
-                    } else {
-                        out.points.push(HistoryPoint {
-                            ts,
-                            open,
-                            high,
-                            low,
-                            close,
-                        });
                     }
                 }
             }
@@ -2348,30 +2393,86 @@ async fn update_holding(
         )
             .into_response();
     }
-    let is_open =
-        sqlx::query_as::<_, (String,)>("SELECT status FROM holdings WHERE id = ? AND user_id = ?")
-            .bind(id)
-            .bind(user.id)
-            .fetch_optional(&state.db)
-            .await
-            .ok()
-            .flatten()
-            .map(|(s,)| s.eq_ignore_ascii_case("OPEN"))
-            .unwrap_or(false);
-    match if is_open {
-        sqlx::query("UPDATE holdings SET quantity = quantity, avg_buy_price = avg_buy_price, stop_loss = ?, take_profit = ? WHERE id = ? AND user_id = ?")
-    } else {
-        sqlx::query("UPDATE holdings SET quantity = ?, avg_buy_price = ?, stop_loss = ?, take_profit = ? WHERE id = ? AND user_id = ?")
-    }
-    .bind(input.quantity.to_string())
-    .bind(input.avg_buy_price.to_string())
-    .bind(input.stop_loss.filter(|v| *v > Decimal::ZERO).map(|v| v.to_string()))
-    .bind(input.take_profit.filter(|v| *v > Decimal::ZERO).map(|v| v.to_string()))
+    let Some((st_str, side_str, sym_str)) = sqlx::query_as::<_, (String, String, String)>(
+        "SELECT status, side, symbol FROM holdings WHERE id = ? AND user_id = ?",
+    )
     .bind(id)
     .bind(user.id)
-    .execute(&state.db)
+    .fetch_optional(&state.db)
     .await
+    .ok()
+    .flatten() else {
+        return StatusCode::NOT_FOUND.into_response();
+    };
+    let is_open = st_str.eq_ignore_ascii_case("OPEN");
+    let ref_px = if is_open {
+        state
+            .prices
+            .read()
+            .await
+            .get(&sym_str)
+            .map(|t| t.price)
+            .unwrap_or(input.avg_buy_price)
+    } else {
+        input.avg_buy_price
+    };
+    let is_short = side_str.eq_ignore_ascii_case("SHORT");
+    if let Some(sl) = input.stop_loss.filter(|v| *v > Decimal::ZERO)
+        && ((!is_short && sl >= ref_px) || (is_short && sl <= ref_px))
     {
+        return (
+            StatusCode::BAD_REQUEST,
+            if is_short {
+                "For SHORT, Stop Loss must be above price."
+            } else {
+                "For LONG, Stop Loss must be below price."
+            },
+        )
+            .into_response();
+    }
+    if let Some(tp) = input.take_profit.filter(|v| *v > Decimal::ZERO)
+        && ((!is_short && tp <= ref_px) || (is_short && tp >= ref_px))
+    {
+        return (
+            StatusCode::BAD_REQUEST,
+            if is_short {
+                "For SHORT, Take Profit must be below price."
+            } else {
+                "For LONG, Take Profit must be above price."
+            },
+        )
+            .into_response();
+    }
+    let sl_bind = input
+        .stop_loss
+        .filter(|v| *v > Decimal::ZERO)
+        .map(|v| v.to_string());
+    let tp_bind = input
+        .take_profit
+        .filter(|v| *v > Decimal::ZERO)
+        .map(|v| v.to_string());
+    let exec_res = if is_open {
+        sqlx::query(
+            "UPDATE holdings SET stop_loss = ?, take_profit = ? WHERE id = ? AND user_id = ?",
+        )
+        .bind(&sl_bind)
+        .bind(&tp_bind)
+        .bind(id)
+        .bind(user.id)
+        .execute(&state.db)
+        .await
+    } else {
+        sqlx::query("UPDATE holdings SET quantity = ?, avg_buy_price = ?, stop_loss = ?, take_profit = ? WHERE id = ? AND user_id = ?")
+            .bind(input.quantity.to_string())
+            .bind(input.avg_buy_price.to_string())
+            .bind(&sl_bind)
+            .bind(&tp_bind)
+            .bind(id)
+            .bind(user.id)
+            .execute(&state.db)
+            .await
+    };
+    match exec_res {
         Ok(r) if r.rows_affected() > 0 => StatusCode::OK.into_response(),
         Ok(_) => StatusCode::NOT_FOUND.into_response(),
         Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
@@ -2503,6 +2604,121 @@ async fn delete_trade(
         .await;
     StatusCode::NO_CONTENT.into_response()
 }
+
+#[derive(Deserialize)]
+struct NewsQuery {
+    symbol: Option<String>,
+}
+
+#[derive(Serialize)]
+struct NewsItem {
+    title: String,
+    publisher: String,
+    link: String,
+    pub_date: String,
+}
+
+fn extract_tag(xml: &str, tag: &str) -> Option<String> {
+    let open = format!("<{}", tag);
+    let close = format!("</{}>", tag);
+    let s = xml.find(&open)?;
+    let after_open = xml[s..].find('>')? + s + 1;
+    let e = xml[after_open..].find(&close)? + after_open;
+    let raw = xml[after_open..e].trim();
+    let cleaned = raw
+        .strip_prefix("<![CDATA[")
+        .and_then(|x| x.strip_suffix("]]>"))
+        .unwrap_or(raw)
+        .replace("&amp;", "&")
+        .replace("&quot;", "\"")
+        .replace("&apos;", "'");
+    Some(cleaned.trim().to_string())
+}
+
+async fn get_news(Query(nq): Query<NewsQuery>) -> Json<Vec<NewsItem>> {
+    let sym = nq.symbol.unwrap_or_default().trim().to_uppercase();
+    let rss_sym = if sym.is_empty() {
+        "^GSPC,EURUSD=X,GC=F,BTC-USD".to_string()
+    } else if sym.len() == 6 && sym.chars().all(|c| c.is_ascii_alphabetic()) {
+        format!("{}=X", sym)
+    } else {
+        sym.clone()
+    };
+    let client = reqwest::Client::builder()
+        .user_agent("Mozilla/5.0")
+        .timeout(Duration::from_secs(5))
+        .build()
+        .unwrap();
+    let mut items = Vec::new();
+
+    if let Ok(rss_url) = reqwest::Url::parse_with_params(
+        "https://feeds.finance.yahoo.com/rss/2.0/headline",
+        &[("s", rss_sym.as_str()), ("region", "US"), ("lang", "en-US")],
+    ) && let Ok(resp) = client.get(rss_url).send().await
+        && let Ok(xml) = resp.text().await
+    {
+        for chunk in xml.split("<item>").skip(1).take(24) {
+            if let (Some(title), Some(link)) =
+                (extract_tag(chunk, "title"), extract_tag(chunk, "link"))
+                && !title.is_empty()
+                && !link.is_empty()
+            {
+                items.push(NewsItem {
+                    title,
+                    publisher: "Yahoo Finance".to_string(),
+                    link,
+                    pub_date: extract_tag(chunk, "pubDate").unwrap_or_default(),
+                });
+            }
+        }
+    }
+
+    if items.len() < 12 {
+        let gq = if sym.is_empty() {
+            "Federal Reserve ECB inflation forex stock market".to_string()
+        } else {
+            format!("{} stock news", sym.split('.').next().unwrap_or(&sym))
+        };
+        if let Ok(g_url) = reqwest::Url::parse_with_params(
+            "https://news.google.com/rss/search",
+            &[
+                ("q", gq.as_str()),
+                ("hl", "en-US"),
+                ("gl", "US"),
+                ("ceid", "US:en"),
+            ],
+        ) && let Ok(resp) = client.get(g_url).send().await
+            && let Ok(xml) = resp.text().await
+        {
+            for chunk in xml.split("<item>").skip(1).take(24) {
+                if let (Some(raw_title), Some(link)) =
+                    (extract_tag(chunk, "title"), extract_tag(chunk, "link"))
+                    && !raw_title.is_empty()
+                    && !link.is_empty()
+                {
+                    let (title, publisher) = match raw_title.rsplit_once(" - ") {
+                        Some((t, p)) => (t.trim().to_string(), p.trim().to_string()),
+                        None => (raw_title, "Market News".to_string()),
+                    };
+                    let key: String = title.to_lowercase().chars().take(48).collect();
+                    if !items
+                        .iter()
+                        .any(|x| x.title.to_lowercase().starts_with(&key))
+                    {
+                        items.push(NewsItem {
+                            title,
+                            publisher,
+                            link,
+                            pub_date: extract_tag(chunk, "pubDate").unwrap_or_default(),
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    Json(items)
+}
 fn build_router(state: AppState, interval_secs: u64) -> Router {
     let portfolio_routes = Router::new()
         .route("/", get(index))
@@ -2510,6 +2726,7 @@ fn build_router(state: AppState, interval_secs: u64) -> Router {
         .route("/api/portfolio", get(get_portfolio))
         .route("/api/search", get(search_symbols))
         .route("/api/history", get(get_history))
+        .route("/api/news", get(get_news))
         .route("/api/auth/me", get(auth_me))
         .route("/api/auth/register", post(auth_register))
         .route("/api/auth/login", post(auth_login))

@@ -21,5 +21,6 @@
 | `DELETE` | `/portfolio/api/holdings/{id}` | — | Deletes holding without archiving to history. |
 | `GET` | `/portfolio/api/trades` | `?base=EUR\|USD` | Lists closed trades with `realized_pnl` (native) and `converted_pnl` (user display currency). |
 | `GET` | `/portfolio/api/search` | `?q=AAPL` | Symbol autocomplete across Yahoo Finance & static index/FX catalog. |
-| `GET` | `/portfolio/api/history` | `?symbol=...&asset_type=...&range=1d` | OHLC candles, 52-week range, and 14-day ATR (pips for Forex). |
+| `GET` | `/portfolio/api/history` | `?symbol=...&asset_type=...&range=1d` | OHLC candles (with `1d -> 5d -> 1mo` fallback), 52-week range, and 14-day ATR (pips for Forex). |
+| `GET` | `/portfolio/api/news` | `?symbol=...` | Up to 24 deduplicated macro or instrument-specific headlines merged from Yahoo Finance RSS & Google News RSS. |
 | `WS` | `/portfolio/ws/prices` | Server pushes `Vec<PriceTick>` | Broadcasts live price ticks and triggers `process_symbol_triggers` on every update. |

@@ -15,7 +15,7 @@
   .card { background: #1e293b; padding: 1rem; border-radius: 0.75rem; border: 1px solid #334155; }
   .card small { color: #94a3b8; display: block; margin-bottom: 0.25rem; }
   .card strong { font-size: 1.4rem; }
-  form { display: grid; grid-template-columns: minmax(195px, 2fr) 0.8fr 0.95fr 0.78fr 0.92fr 0.85fr 0.85fr 0.58fr auto; gap: 0.45rem; background: #1e293b; padding: 0.85rem; border-radius: 0.75rem; margin-bottom: 0.5rem; position: relative; align-items: center; }
+  form { display: grid; grid-template-columns: minmax(210px, 2.2fr) 0.85fr 1fr 0.85fr 1fr 0.9fr 0.9fr auto; gap: 0.45rem; background: #1e293b; padding: 0.85rem; border-radius: 0.75rem; margin-bottom: 0.5rem; position: relative; align-items: center; }
   @media (min-width: 681px) { #add-form input, #add-form select, #add-form button { padding: 0.5rem 0.55rem; font-size: 0.88rem; } }
   .sym-wrap { position: relative; } .sym-wrap input { width: 100%; box-sizing: border-box; }
   #ac-list { position: absolute; top: calc(100% + 4px); left: 0; min-width: 440px; background: #0f172a; border: 1px solid #475569; border-radius: 0.5rem; z-index: 30; max-height: 280px; overflow-y: auto; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
@@ -76,7 +76,7 @@
   .d-tab { width: auto; padding: 0.25rem 0.6rem; font-size: 0.75rem; background: #0f172a; border: 1px solid #334155; color: #94a3b8; border-radius: 0.4rem; }
   .d-tab.active { background: #f59e0b; color: #0f172a; font-weight: 700; border-color: #f59e0b; }
   #d-chart { width: 100%; height: 170px; background: #0f172a; border: 1px solid #334155; border-radius: 0.6rem; display: block; }
-  .d-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.55rem; margin-top: 0.75rem; font-size: 0.82rem; }
+  .d-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 0.55rem; margin-top: 0.75rem; font-size: 0.82rem; }
   .d-stat { background: #0f172a; padding: 0.5rem 0.65rem; border-radius: 0.5rem; border: 1px solid #1e293b; }
   .d-stat small { display: block; color: #94a3b8; font-size: 0.72rem; }
   #auth-screen { max-width: 400px; margin: 3rem auto; background: #1e293b; padding: 1.5rem; border-radius: 0.9rem; border: 1px solid #334155; display: none; }
@@ -96,7 +96,7 @@
   @media (max-width: 680px) {
     .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 0.5rem; margin-bottom: 0.85rem; }
     .card { padding: 0.55rem 0.5rem; }
-    .card { display: flex; flex-direction: column; justify-content: space-between; } .card small { font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
+    .card { display: flex; flex-direction: column; justify-content: flex-start; } .card small { font-size: 0.63rem; text-transform: uppercase; letter-spacing: 0.01em; white-space: nowrap; }
     .card strong { font-size: 1.18rem; margin-top: 0.25rem; line-height: 1.25; }
     .card strong small { display: block; font-size: 0.72rem; font-weight: 500; color: #94a3b8; margin-top: 0.12rem; }
   }
@@ -119,8 +119,8 @@
   #d-chart { width: 100%; height: 460px !important; } @media (max-width: 680px) { #d-chart { height: 340px !important; } } #d-chart { background: #131c2e; border-radius: 0.65rem; border: 1px solid #1e293b; }
   .d-tabs .d-tab { font-size: 0.84rem; padding: 0.38rem 0.72rem; }
   .d-grid { gap: 0.6rem; margin-top: 0.85rem; }
-  .d-stat { background: #1e293b; padding: 0.75rem; border-radius: 0.6rem; border: 1px solid #334155; }
-  .d-stat small { font-size: 0.76rem; color: #94a3b8; }
+  .d-stat { background: #1e293b; padding: 0.75rem; border-radius: 0.6rem; border: 1px solid #334155; min-width: 0; display: flex; flex-direction: column; justify-content: flex-start !important; gap: 0.25rem; }
+  .d-stat small { font-size: 0.76rem; color: #94a3b8; display: flex; align-items: center; flex-wrap: nowrap; white-space: nowrap; } .d-stat .pill { font-size: 0.6rem; padding: 0.05rem 0.22rem; margin-left: 0.2rem; line-height: 1.2; flex-shrink: 0; } @media (max-width: 680px) { .d-stat { padding: 0.55rem 0.42rem !important; overflow: hidden; } .d-stat small { font-size: 0.72rem !important; } .d-stat strong { font-size: clamp(0.72rem, 3.4vw, 0.84rem) !important; letter-spacing: -0.015em; } }
   .d-stat strong { font-size: 0.98rem; margin-top: 0.22rem; display: block; }
   #detail-box input, #detail-box button#edit-save { font-size: 1rem; padding: 0.6rem 0.75rem; }
   #xtb-bar { display: flex; justify-content: space-between; align-items: center; margin: 0.55rem 0; }
@@ -220,6 +220,7 @@
         <label for="base-ccy">Display Currency</label>
         <select id="base-ccy"><option value="NATIVE">Currency: Original</option><option value="USD">Currency: USD ($)</option><option value="EUR">Currency: EUR (€)</option></select>
         <button type="button" id="hist-btn" style="margin-top:0.5rem;background:#1e293b;color:#f8fafc;border:1px solid #334155">Trade History</button>
+        <button type="button" id="news-menu-btn" style="margin-top:0.5rem;background:#1e293b;color:#f8fafc;border:1px solid #334155">Market News</button>
         <button type="button" id="logout-btn">Logout</button>
       </div>
     </div>
@@ -235,11 +236,10 @@
     <div class="sym-wrap"><input id="symbol" placeholder="Search symbol (AAPL, US500, EURUSD)" required><div id="ac-list"></div></div>
     <select id="asset_type"><option value="Stock">Stock</option><option value="Forex">Forex</option><option value="Crypto">Crypto</option><option value="Index">Index</option></select>
     <select id="side"><option value="LONG">Long (Buy)</option><option value="SHORT">Short (Sell)</option></select>
-    <input id="quantity" type="text" inputmode="decimal" placeholder="Qty / Lots" required>
+    <input id="quantity" type="text" inputmode="decimal" placeholder="Quantity" required>
     <input id="avg_buy_price" type="text" inputmode="decimal" placeholder="Entry / Limit (auto)">
     <input id="stop_loss" type="text" inputmode="decimal" placeholder="Stop Loss (opt)">
     <input id="take_profit" type="text" inputmode="decimal" placeholder="Take Profit (opt)">
-    <input id="currency" value="USD" maxlength="3" required>
     <button id="add-btn" type="submit">Add</button>
   </form>
   <div id="err-msg"></div>
@@ -247,6 +247,19 @@
     <colgroup><col style="width:26%"><col style="width:7%"><col style="width:7%"><col style="width:11%"><col style="width:17%"><col style="width:13%"><col style="width:17%"><col style="width:5%"></colgroup><thead><tr><th>Symbol</th><th>Type</th><th>Qty</th><th>Avg Buy</th><th>Live Price &amp; Status</th><th>Market Value</th><th>Unrealized P&amp;L</th><th></th></tr></thead>
     <tbody id="rows"></tbody>
   </table></div>
+  <div id="macro-news-wrap" style="margin-top:1.1rem;background:#1e293b;border:1px solid #334155;border-radius:0.75rem;padding:0.8rem 0.9rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.55rem">
+      <strong style="font-size:0.88rem;color:#f8fafc">Economic &amp; Market News</strong>
+      <div style="display:flex;align-items:center;gap:0.35rem">
+        <button type="button" onclick="loadMacroNews()" style="width:auto;padding:0.22rem 0.55rem;font-size:0.74rem;background:#0f172a;color:#94a3b8;border:1px solid #334155">↻ Refresh</button>
+        <button type="button" onclick="toggleMacroNews(false)" title="Hide news" style="width:auto;padding:0.22rem 0.5rem;font-size:0.74rem;background:#0f172a;color:#94a3b8;border:1px solid #334155">✕</button>
+      </div>
+    </div>
+    <div id="macro-news-list" style="display:flex;flex-direction:column;gap:0.45rem;font-size:0.82rem;color:#94a3b8">Loading market headlines...</div>
+  </div>
+  <div id="macro-news-restore" style="display:none;margin-top:0.85rem;text-align:right">
+    <button type="button" onclick="toggleMacroNews(true)" style="width:auto;display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.7rem;font-size:0.78rem;background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:0.55rem">+ Market News</button>
+  </div>
   </div>
   <div id="detail-bg">
     <div id="detail-box">
@@ -264,18 +277,19 @@
       <div class="chart-wrap"><svg id="d-chart" viewBox="0 0 380 280"></svg></div>
       <div class="d-grid" id="d-stats"></div><div id="d-pos-list" style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.65rem"></div>
       <div style="margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid #334155">
-        <div style="display:flex;gap:0.5rem">
-          <button type="button" id="drawer-btn" onclick="toggleEditDrawer()" style="flex:1;padding:0.58rem 0.75rem;background:#1e293b;color:#f8fafc;border:1px solid #334155;display:flex;justify-content:space-between;align-items:center"><span id="edit-title">Modify Position / Order</span><span id="drawer-arr">▾</span></button>
-          <button type="button" id="close-pos-btn" style="flex:1;padding:0.58rem;background:#dc2626;color:#fff">Close Position</button>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
+          <button type="button" id="new-pos-btn" style="padding:0.64rem 0.7rem;background:#292112 !important;color:#fbbf24 !important;border:1px solid #f59e0b !important;font-weight:700;display:flex;justify-content:center;align-items:center;gap:0.35rem">+ New Position</button>
+          <button type="button" id="drawer-btn" onclick="if(dcaMode&&activeHolding)setEditFields(activeHolding);toggleEditDrawer();" style="padding:0.64rem 0.7rem;background:#1e293b !important;color:#f8fafc !important;border:1px solid #475569 !important;font-weight:600;display:flex;justify-content:center;align-items:center;gap:0.35rem"><span id="edit-title">Modify Position</span><span id="drawer-arr">▾</span></button>
+          <button type="button" id="close-pos-btn" style="grid-column:1 / -1;padding:0.62rem 0.7rem;background:#2a1519 !important;color:#fca5a5 !important;border:1px solid #ef4444 !important;font-weight:600;display:flex;justify-content:center;align-items:center">Close Position</button>
         </div>
         <div id="edit-drawer" style="display:none;margin-top:0.6rem;background:#1e293b;border:1px solid #334155;border-radius:0.65rem;padding:0.7rem">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;font-size:0.78rem;color:#94a3b8">
-            <span>Order &amp; Risk Parameters</span>
-            <button type="button" id="dca-toggle" style="width:auto;padding:0.2rem 0.55rem;font-size:0.74rem;background:#0f172a;border:1px solid #334155;color:#f59e0b">+ Buy More (DCA)</button>
+            <span id="drawer-sub">Order &amp; Risk Parameters</span>
+            <button type="button" id="dca-toggle" style="width:auto;padding:0.2rem 0.55rem;font-size:0.74rem;background:#0f172a;border:1px solid #334155;color:#f59e0b">+ New Position</button>
           </div>
           <div id="edit-side-wrap" style="display:none;margin-bottom:0.5rem"><label style="font-size:0.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:0.2rem">Direction / Side<select id="edit-side"><option value="LONG">Long (Buy)</option><option value="SHORT">Short (Sell)</option></select></label></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
-            <label style="font-size:0.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:0.2rem">Quantity / Lots<input id="edit-qty" type="text" inputmode="decimal"></label>
+            <label style="font-size:0.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:0.2rem"><span id="edit-qty-lbl">Quantity</span><input id="edit-qty" type="text" inputmode="decimal"></label>
             <label style="font-size:0.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:0.2rem">Entry / Trigger Price<input id="edit-px" type="text" inputmode="decimal"></label>
             <label style="font-size:0.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:0.2rem">Stop Loss (SL)<input id="edit-sl" type="text" inputmode="decimal" placeholder="None"></label>
             <label style="font-size:0.72rem;color:#94a3b8;display:flex;flex-direction:column;gap:0.2rem">Take Profit (TP)<input id="edit-tp" type="text" inputmode="decimal" placeholder="None"></label>
@@ -284,9 +298,14 @@
         </div>
         <div id="edit-msg" style="color:#f87171;font-size:0.78rem;margin-top:0.35rem"></div>
       </div>
+      <div id="d-news-wrap" style="margin-top:0.85rem;padding-top:0.75rem;border-top:1px solid #334155">
+        <div style="font-size:0.8rem;font-weight:700;color:#cbd5e1;margin-bottom:0.45rem">Latest Headlines</div>
+        <div id="d-news-list" style="display:flex;flex-direction:column;gap:0.4rem;font-size:0.8rem;color:#94a3b8">Loading headlines...</div>
+      </div>
     </div>
   </div>
   <div id="hist-bg"><div id="hist-box"><div class="d-head"><button type="button" id="h-back" onclick="closeHist()">← Back</button><strong style="font-size:1.1rem">Closed Trades &amp; Realized P&amp;L</strong><span style="width:4.2rem"></span></div><div id="hist-list" style="display:flex;flex-direction:column;gap:0.55rem"></div></div></div>
+  <div id="news-bg" style="display:block;position:fixed;inset:0;background:#0f172a;z-index:65;overflow-y:auto;transform:translateX(100%);transition:transform .24s cubic-bezier(.22,1,.36,1);visibility:hidden;pointer-events:none;padding:.9rem 1rem 2rem"><div style="max-width:1180px;margin:0 auto"><div style="display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding-bottom:.75rem;margin-bottom:.85rem;border-bottom:1px solid #1e293b"><button type="button" onclick="closeNewsModal()" style="display:inline-flex;align-items:center;gap:.3rem;width:auto;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:.42rem .75rem;border-radius:.55rem;font-size:.9rem;font-weight:600">← Back</button><strong style="font-size:1.05rem">Economic &amp; Market News</strong><div style="display:flex;align-items:center;gap:.35rem"><button type="button" id="news-pin-btn" onclick="toggleMacroNews(true);updateNewsPinBtn()" style="width:auto;padding:.35rem .6rem;font-size:.76rem;background:#1e293b;color:#fbbf24;border:1px solid rgba(245,158,11,.45);border-radius:.5rem">+ Home</button><button type="button" onclick="loadNewsModal()" style="width:auto;padding:.35rem .6rem;font-size:.76rem;background:#1e293b;color:#94a3b8;border:1px solid #334155;border-radius:.5rem">↻</button></div></div><div id="news-modal-list" style="display:flex;flex-direction:column;gap:0.55rem;font-size:0.85rem;color:#94a3b8">Loading market headlines...</div></div></div>
   <div id="sheet-bg" onclick="if(event.target===this)closeSheet()">
     <div id="sheet-box"></div>
   </div>
@@ -300,10 +319,11 @@ const symIn = document.getElementById('symbol'), buyIn = document.getElementById
 baseSel.value = localStorage.getItem('base_ccy') || 'NATIVE';
 ['quantity','avg_buy_price','stop_loss','take_profit','edit-qty','edit-px','edit-sl','edit-tp'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', () => { if (el.value.includes(',')) el.value = el.value.replace(/,/g, '.'); }); });
 baseSel.onchange = () => { localStorage.setItem('base_ccy', baseSel.value); load(); };
+document.getElementById('asset_type').onchange = e => { document.getElementById('quantity').placeholder = e.target.value === 'Forex' ? 'Volume' : 'Quantity'; };
 let acTimer = null;
 function applyPick(it) {
-  symIn.value = it.symbol; document.getElementById('asset_type').value = it.asset_type;
-  if (it.currency) document.getElementById('currency').value = it.currency;
+  symIn.value = it.symbol; document.getElementById('asset_type').value = it.asset_type; document.getElementById('quantity').placeholder = it.asset_type === 'Forex' ? 'Volume' : 'Quantity';
+  window.pickedCurrency = it.currency || '';
   if (it.price != null) buyIn.value = it.price;
   acList.style.display = 'none';
 }
@@ -334,7 +354,7 @@ let chartMode = localStorage.getItem('chartMode') || 'candles';
 const sheetBg = document.getElementById('sheet-bg'), sheetBox = document.getElementById('sheet-box');
 const closeSheet = () => sheetBg.classList.remove('open');
 document.getElementById('tf-btn').onclick = () => {
-  const tfs = [['5m','5M'],['15m','15M'],['1h','1H'],['4h','4H'],['1d','1D'],['5d','5D'],['1mo','1M'],['6mo','6M'],['1y','1Y']];
+  const tfs = new Array(new Array('1m','1M'),new Array('5m','5M'),new Array('15m','15M'),new Array('1h','1H'),new Array('4h','4H'),new Array('1d','1D'),new Array('1w','1W'),new Array('1mo','1MO'),new Array('6mo','6MO'),new Array('1y','1Y'));
   sheetBox.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center"><strong>Timeframe</strong><button type="button" class="del" style="background:#334155" onclick="closeSheet()">✕</button></div><div class="tf-grid">' +
     tfs.map(([v, l]) => '<button type="button" class="tf-opt' + (activeRange === v ? ' active' : '') + '" data-r="' + v + '">' + l + '</button>').join('') + '</div>';
   sheetBox.querySelectorAll('.tf-opt').forEach(b => b.onclick = () => {
@@ -360,6 +380,9 @@ function setEditFields(h) {
   document.getElementById('dca-toggle').textContent = '+ New Position';
   const sw = document.getElementById('edit-side-wrap'); if (sw) sw.style.display = 'none';
   const qEl = document.getElementById('edit-qty'), pEl = document.getElementById('edit-px');
+  const qLbl = document.getElementById('edit-qty-lbl'); if (qLbl) qLbl.textContent = h.asset_type === 'Forex' ? 'Volume' : 'Quantity';
+  const dSub = document.getElementById('drawer-sub'); if (dSub) dSub.textContent = 'Order & Risk Parameters';
+  const npb = document.getElementById('new-pos-btn'); if (npb) npb.textContent = '+ New Position';
   qEl.value = h.quantity; pEl.value = h.avg_buy_price;
   qEl.disabled = isOpen; pEl.disabled = isOpen;
   qEl.style.opacity = isOpen ? '0.6' : '1'; pEl.style.opacity = isOpen ? '0.6' : '1';
@@ -368,18 +391,31 @@ function setEditFields(h) {
   document.getElementById('close-pos-btn').textContent = isOpen ? 'Close Position' : 'Cancel Pending Order';
   document.getElementById('edit-msg').textContent = '';
 }
+function enterNewPosMode() {
+  if (!activeHolding) return;
+  dcaMode = true;
+  const qEl = document.getElementById('edit-qty'), pEl = document.getElementById('edit-px');
+  const qLbl = document.getElementById('edit-qty-lbl'); if (qLbl) qLbl.textContent = activeHolding.asset_type === 'Forex' ? 'Volume' : 'Quantity';
+  document.getElementById('edit-title').textContent = 'New Position (' + activeHolding.symbol + ')';
+  const dSub = document.getElementById('drawer-sub'); if (dSub) dSub.textContent = 'New Order / Position on ' + activeHolding.symbol;
+  document.getElementById('dca-toggle').textContent = 'Back to Current';
+  const npb = document.getElementById('new-pos-btn'); if (npb) npb.textContent = 'Editing New';
+  const sw = document.getElementById('edit-side-wrap'); if (sw) { sw.style.display = 'block'; document.getElementById('edit-side').value = activeHolding.side || 'LONG'; }
+  qEl.disabled = false; pEl.disabled = false; qEl.style.opacity = '1'; pEl.style.opacity = '1';
+  qEl.value = ''; pEl.value = activeHolding.current_price ?? activeHolding.avg_buy_price;
+  document.getElementById('edit-sl').value = ''; document.getElementById('edit-tp').value = '';
+  document.getElementById('edit-msg').textContent = '';
+  toggleEditDrawer(true);
+}
+document.getElementById('new-pos-btn').onclick = () => {
+  if (!activeHolding) return;
+  if (dcaMode && document.getElementById('edit-drawer').style.display !== 'none') { setEditFields(activeHolding); toggleEditDrawer(false); }
+  else { enterNewPosMode(); }
+};
 document.getElementById('dca-toggle').onclick = () => {
   if (!activeHolding) return;
-  dcaMode = !dcaMode;
-  const qEl = document.getElementById('edit-qty'), pEl = document.getElementById('edit-px');
-  if (dcaMode) {
-    document.getElementById('edit-title').textContent = 'New Separate Position (' + activeHolding.symbol + ')';
-    document.getElementById('dca-toggle').textContent = 'Back to Current';
-    const sw = document.getElementById('edit-side-wrap'); if (sw) { sw.style.display = 'block'; document.getElementById('edit-side').value = activeHolding.side || 'LONG'; }
-    qEl.disabled = false; pEl.disabled = false; qEl.style.opacity = '1'; pEl.style.opacity = '1';
-    qEl.value = ''; pEl.value = activeHolding.current_price ?? activeHolding.avg_buy_price;
-    document.getElementById('edit-sl').value = ''; document.getElementById('edit-tp').value = '';
-  } else { setEditFields(activeHolding); }
+  if (!dcaMode) enterNewPosMode();
+  else setEditFields(activeHolding);
 };
 document.getElementById('edit-save').onclick = async () => {
   if (!activeHolding) return;
@@ -387,20 +423,41 @@ document.getElementById('edit-save').onclick = async () => {
   const qIn = Number(cleanDec(document.getElementById('edit-qty').value)), pIn = Number(cleanDec(document.getElementById('edit-px').value));
   if (!(qIn > 0) || !(pIn > 0)) { msgEl.textContent = 'Enter positive quantity and price.'; return; }
   const slVal = cleanDec(document.getElementById('edit-sl').value) || null, tpVal = cleanDec(document.getElementById('edit-tp').value) || null;
+  const isOpenPos = !dcaMode && activeHolding.status === 'OPEN';
+  const sendQty = isOpenPos ? String(activeHolding.quantity) : qIn.toString();
+  const sendPx = isOpenPos ? String(activeHolding.avg_buy_price) : pIn.toString();
   const res = dcaMode
     ? await fetch('/portfolio/api/holdings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ symbol: activeHolding.symbol, asset_type: activeHolding.asset_type, side: document.getElementById('edit-side').value || 'LONG', quantity: qIn.toString(), avg_buy_price: pIn.toString(), stop_loss: slVal, take_profit: tpVal, currency: activeHolding.currency }) })
-    : await fetch('/portfolio/api/holdings/' + activeHolding.id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ quantity: qIn.toString(), avg_buy_price: pIn.toString(), stop_loss: slVal, take_profit: tpVal }) });
-  if (!res.ok) { msgEl.textContent = await res.text(); return; }
+    : await fetch('/portfolio/api/holdings/' + activeHolding.id, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ quantity: sendQty, avg_buy_price: sendPx, stop_loss: slVal, take_profit: tpVal }) });
+  if (!res.ok) { msgEl.style.color = '#f87171'; msgEl.textContent = await res.text(); return; }
   await load();
   if (holdingsMap[activeHolding.id]) {
     activeHolding = holdingsMap[activeHolding.id];
     setEditFields(activeHolding);
     await loadHistory();
+    msgEl.style.color = '#4ade80'; msgEl.textContent = '✓ Saved';
+    setTimeout(() => { if (msgEl.textContent === '✓ Saved') msgEl.textContent = ''; }, 2500);
   }
 };
 setInterval(() => { if (!document.hidden && activeHolding) loadHistory(); }, 15000);
-document.getElementById('close-pos-btn').onclick = async () => {
+let confirmCloseTimer = null;
+document.getElementById('close-pos-btn').onclick = async function() {
   if (!activeHolding) return;
+  const isPend = activeHolding.status === 'PENDING';
+  if (this.dataset.armed !== '1') {
+    this.dataset.armed = '1';
+    this.textContent = isPend ? 'Confirm Cancel Order?' : 'Confirm Close Position?';
+    this.style.setProperty('background', '#7f1d1d', 'important');
+    clearTimeout(confirmCloseTimer);
+    confirmCloseTimer = setTimeout(() => {
+      this.dataset.armed = '';
+      this.textContent = isPend ? 'Cancel Pending Order' : 'Close Position';
+      this.style.setProperty('background', '#2a1519', 'important');
+    }, 4000);
+    return;
+  }
+  this.dataset.armed = '';
+  clearTimeout(confirmCloseTimer);
   const res = await fetch('/portfolio/api/holdings/' + activeHolding.id + '/close', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) });
   if (!res.ok) { document.getElementById('edit-msg').textContent = await res.text(); return; }
   closeDetail(); await load();
@@ -414,13 +471,14 @@ function toggleEditDrawer(force) {
 }
 async function openDetail(id) {
   const h = holdingsMap[id]; if (!h) return;
-  activeHolding = h;
+  activeHolding = h; window.activePrevClose = 0;
   setEditFields(h); toggleEditDrawer(false);
   document.getElementById('detail-bg').classList.add('open'); document.body.style.overflow = 'hidden';
   document.getElementById('d-sym').textContent = h.symbol; document.getElementById('close-pos-btn').textContent = h.status === 'PENDING' ? 'Cancel Order' : 'Close Position';
   const cs = ccySym(h.asset_type === 'Forex' && h.symbol.length === 6 ? h.symbol.slice(3) : h.currency);
   const dpH = h.asset_type === 'Forex' ? 3 : 2;
   document.getElementById('d-px').textContent = h.current_price != null ? cs + Number(h.current_price).toFixed(dpH) : 'N/A';
+  loadSymbolNews(h.symbol);
   await loadHistory();
 }
 function fmtPendingStat(h) {
@@ -437,47 +495,90 @@ async function loadHistory() {
   const res = await fetch('/portfolio/api/history?symbol=' + encodeURIComponent(h.symbol) + '&asset_type=' + encodeURIComponent(h.asset_type) + '&range=' + activeRange);
   const d = await res.json();
   const cs = ccySym(h.asset_type === 'Forex' && h.symbol.length === 6 ? h.symbol.slice(3) : h.currency);
-  document.getElementById('d-meta').innerHTML = (d.exchange || mktTag(h.symbol, h.asset_type)) + ' · ' + h.asset_type + ' · <span style="color:' + (h.status === 'PENDING' ? '#facc15' : '#4ade80') + ';font-weight:600">' + (h.status === 'PENDING' ? 'PENDING' : 'ACTIVE') + ' ' + (h.side || 'LONG') + '</span>';
+    document.getElementById('d-meta').textContent = (d.exchange || mktTag(h.symbol, h.asset_type)) + ' · ' + h.asset_type;
   const pts = d.points || [];
   const svg = document.getElementById('d-chart');
   
   if (pts.length > 1) {
     const dp = h.asset_type === 'Forex' ? 3 : 2;
     const isMob = window.innerWidth <= 680;
-    const W = isMob ? 380 : 860, H = isMob ? 280 : 360, plotR = W - 76, plotW = plotR - 10, plotB = H - 34, plotH = plotB - 22;
+    const yPad = isMob ? 52 : 56, W = isMob ? 380 : 860, H = isMob ? 280 : 360, plotR = W - yPad, plotW = plotR - 10, plotB = H - 34, plotH = plotB - 22;
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-    const viewPts = isMob ? (pts.length > 48 ? pts.slice(-48) : pts) : (pts.length > 120 ? pts.slice(-120) : pts);
+    const maxBars = activeRange === '4h' ? (isMob ? 15 : 24) : (activeRange === '1mo' ? 32 : (['6mo','1y'].includes(activeRange) ? 160 : (isMob ? 45 : 80)));
+    const viewPts = pts.length > maxBars ? pts.slice(-maxBars) : pts;
+    const sameSymAll = Object.values(holdingsMap).filter(x => x.symbol === h.symbol);
     const min = Math.min(...viewPts.map(p => p.low)), max = Math.max(...viewPts.map(p => p.high)), span = (max - min) || 1;
     const yOf = v => plotB - ((v - min) / span) * plotH;
-    const up = viewPts[viewPts.length - 1].close >= viewPts[0].open, col = up ? '#4ade80' : '#f87171';
-    const pct = (((viewPts[viewPts.length - 1].close - viewPts[0].open) / viewPts[0].open) * 100).toFixed(2);
+    const livePx = h.current_price != null ? Number(h.current_price) : viewPts[viewPts.length - 1].close;
+    if (activeRange === '1d' && d.prev_close != null && Number(d.prev_close) > 0) {
+      window.activePrevClose = Number(d.prev_close);
+    } else if (!window.activePrevClose) {
+      window.activePrevClose = (d.prev_close != null && Number(d.prev_close) > 0) ? Number(d.prev_close) : viewPts[0].open;
+      fetch('/portfolio/api/history?symbol=' + encodeURIComponent(h.symbol) + '&asset_type=' + encodeURIComponent(h.asset_type) + '&range=1d')
+        .then(r => r.ok ? r.json() : null).then(d1 => {
+          if (d1 && d1.prev_close > 0 && activeHolding && activeHolding.symbol === h.symbol) {
+            window.activePrevClose = Number(d1.prev_close);
+            if (mktOpen) { const p1 = (((livePx - window.activePrevClose) / window.activePrevClose) * 100).toFixed(2); chgEl.textContent = 'Today ' + (livePx >= window.activePrevClose ? '+' : '') + p1 + '%'; chgEl.className = livePx >= window.activePrevClose ? 'pos' : 'neg'; }
+          }
+        }).catch(() => {});
+    }
+    const baseDaily = window.activePrevClose;
+    const mktOpen = ['LIVE', 'REGULAR', '24/7'].includes(h.market_state || '');
+    const up = livePx >= baseDaily, col = up ? '#4ade80' : '#f87171';
+    const pct = mktOpen ? (((livePx - baseDaily) / baseDaily) * 100).toFixed(2) : '0.00';
     const chgEl = document.getElementById('d-chg');
-    chgEl.textContent = (up ? '+' : '') + pct + '% (' + activeRange.toUpperCase() + ')';
-    chgEl.className = up ? 'pos' : 'neg';
-    const spanDay = viewPts.length > 1 && (viewPts.at(-1).ts - viewPts.at(0).ts) > 43200; const fmtTs = ts => { const dt = new Date(ts * 1000); return ['5m','15m','1h','4h','1d','5d'].includes(activeRange) ? (spanDay ? dt.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' : '') + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : dt.toLocaleDateString([], { month: 'short', day: 'numeric', year: '2-digit' }); };
-    
-    
-    const yTicks = [max, min + span * 0.67, min + span * 0.33, min];
-    const grid = yTicks.map(v => '<line x1="6" y1="' + yOf(v).toFixed(1) + '" x2="' + plotR + '" y2="' + yOf(v).toFixed(1) + '" stroke="#1e293b" stroke-dasharray="3,3"/><text x="' + (W - 4) + '" y="' + (yOf(v) + 4).toFixed(1) + '" fill="#94a3b8" font-size="11.5" text-anchor="end">' + v.toFixed(dp) + '</text>').join('');
+    chgEl.textContent = 'Today ' + (mktOpen ? ((up ? '+' : '') + pct + '%') : '0.00%');
+    chgEl.className = mktOpen ? (up ? 'pos' : 'neg') : '';
+    chgEl.style.color = mktOpen ? '' : '#94a3b8';
+    const fmtTs = ts => {
+      const dt = new Date(ts * 1000);
+      const tm = dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+      const dd = dt.toLocaleDateString([], { day: '2-digit', month: 'short' });
+      if (['1m','5m','15m','1h','1d'].includes(activeRange)) return tm;
+      if (['4h','1w','5d'].includes(activeRange)) return isMob ? dd : (dd + ' ' + tm);
+      return dd;
+    };
+    const yTicks = Array.from({ length: 7 }, (_, k) => max - (span * k) / 6);
+    const grid = yTicks.map(v => '<line x1="6" y1="' + yOf(v).toFixed(1) + '" x2="' + plotR + '" y2="' + yOf(v).toFixed(1) + '" stroke="#1e293b" stroke-width="1"/><text x="' + (plotR + 4) + '" y="' + (yOf(v) + 3.5).toFixed(1) + '" fill="#64748b" font-size="9.5">' + v.toFixed(dp) + '</text>').join('');
     const lastC = viewPts[viewPts.length - 1].close, curY = yOf(lastC).toFixed(1);
     const dispC = (h.current_price != null ? Number(h.current_price) : lastC), dispY = yOf(Math.max(min, Math.min(max, dispC))).toFixed(1);
-    const curLine = '<line id="d-cline" x1="6" y1="' + dispY + '" x2="' + plotR + '" y2="' + dispY + '" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3,2"/><rect id="d-crect" x="' + (plotR + 3) + '" y="' + (Number(dispY) - 9).toFixed(1) + '" width="70" height="18" rx="4" fill="#475569"/><text id="d-ctxt" x="' + (W - 6) + '" y="' + (Number(dispY) + 4).toFixed(1) + '" fill="#fff" font-size="11.5" font-weight="bold" text-anchor="end">' + dispC.toFixed(dp) + '</text>';
-    const xAxis = [0, 0.33, 0.67, 1].map((f, idx) => { const i = Math.min(viewPts.length - 1, Math.floor(f * (viewPts.length - 1))); const x = (8 + f * plotW).toFixed(1); const anc = idx === 0 ? 'start' : idx === 3 ? 'end' : 'middle'; return '<line x1="' + x + '" y1="16" x2="' + x + '" y2="' + (plotB + 6) + '" stroke="#1e293b" stroke-width="0.8"/><text x="' + x + '" y="' + (H - 8) + '" fill="#94a3b8" font-size="11.5" text-anchor="' + anc + '">' + fmtTs(viewPts[i].ts) + '</text>'; }).join('');
+    const badgeW = yPad - 4;
+    const curLine = '<line id="d-cline" x1="6" y1="' + dispY + '" x2="' + plotR + '" y2="' + dispY + '" stroke="#f59e0b" stroke-width="1.2" stroke-dasharray="3,3"/><rect id="d-crect" x="' + (plotR + 2) + '" y="' + (Number(dispY) - 8).toFixed(1) + '" width="' + badgeW + '" height="16" rx="3" fill="#f59e0b"/><text id="d-ctxt" x="' + (plotR + 5) + '" y="' + (Number(dispY) + 3.5).toFixed(1) + '" fill="#0f172a" font-size="9.5" font-weight="700">' + dispC.toFixed(dp) + '</text>';
+    const xFracs = isMob ? new Array(0, 0.2, 0.4, 0.6, 0.8, 1) : new Array(0, 0.167, 0.333, 0.5, 0.667, 0.833, 1);
+    const xAxis = xFracs.map((f, idx) => {
+      const i = Math.min(viewPts.length - 1, Math.round(f * (viewPts.length - 1)));
+      const x = idx === 0 ? 8 : (idx === xFracs.length - 1 ? plotR : (8 + f * plotW));
+      const anc = idx === 0 ? 'start' : (idx === xFracs.length - 1 ? 'end' : 'middle');
+      return '<line x1="' + x.toFixed(1) + '" y1="22" x2="' + x.toFixed(1) + '" y2="' + plotB + '" stroke="#1e293b" stroke-width="0.8"/><text x="' + x.toFixed(1) + '" y="' + (H - 8) + '" fill="#94a3b8" font-size="9.5" text-anchor="' + anc + '">' + fmtTs(viewPts[i].ts) + '</text>';
+    }).join('');
     let body = '';
     if (chartMode === 'line') {
-      const poly = viewPts.map((p, i) => ((i / (viewPts.length - 1)) * plotW + 8).toFixed(1) + ',' + yOf(p.close).toFixed(1)).join(' ');
+      const poly = viewPts.map((p, i) => ((i / Math.max(1, viewPts.length - 1)) * plotW + 8).toFixed(1) + ',' + yOf(p.close).toFixed(1)).join(' ');
       body = '<polyline fill="none" stroke="' + col + '" stroke-width="2.4" points="' + poly + '"/>';
     } else {
-      const step = plotW / viewPts.length, bw = Math.max(3.2, Math.min(9, step * 0.68));
+      const step = plotW / viewPts.length, bw = Math.max(3, Math.min(12, step * 0.65));
+      const maxGap = activeRange === '1m' ? 180 : (activeRange === '5m' ? 600 : (activeRange === '15m' ? 1800 : 5400));
       body = viewPts.map((p, i) => {
-        const x = 8 + i * step + step / 2, c = p.close >= p.open ? '#4ade80' : '#f87171';
-        const y1 = yOf(Math.max(p.open, p.close)), y2 = yOf(Math.min(p.open, p.close));
-        return '<line x1="' + x.toFixed(1) + '" y1="' + yOf(p.high).toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + yOf(p.low).toFixed(1) + '" stroke="' + c + '" stroke-width="1.3"/><rect x="' + (x - bw / 2).toFixed(1) + '" y="' + y1.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(2, y2 - y1).toFixed(1) + '" fill="' + c + '"/>';
+        const contig = i > 0 && (p.ts - viewPts[i - 1].ts) <= maxGap;
+        const op = (p.open === p.close && p.high === p.low && contig) ? viewPts[i - 1].close : p.open;
+        const hi = Math.max(p.high, op, p.close), lo = Math.min(p.low, op, p.close);
+        const x = 8 + i * step + step / 2, c = p.close >= op ? '#4ade80' : '#f87171';
+        const y1 = yOf(Math.max(op, p.close)), y2 = yOf(Math.min(op, p.close));
+        return '<line x1="' + x.toFixed(1) + '" y1="' + yOf(hi).toFixed(1) + '" x2="' + x.toFixed(1) + '" y2="' + yOf(lo).toFixed(1) + '" stroke="' + c + '" stroke-width="1.3"/><rect x="' + (x - bw / 2).toFixed(1) + '" y="' + y1.toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(1.8, y2 - y1).toFixed(1) + '" fill="' + c + '" rx="0.8"/>';
       }).join('');
     }
-    const slLine = (h.stop_loss != null && h.stop_loss >= min && h.stop_loss <= max) ? '<line x1="6" y1="' + yOf(Number(h.stop_loss)).toFixed(1) + '" x2="' + plotR + '" y2="' + yOf(Number(h.stop_loss)).toFixed(1) + '" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4,3"/><text x="12" y="' + (yOf(Number(h.stop_loss)) - 3).toFixed(1) + '" fill="#fca5a5" font-size="10.5">SL ' + Number(h.stop_loss).toFixed(dp) + '</text>' : '';
-    const tpLine = (h.take_profit != null && h.take_profit >= min && h.take_profit <= max) ? '<line x1="6" y1="' + yOf(Number(h.take_profit)).toFixed(1) + '" x2="' + plotR + '" y2="' + yOf(Number(h.take_profit)).toFixed(1) + '" stroke="#22c55e" stroke-width="1.2" stroke-dasharray="4,3"/><text x="12" y="' + (yOf(Number(h.take_profit)) - 3).toFixed(1) + '" fill="#86efac" font-size="10.5">TP ' + Number(h.take_profit).toFixed(dp) + '</text>' : '';
-    svg.innerHTML = grid + xAxis + body + slLine + tpLine + curLine + '<g id="d-xhair" visibility="hidden"><line id="d-xv" x1="0" y1="16" x2="0" y2="' + (plotB + 6) + '" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/><line id="d-yh" x1="6" y1="0" x2="' + plotR + '" y2="0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/><circle id="d-xdot" cx="0" cy="0" r="3.5" fill="#f59e0b" stroke="#0f172a" stroke-width="1.2"/><rect id="d-ytag" x="' + (plotR + 3) + '" y="0" width="70" height="18" rx="4" fill="#334155"/><text id="d-ytxt" x="' + (W - 6) + '" y="0" fill="#f8fafc" font-size="11" font-weight="bold" text-anchor="end"></text><rect id="d-xtag" x="0" y="' + (plotB + 4) + '" width="76" height="18" rx="4" fill="#334155"/><text id="d-xtxt" x="0" y="' + (plotB + 16) + '" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle"></text></g>';
+    const fmtDist = (a, b) => !a || !b ? '' : (h.asset_type === 'Forex' ? ' (' + (Math.abs(a - b) / (h.symbol.endsWith('JPY') ? 0.01 : 0.0001)).toFixed(1) + 'p)' : ' (' + ((Math.abs(a - b) / b) * 100).toFixed(2) + '%)');
+    const drawTagLine = (val, colH, dash, txt, op) => {
+      if (!(val >= min && val <= max)) return '';
+      const y = yOf(val);
+      return '<line x1="6" y1="' + y.toFixed(1) + '" x2="' + plotR + '" y2="' + y.toFixed(1) + '" stroke="' + colH + '" stroke-width="1.2" opacity="' + (op || 1) + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + '/>';
+    };
+    const refPx = h.current_price != null ? Number(h.current_price) : lastC, entryPx = Number(h.avg_buy_price), sw = (h.side || 'LONG') === 'SHORT' ? 'SELL' : 'BUY';
+    const entryLine = h.status === 'PENDING' ? drawTagLine(entryPx, '#c084fc', '5,3', 'PENDING ' + sw + ' @ ' + entryPx.toFixed(dp) + fmtDist(refPx, entryPx), 1) : drawTagLine(entryPx, '#38bdf8', '', sw + ' ' + h.quantity + ' @ ' + entryPx.toFixed(dp), 1);
+    const sibLines = sameSymAll.filter(x => x.id !== h.id).map(x => { const sp = Number(x.avg_buy_price), s2 = (x.side || 'LONG') === 'SHORT' ? 'SELL' : 'BUY'; return x.status === 'PENDING' ? drawTagLine(sp, '#a855f7', '3,3', 'PEND ' + s2 + ' @ ' + sp.toFixed(dp) + fmtDist(refPx, sp), 0.72) : drawTagLine(sp, '#0284c7', '2,2', s2 + ' ' + x.quantity + ' @ ' + sp.toFixed(dp), 0.65); }).join('');
+    const slLine = h.stop_loss != null ? drawTagLine(Number(h.stop_loss), '#f87171', '4,3', 'SL ' + Number(h.stop_loss).toFixed(dp) + fmtDist(Number(h.stop_loss), entryPx), 1) : '';
+    const tpLine = h.take_profit != null ? drawTagLine(Number(h.take_profit), '#4ade80', '4,3', 'TP ' + Number(h.take_profit).toFixed(dp) + fmtDist(Number(h.take_profit), entryPx), 1) : '';
+    const clipDef = '<defs><clipPath id="pclip"><rect x="6" y="18" width="' + (plotR - 6) + '" height="' + (plotB - 16) + '"/></clipPath></defs>'; svg.innerHTML = clipDef + grid + xAxis + '<g clip-path="url(#pclip)">' + body + '</g>' + sibLines + entryLine + slLine + tpLine + curLine + '<g id="d-xhair" visibility="hidden"><line id="d-xv" x1="0" y1="16" x2="0" y2="' + (plotB + 6) + '" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/><line id="d-yh" x1="6" y1="0" x2="' + plotR + '" y2="0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/><circle id="d-xdot" cx="0" cy="0" r="3.5" fill="#f59e0b" stroke="#0f172a" stroke-width="1.2"/><rect id="d-ytag" x="' + (plotR + 3) + '" y="0" width="70" height="18" rx="4" fill="#334155"/><text id="d-ytxt" x="' + (W - 6) + '" y="0" fill="#f8fafc" font-size="11" font-weight="bold" text-anchor="end"></text><rect id="d-xtag" x="0" y="' + (plotB + 4) + '" width="76" height="18" rx="4" fill="#334155"/><text id="d-xtxt" x="0" y="' + (plotB + 16) + '" fill="#f8fafc" font-size="10.5" font-weight="bold" text-anchor="middle"></text></g>';
     svg.onpointerleave = () => { const xh = document.getElementById('d-xhair'); if (xh) xh.setAttribute('visibility', 'hidden'); };
     svg.onpointermove = e => {
       const ptObj = svg.createSVGPoint(); ptObj.x = e.clientX; ptObj.y = e.clientY;
@@ -506,7 +607,10 @@ async function loadHistory() {
   if (plEl) {
     plEl.innerHTML = sameSym.length > 1 ? '<div style="font-size:0.74rem;color:#94a3b8">Positions on ' + h.symbol + ' (' + sameSym.length + ') — tap to select</div>' + sameSym.map(x => {
       const act = x.id === h.id, xPnl = Number(x.valuation?.unrealized_pnl || 0);
-      const rightTxt = x.status === 'PENDING' ? '<span style="color:#facc15">PENDING</span>' : '<span class="' + (xPnl >= 0 ? 'pos' : 'neg') + '">' + (xPnl >= 0 ? '+' : '-') + cs + fmtPnl(xPnl) + '</span>';
+      const isFxP = x.asset_type === 'Forex', pSzP = x.symbol.endsWith('JPY') ? 0.01 : 0.0001;
+      const curP = Number(x.current_price) || 0, epP = Number(x.avg_buy_price) || 0;
+      const dStrP = curP && epP ? (isFxP ? (Math.abs(curP - epP) / pSzP).toFixed(1) + 'p away' : ((Math.abs(curP - epP) / epP) * 100).toFixed(2) + '% away') : '';
+      const rightTxt = x.status === 'PENDING' ? '<span style="color:#facc15">PENDING' + (dStrP ? ' · ' + dStrP : '') + '</span>' : '<span class="' + (xPnl >= 0 ? 'pos' : 'neg') + '">' + (xPnl >= 0 ? '+' : '-') + cs + fmtPnl(xPnl) + '</span>';
       const epFmt = Number(x.avg_buy_price).toFixed(h.asset_type === 'Forex' ? 3 : 2);
       return '<div data-pid="' + x.id + '" onclick="openDetail(' + x.id + ')" style="display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0.7rem;border-radius:0.55rem;cursor:pointer;background:' + (act ? '#1e293b' : '#0f172a') + ';border:1px solid ' + (act ? '#f59e0b' : '#1e293b') + '"><div style="font-size:0.8rem"><strong>' + (x.side || 'LONG') + '</strong> · ' + x.quantity + ' @ ' + cs + epFmt + '</div><div class="pid-pnl" style="font-size:0.8rem;font-weight:700">' + rightTxt + '</div></div>';
     }).join('') : '';
@@ -514,19 +618,55 @@ async function loadHistory() {
   const isFx = h.asset_type === 'Forex';
   const rawVol = d.volume ?? h.volume;
   const pipSz = h.symbol.endsWith('JPY') ? 0.01 : 0.0001;
-  const atrTxt = d.atr_14d_pips != null ? ' (14D ATR: ' + Number(d.atr_14d_pips).toFixed(1) + ')' : ''; const pipsVal = pts.length > 0 ? ((Math.max(...pts.map(x => x.high)) - Math.min(...pts.map(x => x.low))) / pipSz).toFixed(1) + ' pips' + atrTxt : 'N/A';
-  const stat1Lbl = isFx ? 'Range (' + activeRange.toUpperCase() + ' Pips)' : 'Session Volume';
-  const stat1Val = isFx ? pipsVal : (rawVol != null ? Number(rawVol).toLocaleString('en-US') : 'N/A');
-  const dp52 = isFx ? 4 : 2;
-  const rng52 = (d.low_52w != null && d.high_52w != null) ? cs + d.low_52w.toFixed(dp52) + ' – ' + cs + d.high_52w.toFixed(dp52) : 'N/A';
-  const mvStr = h.valuation ? (baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value)) + fmt(h.valuation.market_value) : '-';
+  const atrTxt = d.atr_14d_pips != null ? ' · 14D ATR ' + Number(d.atr_14d_pips).toFixed(1) : '';
+  const pipsVal = pts.length > 0 ? ((Math.max(...pts.map(x => x.high)) - Math.min(...pts.map(x => x.low))) / pipSz).toFixed(1) + 'p' + atrTxt : 'N/A';
+  const dp52 = isFx ? 3 : 2;
+  const rng52 = (d.low_52w != null && d.high_52w != null) ? cs + d.low_52w.toFixed(dp52) + '–' + cs + d.high_52w.toFixed(dp52) : 'N/A';
+  const b1Lbl = isFx ? 'Range &amp; 52W High/Low' : 'Session Vol &amp; 52W';
+  const b1Val = (isFx ? pipsVal : (rawVol != null ? Number(rawVol).toLocaleString('en-US') + ' vol' : 'N/A')) + '<br><span style="font-size:0.85em;color:#cbd5e1">52W: ' + rng52 + '</span>';
+  const qtyNum = Number(h.quantity) || 0, epNum = Number(h.avg_buy_price) || 0, curNum = Number(h.current_price) || epNum;
+  const szUnit = isFx ? ' vol' : ' qty';
   const pnlVal = h.valuation ? Number(h.valuation.unrealized_pnl) : 0;
-  const pnlStr = h.valuation ? (pnlVal >= 0 ? '+' : '-') + (baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value)) + fmtPnl(pnlVal) : '-';
-  document.getElementById('d-stats').innerHTML =
-    '<div class="d-stat"><small>' + stat1Lbl + '</small><strong>' + stat1Val + '</strong></div>' +
-    '<div class="d-stat"><small>52-Week Range</small><strong>' + rng52 + '</strong></div>' +
-    '<div class="d-stat"><small>' + (h.status === 'PENDING' ? 'Order Size / Trigger' : 'Position Size / Avg Entry') + '</small><strong>' + h.quantity + ' @ ' + cs + h.avg_buy_price + '</strong></div>' +
-    (h.status === 'PENDING' ? '<div class="d-stat"><small>Order Status</small><strong>' + fmtPendingStat(h) + '</strong></div>' : '<div class="d-stat"><small>Market Value / P&amp;L</small><strong>' + mvStr + ' <span class="' + (pnlVal >= 0 ? 'pos' : 'neg') + '">(' + pnlStr + ')</span></strong></div>');
+  const pnlStr = (pnlVal >= 0 ? '+' : '-') + (baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value)) + fmtPnl(pnlVal);
+  const sideBadge = h.side === 'SHORT' ? '<span class="pill short">SHORT</span>' : '<span class="pill long">LONG</span>';
+  const pendBadge = h.status === 'PENDING' ? '<span class="pill pend">PENDING</span>' : '';
+  const b2Lbl = (h.status === 'PENDING' ? 'Order ' : 'Position ') + sideBadge + pendBadge;
+  const b2Val = h.quantity + szUnit + ' @ ' + cs + epNum.toFixed(isFx ? 3 : 2) + (h.status === 'PENDING' ? '' : ' <span class="' + (pnlVal >= 0 ? 'pos' : 'neg') + '">(' + pnlStr + ')</span>');
+  const units = isFx ? qtyNum * 100000 : qtyNum;
+  const rFx = Number(window.lastEurUsdRate || 1) || 1;
+  const acctSym = baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value);
+  const toAcct = qAmt => {
+    if (baseSel.value === 'NATIVE') return qAmt;
+    let usdAmt = qAmt;
+    if (isFx && h.symbol.length === 6) {
+      const bC = h.symbol.slice(0, 3), qC = h.symbol.slice(3);
+      usdAmt = qC === 'USD' ? qAmt : (bC === 'USD' && curNum > 0 ? qAmt / curNum : (bC === 'EUR' && curNum > 0 ? (qAmt / curNum) * rFx : qAmt));
+    } else {
+      usdAmt = h.currency === 'EUR' ? qAmt * rFx : qAmt;
+    }
+    return baseSel.value === 'EUR' ? usdAmt / rFx : usdAmt;
+  };
+  const pipVal = toAcct(units * pipSz);
+  const mvStr = (h.status === 'PENDING' || !h.valuation) ? (acctSym + fmt(toAcct(units * epNum)) + ' ord') : (acctSym + fmt(h.valuation.market_value));
+  const b3Lbl = isFx ? 'Pip Value · Exposure' : '1% Move · Market Value';
+  const b3Val = isFx ? (acctSym + pipVal.toFixed(2) + '/pip · ' + units.toLocaleString('en-US') + ' units') : ('±' + acctSym + toAcct(units * curNum * 0.01).toFixed(2) + ' · ' + mvStr);
+  const slNum = h.stop_loss != null ? Number(h.stop_loss) : 0, tpNum = h.take_profit != null ? Number(h.take_profit) : 0;
+  const fmtPips = p => p >= 10000 ? Math.round(p / 1000) + 'kp' : (p >= 1000 ? (p / 1000).toFixed(1) + 'kp' : (p >= 10 ? Math.round(p) + 'p' : p.toFixed(1) + 'p'));
+  const fmtPct = p => p < 0.1 ? p.toFixed(2) + '%' : p.toFixed(1) + '%';
+  const slDist = slNum > 0 && epNum > 0 ? (isFx ? fmtPips(Math.abs(epNum - slNum) / pipSz) : fmtPct((Math.abs(epNum - slNum) / epNum) * 100)) : '';
+  const tpDist = tpNum > 0 && epNum > 0 ? (isFx ? fmtPips(Math.abs(tpNum - epNum) / pipSz) : fmtPct((Math.abs(tpNum - epNum) / epNum) * 100)) : '';
+  const fmtBoxCash = v => { const a = Math.abs(v); return a >= 10000 ? (Math.floor(a / 100) / 10).toFixed(1) + 'k' : (a >= 1000 ? (Math.floor(a / 10) / 100).toFixed(2) + 'k' : (Math.floor(a * 100) / 100).toFixed(2)); };
+  const slCash = slNum > 0 ? '-' + acctSym + fmtBoxCash(toAcct(Math.abs(epNum - slNum) * units)) : '';
+  const tpCash = tpNum > 0 ? '+' + acctSym + fmtBoxCash(toAcct(Math.abs(tpNum - epNum) * units)) : '';
+  const rrTxt = (slNum > 0 && tpNum > 0 && Math.abs(epNum - slNum) > 0) ? ' · 1:' + (Math.abs(tpNum - epNum) / Math.abs(epNum - slNum)).toFixed(1) : '';
+  const b4Lbl = 'SL / TP' + (rrTxt ? rrTxt : ' Risk-Reward');
+  const b4Val = (!slNum && !tpNum) ? '<span style="color:#94a3b8">Not set</span>' : ((slNum ? '<div style="display:flex;align-items:center;gap:0.18rem;white-space:nowrap"><span class="pill short" style="margin:0">SL</span><span class="neg">' + slDist + ' (' + slCash + ')</span></div>' : '') + (tpNum ? '<div style="display:flex;align-items:center;gap:0.18rem;white-space:nowrap;margin-top:' + (slNum ? '0.2rem' : '0') + '"><span class="pill long" style="margin:0">TP</span><span class="pos">' + tpDist + ' (' + tpCash + ')</span></div>' : ''));
+  const nextStatsHtml =
+    '<div class="d-stat"><small>' + b1Lbl + '</small><strong>' + b1Val + '</strong></div>' +
+    '<div class="d-stat"><small>' + b2Lbl + '</small><strong id="d-box2-val">' + b2Val + '</strong></div>' +
+    '<div class="d-stat"><small>' + b3Lbl + '</small><strong id="d-box3-val">' + b3Val + '</strong></div>' +
+    '<div class="d-stat"><small>' + b4Lbl + '</small><strong>' + b4Val + '</strong></div>';
+  const stBox = document.getElementById('d-stats'); if (stBox && stBox.innerHTML !== nextStatsHtml) stBox.innerHTML = nextStatsHtml;
 }
 
 const lastPx = {};
@@ -536,7 +676,7 @@ function renderRowHtml(h) {
     '<td class="sym-cell"><strong>' + h.symbol + '</strong> <span class="pill">' + mktTag(h.symbol, h.asset_type) + '</span></td>' +
     '<td>' + h.asset_type + '</td>' +
     '<td>' + h.quantity + '</td>' +
-    '<td>' + cs + h.avg_buy_price + '</td>' +
+    '<td class="avg-cell">' + (String(h.avg_buy_price).includes('Orders') ? h.avg_buy_price : cs + h.avg_buy_price) + '</td>' +
     '<td class="px-cell"></td>' +
     '<td class="mv-cell"></td>' +
     '<td class="pnl-cell"></td>' +
@@ -551,6 +691,7 @@ function patchRow(tr, h) {
   const vol = (h.volume != null && h.volume > 0) ? '<span class="sub">Vol: ' + Number(h.volume).toLocaleString('en-US') + '</span>' : '';
   const dpR = h.asset_type === 'Forex' ? 3 : 2;
   const pxText = h.current_price != null ? cs + Number(h.current_price).toFixed(dpR) : 'Waiting...';
+  const avgCell = tr.querySelector('.avg-cell'); if (avgCell) { const nextAvg = String(h.avg_buy_price).includes('Orders') ? h.avg_buy_price : cs + h.avg_buy_price; if (avgCell.innerHTML !== nextAvg) avgCell.innerHTML = nextAvg; }
   const pxCell = tr.querySelector('.px-cell');
     const sPill = h.side === 'LONG/SHORT' ? '<span class="pill" style="color:#38bdf8;border-color:rgba(56,189,248,.4)">L / S</span>' : (h.side === 'SHORT' ? '<span class="pill short">SHORT</span>' : '<span class="pill long">LONG</span>');
   const pPill = h.status === 'PENDING' ? '<span class="pill pend">PENDING</span>' : '';
@@ -560,18 +701,42 @@ function patchRow(tr, h) {
   if (pxCell.innerHTML !== nextPxHtml) pxCell.innerHTML = nextPxHtml;
   const valSym = baseSel.value === 'NATIVE' ? qCcy : ccySym(baseSel.value);
   const mvCell = tr.querySelector('.mv-cell');
-  const nextMv = h.status === 'PENDING' ? 'Pending' : (h.valuation ? valSym + fmt(h.valuation.market_value) : '-');
+  let estMv = 0;
+  if (h.status === 'PENDING' && h.current_price != null) {
+    const px = Number(h.current_price), q = Number(h.quantity), rFx = Number(window.lastEurUsdRate || 1);
+    if (h.asset_type === 'Forex' && h.symbol.length === 6) {
+      const bCcy = h.symbol.slice(0, 3), qCode = h.symbol.slice(3);
+      if (baseSel.value === 'NATIVE') {
+        estMv = q * 100000 * px;
+      } else {
+        const usdNotional = bCcy === 'USD' ? (q * 100000) : (qCode === 'USD' ? q * 100000 * px : (bCcy === 'EUR' ? q * 100000 * rFx : q * 100000));
+        estMv = baseSel.value === 'EUR' && rFx > 0 ? (usdNotional / rFx) : usdNotional;
+      }
+    } else {
+      const rawVal = q * px;
+      if (baseSel.value === 'NATIVE') estMv = rawVal;
+      else if (h.currency === 'EUR' && baseSel.value === 'USD') estMv = rawVal * rFx;
+      else if (h.currency === 'USD' && baseSel.value === 'EUR' && rFx > 0) estMv = rawVal / rFx;
+      else estMv = rawVal;
+    }
+  }
+  const fmtMvVal = v => (baseSel.value === 'NATIVE' && qCcy === '¥') ? Math.round(v).toLocaleString('en-US') : fmt(v);
+  const nextMv = h.status === 'PENDING' ? (estMv > 0 ? valSym + fmtMvVal(estMv) : 'Pending') : (h.valuation ? valSym + fmtMvVal(h.valuation.market_value) : '—');
   if (mvCell.textContent !== nextMv) mvCell.textContent = nextMv;
   const pnlCell = tr.querySelector('.pnl-cell');
   const u = h.valuation ? Number(h.valuation.unrealized_pnl) : 0;
   const pct = h.valuation ? Number(h.valuation.pnl_percent).toFixed(2) : '0.00';
-  const nextPnl = h.status === 'PENDING' ? 'Trigger @ ' + cs + h.avg_buy_price : (h.valuation ? (u >= 0 ? '+' : '-') + valSym + fmtPnl(u) + ' (' + pct + '%)' : '-');
-  pnlCell.className = 'pnl-cell ' + (u >= 0 ? 'pos' : 'neg');
+  const nextPnl = h.status === 'PENDING'
+    ? 'Pending'
+    : (h.valuation ? (u >= 0 ? '+' : '-') + valSym + fmtPnl(u) + ' (' + pct + '%)' : '—');
+  pnlCell.className = 'pnl-cell' + (h.status === 'PENDING' ? '' : (u >= 0 ? ' pos' : ' neg'));
+  pnlCell.style.color = h.status === 'PENDING' ? '#64748b' : '';
+  mvCell.style.color = h.status === 'PENDING' ? '#64748b' : '';
   if (pnlCell.textContent !== nextPnl) pnlCell.textContent = nextPnl;
 }
 async function load() {
   const res = await fetch('/portfolio/api/portfolio?base=' + encodeURIComponent(baseSel.value)); if (res.status === 401) { initSession(); return; } const data = await res.json();
-  const rate = Number(data.eur_usd_rate || 1);
+  const rate = Number(data.eur_usd_rate || 1); window.lastEurUsdRate = rate;
   const mv = Number(data.total_market_value), cb = Number(data.total_cost_basis), pnl = Number(data.total_unrealized_pnl), rpnl = Number(data.total_realized_pnl || 0);
   const topSym = ccySym(data.base_currency || 'USD');
   const setH = (id, html) => { const el = document.getElementById(id); if (el && el.innerHTML !== html) el.innerHTML = html; };
@@ -602,13 +767,27 @@ async function load() {
     const rep = Object.assign({}, list.at(0));
     if (list.length > 1) {
       const openList = list.filter(x => (x.status || 'OPEN') === 'OPEN');
-      const totQty = list.reduce((s, x) => s + Number(x.quantity), 0);
+      const pendCount = list.length - openList.length;
       const totMv = openList.reduce((s, x) => s + Number(x.valuation?.market_value || 0), 0);
       const totCb = openList.reduce((s, x) => s + Number(x.valuation?.cost_basis || 0), 0);
       const totPnl = openList.reduce((s, x) => s + Number(x.valuation?.unrealized_pnl || 0), 0);
-      const wCost = (openList.length ? openList : list).reduce((s, x) => s + Number(x.quantity) * Number(x.avg_buy_price), 0); const wQty = (openList.length ? openList : list).reduce((s, x) => s + Number(x.quantity), 0); rep.quantity = Number(totQty.toFixed(6)).toString(); if (wQty > 0) rep.avg_buy_price = Number((wCost / wQty).toFixed(4)).toString();
-      rep.status = openList.length ? 'OPEN' : 'PENDING';
-      rep.pos_count = list.length; const sides = new Set(list.map(x => x.side || 'LONG')); if (sides.size > 1) rep.side = 'LONG/SHORT';
+      const dpG = rep.asset_type === 'Forex' ? 3 : 2;
+      const cs = ccySym(rep.asset_type === 'Forex' && rep.symbol.length === 6 ? rep.symbol.slice(3) : rep.currency);
+      if (openList.length > 0) {
+        const wCost = openList.reduce((s, x) => s + Number(x.quantity) * Number(x.avg_buy_price), 0);
+        const wQty = openList.reduce((s, x) => s + Number(x.quantity), 0);
+        rep.quantity = Number(wQty.toFixed(4)).toString();
+        rep.avg_buy_price = wQty > 0 ? (wCost / wQty).toFixed(dpG) : rep.avg_buy_price;
+        rep.status = 'OPEN';
+      } else {
+        rep.quantity = Number(list.reduce((s, x) => s + Number(x.quantity), 0).toFixed(4)).toString();
+        rep.avg_buy_price = list.length + ' Orders';
+        rep.status = 'PENDING';
+      }
+      rep.pend_count = pendCount;
+      rep.pos_count = list.length;
+      const sides = new Set(list.map(x => x.side || 'LONG'));
+      if (sides.size > 1) rep.side = 'LONG/SHORT';
       if (rep.valuation) rep.valuation = { ...rep.valuation, market_value: totMv, cost_basis: totCb, unrealized_pnl: totPnl, pnl_percent: totCb > 0 ? (totPnl / totCb) * 100 : 0 };
     }
     let tr = tbody.querySelector('tr[data-sym="' + sym + '"]');
@@ -629,28 +808,30 @@ async function load() {
       const dpH = h.asset_type === 'Forex' ? 3 : 2;
       const pxEl = document.getElementById('d-px'), nextPx = cs + Number(h.current_price).toFixed(dpH);
       if (pxEl && pxEl.textContent !== nextPx) pxEl.textContent = nextPx;
-      const ct = document.getElementById('d-ctxt'); if (ct) { const dp = h.asset_type === 'Forex' ? 3 : 2; ct.textContent = Number(h.current_price).toFixed(dp); }
+      const ct = document.getElementById('d-ctxt'); if (ct) { const dp = h.asset_type === 'Forex' ? 3 : 2; ct.textContent = Number(h.current_price).toFixed(dp); } const ce = document.getElementById('d-chg'); if (ce && window.activePrevClose > 0) { const isOp = ['LIVE', 'REGULAR', '24/7'].includes(h.market_state || ''); const lp = Number(h.current_price), dPct = isOp ? (((lp - window.activePrevClose) / window.activePrevClose) * 100).toFixed(2) : '0.00'; ce.textContent = 'Today ' + (isOp ? ((lp >= window.activePrevClose ? '+' : '') + dPct + '%') : '0.00%'); ce.className = isOp ? (lp >= window.activePrevClose ? 'pos' : 'neg') : ''; ce.style.color = isOp ? '' : '#94a3b8'; }
     }
-    const mvEl = document.querySelector('#d-stats .d-stat:last-child strong');
-    if (mvEl && h.status === 'PENDING') {
-      const nextP = fmtPendingStat(h);
-      if (mvEl.innerHTML !== nextP) mvEl.innerHTML = nextP;
-    } else if (mvEl && h.valuation) {
-      const valSym = baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value);
-      const pv = Number(h.valuation.unrealized_pnl);
-      const ps = (pv >= 0 ? '+' : '-') + valSym + fmtPnl(pv);
-      const nextHtml = valSym + fmt(h.valuation.market_value) + ' <span class="' + (pv >= 0 ? 'pos' : 'neg') + '">(' + ps + ')</span>';
-      if (mvEl.innerHTML !== nextHtml) mvEl.innerHTML = nextHtml;
+    const b2El = document.getElementById('d-box2-val');
+    if (b2El) {
+      const isFxW = h.asset_type === 'Forex', pSzW = h.symbol.endsWith('JPY') ? 0.01 : 0.0001;
+      const epW = Number(h.avg_buy_price) || 0, curW = Number(h.current_price) || epW;
+      const pvW = Number(h.valuation?.unrealized_pnl || 0);
+      const psW = (pvW >= 0 ? '+' : '-') + (baseSel.value === 'NATIVE' ? cs : ccySym(baseSel.value)) + fmtPnl(pvW);
+      const nxtB2 = h.quantity + (isFxW ? ' vol' : ' qty') + ' @ ' + cs + epW.toFixed(isFxW ? 3 : 2) + (h.status === 'PENDING' ? '' : ' <span class="' + (pvW >= 0 ? 'pos' : 'neg') + '">(' + psW + ')</span>');
+      if (b2El.innerHTML !== nxtB2) b2El.innerHTML = nxtB2;
     }
     document.querySelectorAll('#d-pos-list [data-pid]').forEach(el => {
       const x = holdingsMap[el.dataset.pid]; if (!x) return;
       const xp = Number(x.valuation?.unrealized_pnl || 0), rEl = el.querySelector('.pid-pnl');
-      const nxt = x.status === 'PENDING' ? '<span style="color:#facc15">PENDING</span>' : '<span class="' + (xp >= 0 ? 'pos' : 'neg') + '">' + (xp >= 0 ? '+' : '-') + cs + fmtPnl(xp) + '</span>';
+      const isFxL = x.asset_type === 'Forex', pSzL = x.symbol.endsWith('JPY') ? 0.01 : 0.0001;
+      const curL = Number(x.current_price) || 0, epL = Number(x.avg_buy_price) || 0;
+      const dStrL = curL && epL ? (isFxL ? (Math.abs(curL - epL) / pSzL).toFixed(1) + 'p away' : ((Math.abs(curL - epL) / epL) * 100).toFixed(2) + '% away') : '';
+      const nxt = x.status === 'PENDING' ? '<span style="color:#facc15">PENDING' + (dStrL ? ' · ' + dStrL : '') + '</span>' : '<span class="' + (xp >= 0 ? 'pos' : 'neg') + '">' + (xp >= 0 ? '+' : '-') + cs + fmtPnl(xp) + '</span>';
       if (rEl && rEl.innerHTML !== nxt) rEl.innerHTML = nxt;
     });
   }
 }
 
+document.getElementById('asset_type').onchange = e => { document.getElementById('quantity').placeholder = e.target.value === 'Forex' ? 'Volume (Lots)' : 'Quantity'; };
 const mobAddBtn = document.getElementById('mob-add-btn'), addForm = document.getElementById('add-form');
 mobAddBtn.onclick = () => { const hid = addForm.classList.toggle('mob-hidden'); mobAddBtn.textContent = hid ? '+ Add Instrument' : '✕ Close'; };
 document.getElementById('add-form').onsubmit = async e => {
@@ -661,9 +842,9 @@ document.getElementById('add-form').onsubmit = async e => {
       const sr = await fetch('/portfolio/api/search?q=' + encodeURIComponent(symIn.value.trim()));
       if (sr.ok) { const its = await sr.json(); const m = its.find(x => x.symbol === symIn.value.trim().toUpperCase()) || its; if (m && m.price != null) buyIn.value = m.price; }
     }
-    const res = await fetch('/portfolio/api/holdings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ symbol: symIn.value, asset_type: document.getElementById('asset_type').value, side: document.getElementById('side').value, quantity: cleanDec(document.getElementById('quantity').value), avg_buy_price: cleanDec(buyIn.value), stop_loss: cleanDec(document.getElementById('stop_loss').value) || null, take_profit: cleanDec(document.getElementById('take_profit').value) || null, currency: document.getElementById('currency').value }) });
+    const res = await fetch('/portfolio/api/holdings', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ symbol: symIn.value, asset_type: document.getElementById('asset_type').value, side: document.getElementById('side').value, quantity: cleanDec(document.getElementById('quantity').value), avg_buy_price: cleanDec(buyIn.value), stop_loss: cleanDec(document.getElementById('stop_loss').value) || null, take_profit: cleanDec(document.getElementById('take_profit').value) || null, currency: window.pickedCurrency || '' }) });
     if (!res.ok) { errEl.textContent = await res.text(); return; }
-    e.target.reset(); document.getElementById('currency').value = 'USD'; addForm.classList.add('mob-hidden'); mobAddBtn.textContent = '+ Add Instrument'; load();
+    e.target.reset(); window.pickedCurrency = ''; addForm.classList.add('mob-hidden'); mobAddBtn.textContent = '+ Add Instrument'; load();
   } finally { btn.disabled = false; btn.textContent = 'Add'; }
 };
 async function closeOneId(id) {
@@ -678,7 +859,6 @@ async function closeAllSym(sym) {
 async function del(id) {
   const h = holdingsMap[id]; if (!h) return;
   const list = Object.values(holdingsMap).filter(x => x.symbol === h.symbol);
-  if (list.length <= 1) { await closeOneId(id); await load(); return; }
   const cs = ccySym(h.asset_type === 'Forex' && h.symbol.length === 6 ? h.symbol.slice(3) : h.currency);
   const dp = h.asset_type === 'Forex' ? 3 : 2;
   const rows = list.map(x => {
@@ -781,6 +961,103 @@ async function initSession() {
   await load();
 }
 initSession(); connectWS();
+
+function fmtAgo(dStr) {
+  const ms = Date.parse(dStr || '');
+  if (!ms) return '';
+  const s = Math.max(1, Math.floor((Date.now() - ms) / 1000));
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+}
+const newsPages = {};
+function renderNewsItems(el, items, page) {
+  if (!el) return;
+  if (items) { newsPages[el.id] = { items, page: page || 1 }; }
+  const st = newsPages[el.id] || { items: [], page: 1 };
+  const all = st.items || [];
+  if (!all.length) { el.innerHTML = '<div style="color:#64748b">No recent headlines available.</div>'; return; }
+  const perPage = 6, totalPages = Math.max(1, Math.ceil(all.length / perPage));
+  const cur = Math.min(Math.max(1, page || st.page || 1), totalPages);
+  st.page = cur;
+  const slice = all.slice((cur - 1) * perPage, cur * perPage);
+  const cards = slice.map(n =>
+    '<a href="' + n.link + '" target="_blank" rel="noopener noreferrer" style="display:block;padding:0.48rem 0.6rem;background:#0f172a;border:1px solid #334155;border-radius:0.5rem;text-decoration:none;color:#e2e8f0">' +
+      '<div style="font-weight:600;line-height:1.35;margin-bottom:0.2rem">' + n.title + '</div>' +
+      '<div style="font-size:0.72rem;color:#94a3b8">' + n.publisher + (n.pub_date ? ' · ' + fmtAgo(n.pub_date) : '') + '</div>' +
+    '</a>'
+  ).join('');
+  const nav = totalPages > 1
+    ? '<div style="display:flex;justify-content:flex-end;align-items:center;gap:0.4rem;margin-top:0.25rem">' +
+        '<button type="button" onclick="' + (cur <= 1 ? 'return false;' : 'renderNewsItems(document.getElementById(\'' + el.id + '\'),null,' + (cur - 1) + ')') + '" style="width:auto;padding:0.22rem 0.55rem;font-size:0.74rem;background:#0f172a;color:' + (cur <= 1 ? '#475569;opacity:0.45;cursor:default;pointer-events:none' : '#cbd5e1;cursor:pointer') + ';border:1px solid #334155;border-radius:0.45rem">‹ Prev</button>' +
+        '<span style="font-size:0.74rem;color:#94a3b8;min-width:2.6rem;text-align:center">' + cur + ' / ' + totalPages + '</span>' +
+        '<button type="button" onclick="' + (cur >= totalPages ? 'return false;' : 'renderNewsItems(document.getElementById(\'' + el.id + '\'),null,' + (cur + 1) + ')') + '" style="width:auto;padding:0.22rem 0.55rem;font-size:0.74rem;background:#0f172a;color:' + (cur >= totalPages ? '#475569;opacity:0.45;cursor:default;pointer-events:none' : '#cbd5e1;cursor:pointer') + ';border:1px solid #334155;border-radius:0.45rem">Next ›</button>' +
+      '</div>'
+    : '';
+  el.innerHTML = cards + nav;
+}
+let lastNewsSym = '';
+function updateNewsPinBtn() {
+  const hidden = localStorage.getItem('hide_macro_news') === '1';
+  const pin = document.getElementById('news-pin-btn');
+  if (pin) pin.style.display = hidden ? 'inline-flex' : 'none';
+}
+function toggleMacroNews(show) {
+  const wrap = document.getElementById('macro-news-wrap');
+  const rest = document.getElementById('macro-news-restore');
+  if (!wrap) return;
+  const next = show !== undefined ? show : wrap.style.display === 'none';
+  wrap.style.display = next ? 'block' : 'none';
+  if (rest) rest.style.display = next ? 'none' : 'block';
+  localStorage.setItem('hide_macro_news', next ? '0' : '1');
+  updateNewsPinBtn();
+  if (next) loadMacroNews();
+}
+function closeNewsModal() {
+  const nb = document.getElementById('news-bg');
+  if (nb) { nb.style.transform = 'translateX(100%)'; nb.style.visibility = 'hidden'; nb.style.pointerEvents = 'none'; }
+  document.body.style.overflow = '';
+}
+async function loadNewsModal() {
+  const el = document.getElementById('news-modal-list');
+  if (el) el.textContent = 'Loading market headlines...';
+  const r = await fetch('/portfolio/api/news');
+  if (r.ok) renderNewsItems(el, await r.json());
+}
+document.getElementById('news-menu-btn').onclick = () => {
+  userDd.style.display = 'none';
+  updateNewsPinBtn();
+  const nb = document.getElementById('news-bg');
+  if (nb) { nb.style.transform = 'translateX(0)'; nb.style.visibility = 'visible'; nb.style.pointerEvents = 'auto'; }
+  document.body.style.overflow = 'hidden';
+  loadNewsModal();
+};
+async function loadMacroNews() {
+  const wrap = document.getElementById('macro-news-wrap');
+  if (wrap && wrap.style.display === 'none') return;
+  const r = await fetch('/portfolio/api/news');
+  if (r.ok) renderNewsItems(document.getElementById('macro-news-list'), await r.json());
+}
+async function loadSymbolNews(sym, force) {
+  const s = (sym || '').toUpperCase();
+  if (!force && s === lastNewsSym) return;
+  lastNewsSym = s;
+  const el = document.getElementById('d-news-list'); if (el) el.textContent = 'Loading headlines...';
+  const r = await fetch('/portfolio/api/news?symbol=' + encodeURIComponent(s));
+  if (r.ok) renderNewsItems(el, await r.json());
+}
+if (localStorage.getItem('hide_macro_news') === '1') {
+  const w = document.getElementById('macro-news-wrap'); if (w) w.style.display = 'none';
+  const r = document.getElementById('macro-news-restore'); if (r) r.style.display = 'block';
+} else {
+  loadMacroNews();
+}
+setInterval(() => {
+  if (document.hidden) return;
+  loadMacroNews();
+  if (activeHolding) loadSymbolNews(activeHolding.symbol, true);
+}, 120000);
+
 </script>
 </body>
 </html>
