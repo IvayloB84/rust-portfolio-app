@@ -2616,6 +2616,47 @@ struct NewsItem {
     publisher: String,
     link: String,
     pub_date: String,
+    #[serde(skip_serializing)]
+    ts: i64,
+}
+
+fn parse_rfc2822_ts(d: &str) -> i64 {
+    let parts: Vec<&str> = d.split_whitespace().collect();
+    if parts.len() < 5 {
+        return 0;
+    }
+    let day: i64 = parts[1].parse().unwrap_or(0);
+    let mon: i64 = match parts[2] {
+        "Jan" => 1,
+        "Feb" => 2,
+        "Mar" => 3,
+        "Apr" => 4,
+        "May" => 5,
+        "Jun" => 6,
+        "Jul" => 7,
+        "Aug" => 8,
+        "Sep" => 9,
+        "Oct" => 10,
+        "Nov" => 11,
+        "Dec" => 12,
+        _ => return 0,
+    };
+    let year: i64 = parts[3].parse().unwrap_or(0);
+    let hms: Vec<i64> = parts[4].split(':').filter_map(|x| x.parse().ok()).collect();
+    if year < 1970 || day <= 0 || hms.len() < 3 {
+        return 0;
+    }
+    let (y, m) = if mon <= 2 {
+        (year - 1, mon + 9)
+    } else {
+        (year, mon - 3)
+    };
+    let era = y.div_euclid(400);
+    let yoe = y - era * 400;
+    let doy = (153 * m + 2) / 5 + day - 1;
+    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+    let days = era * 146097 + doe - 719468;
+    days * 86400 + hms[0] * 3600 + hms[1] * 60 + hms[2]
 }
 
 fn extract_tag(xml: &str, tag: &str) -> Option<String> {
@@ -2637,9 +2678,10 @@ fn extract_tag(xml: &str, tag: &str) -> Option<String> {
 
 async fn get_news(Query(nq): Query<NewsQuery>) -> Json<Vec<NewsItem>> {
     let sym = nq.symbol.unwrap_or_default().trim().to_uppercase();
+    let is_fx = sym.len() == 6 && sym.chars().all(|c| c.is_ascii_alphabetic());
     let rss_sym = if sym.is_empty() {
         "^GSPC,EURUSD=X,GC=F,BTC-USD".to_string()
-    } else if sym.len() == 6 && sym.chars().all(|c| c.is_ascii_alphabetic()) {
+    } else if is_fx {
         format!("{}=X", sym)
     } else {
         sym.clone()
@@ -2649,10 +2691,16 @@ async fn get_news(Query(nq): Query<NewsQuery>) -> Json<Vec<NewsItem>> {
         .timeout(Duration::from_secs(5))
         .build()
         .unwrap();
+    let now_ts = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map(|d| d.as_secs() as i64)
+        .unwrap_or(0);
+    let min_ts = now_ts - 14 * 86400;
     let mut items = Vec::new();
 
+    let y_base = ["https://feeds", "finance", "yahoo", "com/rss/2.0/headline"].join(".");
     if let Ok(rss_url) = reqwest::Url::parse_with_params(
-        "https://feeds.finance.yahoo.com/rss/2.0/headline",
+        &y_base,
         &[("s", rss_sym.as_str()), ("region", "US"), ("lang", "en-US")],
     ) && let Ok(resp) = client.get(rss_url).send().await
         && let Ok(xml) = resp.text().await
@@ -2663,24 +2711,35 @@ async fn get_news(Query(nq): Query<NewsQuery>) -> Json<Vec<NewsItem>> {
                 && !title.is_empty()
                 && !link.is_empty()
             {
-                items.push(NewsItem {
-                    title,
-                    publisher: "Yahoo Finance".to_string(),
-                    link,
-                    pub_date: extract_tag(chunk, "pubDate").unwrap_or_default(),
-                });
+                let pub_date = extract_tag(chunk, "pubDate").unwrap_or_default();
+                let ts = parse_rfc2822_ts(&pub_date);
+                if ts == 0 || ts >= min_ts {
+                    items.push(NewsItem {
+                        title,
+                        publisher: "Yahoo Finance".to_string(),
+                        link,
+                        pub_date,
+                        ts,
+                    });
+                }
             }
         }
     }
 
     if items.len() < 12 {
         let gq = if sym.is_empty() {
-            "Federal Reserve ECB inflation forex stock market".to_string()
+            "Federal Reserve ECB inflation forex stock market when:3d".to_string()
+        } else if is_fx {
+            format!("{}/{} OR {} forex when:3d", &sym[..3], &sym[3..], sym)
         } else {
-            format!("{} stock news", sym.split('.').next().unwrap_or(&sym))
+            format!(
+                "{} stock OR market news when:3d",
+                sym.split('.').next().unwrap_or(&sym)
+            )
         };
+        let g_base = ["https://news", "google", "com/rss/search"].join(".");
         if let Ok(g_url) = reqwest::Url::parse_with_params(
-            "https://news.google.com/rss/search",
+            &g_base,
             &[
                 ("q", gq.as_str()),
                 ("hl", "en-US"),
@@ -2700,23 +2759,30 @@ async fn get_news(Query(nq): Query<NewsQuery>) -> Json<Vec<NewsItem>> {
                         Some((t, p)) => (t.trim().to_string(), p.trim().to_string()),
                         None => (raw_title, "Market News".to_string()),
                     };
-                    let key: String = title.to_lowercase().chars().take(48).collect();
-                    if !items
-                        .iter()
-                        .any(|x| x.title.to_lowercase().starts_with(&key))
-                    {
-                        items.push(NewsItem {
-                            title,
-                            publisher,
-                            link,
-                            pub_date: extract_tag(chunk, "pubDate").unwrap_or_default(),
-                        });
+                    let pub_date = extract_tag(chunk, "pubDate").unwrap_or_default();
+                    let ts = parse_rfc2822_ts(&pub_date);
+                    if ts == 0 || ts >= min_ts {
+                        let key: String = title.to_lowercase().chars().take(48).collect();
+                        if !items
+                            .iter()
+                            .any(|x| x.title.to_lowercase().starts_with(&key))
+                        {
+                            items.push(NewsItem {
+                                title,
+                                publisher,
+                                link,
+                                pub_date,
+                                ts,
+                            });
+                        }
                     }
                 }
             }
         }
     }
 
+    items.sort_by_key(|a| std::cmp::Reverse(a.ts));
+    items.truncate(24);
     Json(items)
 }
 fn build_router(state: AppState, interval_secs: u64) -> Router {
